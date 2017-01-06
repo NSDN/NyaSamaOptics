@@ -1,14 +1,14 @@
 [
 {
-  "modid": "NyaSamaTelecom",
-  "name": "NyaSama Telecom",
-  "description": "NyaSama telecom mod.",
+  "modid": "NyaSamaOptics",
+  "name": "NyaSama Optics",
+  "description": "NyaSama optics mod.",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "http://dev.nyasama.com/nsmc",
   "updateUrl": "",
   "authorList": ["NSDN"],
-  "credits": "Copyright (C) NSDN 2014 - 2016",
+  "credits": "Copyright (C) NSDN 2014 - 2017",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
