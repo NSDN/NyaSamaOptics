@@ -2,3 +2,7 @@ itemGroup.tabNyaSamaOptics=NyaSama Optics
 tile.NyaSamaOpticsBlockSign.name=NyaSama Optics
 tile.NyaSamaOpticsNSDNLogo.name=NSDN Logo
 tile.NyaSamaOpticsLogo.name=NyaSama Optics Logo
+item.ItemHoloJetLiShu.name=Holo Jet Converter(LiShu)
+tile.BlockHoloJetLiShu.name=Holo Jet(LiShu)
+item.ItemHoloJetDaBiaoSong.name=Holo Jet Converter(DaBiaoSong)
+tile.BlockHoloJetDaBiaoSong.name=Holo Jet(DaBiaoSong)

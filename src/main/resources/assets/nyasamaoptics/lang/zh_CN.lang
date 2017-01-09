@@ -2,3 +2,7 @@ itemGroup.tabNyaSamaOptics=喵玉光学
 tile.NyaSamaOpticsBlockSign.name=喵玉光学
 tile.NyaSamaOpticsNSDNLogo.name=NSDN标志
 tile.NyaSamaOpticsLogo.name=喵玉光学标志
+item.ItemHoloJetLiShu.name=全息投影仪转换器(隶书)
+tile.BlockHoloJetLiShu.name=全息投影仪(隶书)
+item.ItemHoloJetDaBiaoSong.name=全息投影仪转换器(大标宋)
+tile.BlockHoloJetDaBiaoSong.name=全息投影仪(大标宋)

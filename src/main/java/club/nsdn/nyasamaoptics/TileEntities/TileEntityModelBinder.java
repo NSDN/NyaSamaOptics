@@ -5,6 +5,8 @@ package club.nsdn.nyasamaoptics.TileEntities;
  */
 
 import club.nsdn.nyasamaoptics.Renderers.TileEntity.*;
+import club.nsdn.nyasamaoptics.Util.Font.FontRenderer;
+import club.nsdn.nyasamaoptics.Util.Font.HoloJet;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 
@@ -13,8 +15,8 @@ public class TileEntityModelBinder {
     public TileEntityModelBinder(FMLInitializationEvent event) {
 
         ClientRegistry.bindTileEntitySpecialRenderer(
-                TileEntityHalfBlock.HalfBlock.class,
-                new BaseRenderer(new HalfBlockModel()));
+                HoloJet.TileText.class,
+                new FontRenderer());
 
     }
 

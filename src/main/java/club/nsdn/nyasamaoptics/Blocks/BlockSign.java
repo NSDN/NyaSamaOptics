@@ -18,7 +18,7 @@ public class BlockSign extends Block {
         setLightLevel(1);
         setStepSound(Block.soundTypeGlass);
         setResistance(10.0F);
-        setCreativeTab(CreativeTabLoader.tabNyaSamaTelecom);
+        setCreativeTab(CreativeTabLoader.tabNyaSamaOptics);
     }
 
 }

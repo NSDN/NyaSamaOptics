@@ -6,8 +6,11 @@ package club.nsdn.nyasamaoptics.Proxy;
 
 import club.nsdn.nyasamaoptics.Entity.EntityModelBinder;
 import club.nsdn.nyasamaoptics.Event.EventRegister;
+import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
+import club.nsdn.nyasamaoptics.Util.Font.FontRenderer;
 import cpw.mods.fml.common.event.*;
 import club.nsdn.nyasamaoptics.TileEntities.TileEntityModelBinder;
+import net.minecraft.client.Minecraft;
 
 public class ClientProxy extends CommonProxy {
 
@@ -22,6 +25,7 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent event)
     {
         super.init(event);
+        new FontLoader(Minecraft.getMinecraft().getResourceManager());
         new TileEntityModelBinder(event);
         new EntityModelBinder(event);
         EventRegister.registerClient();

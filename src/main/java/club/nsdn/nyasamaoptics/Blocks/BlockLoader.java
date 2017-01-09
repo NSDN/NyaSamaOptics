@@ -5,6 +5,7 @@ package club.nsdn.nyasamaoptics.Blocks;
  */
 
 
+import club.nsdn.nyasamaoptics.Util.Font.HoloJet;
 import net.minecraft.block.Block;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -14,6 +15,9 @@ public class BlockLoader {
     public static Block blockSign;
     public static Block blockNSDNLogo;
     public static Block blockNyaSamaOpticsLogo;
+
+    public static Block blockHoloJetLiShu;
+    public static Block blockHoloJetDaBiaoSong;
 
     private static void register(Block block, String name) {
         GameRegistry.registerBlock(block, name);
@@ -29,6 +33,11 @@ public class BlockLoader {
         blockNyaSamaOpticsLogo = new BlockNyaSamaOpticsLogo();
         register(blockNyaSamaOpticsLogo, "nyasamaoptics_logo");
 
+        blockHoloJetLiShu = new HoloJet("BlockHoloJetLiShu");
+        register(blockHoloJetLiShu, "block_holojet_lishu");
+
+        blockHoloJetDaBiaoSong = new HoloJet("BlockHoloJetDaBiaoSong");
+        register(blockHoloJetDaBiaoSong, "block_holojet_dabiaosong");
     }
 
 }
