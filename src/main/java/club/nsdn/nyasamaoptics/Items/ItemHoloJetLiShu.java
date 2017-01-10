@@ -41,11 +41,11 @@ public class ItemHoloJetLiShu extends ItemToolBase {
         if (tileEntity instanceof TileEntitySign) {
             HoloJet.TileText tileText = new HoloJet.TileText();
             tileText.content = ((TileEntitySign) tileEntity).signText[0];
-            tileText.color = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].split(", ")[0], 16);
-            tileText.thick = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].split(", ")[1], 10);
-            tileText.scaleX = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].split(", ")[0]);
-            tileText.scaleY = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].split(", ")[1]);
-            tileText.scaleZ = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].split(", ")[2]);
+            tileText.color = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].replace(" ", "").split(",")[0], 16);
+            tileText.thick = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].replace(" ", "").split(",")[1], 10);
+            tileText.scaleX = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[0]);
+            tileText.scaleY = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[1]);
+            tileText.scaleZ = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[2]);
             if (((TileEntitySign) tileEntity).signText[3].contains("Left")) {
                 tileText.align = FontLoader.ALIGN_LEFT;
             } else if (((TileEntitySign) tileEntity).signText[3].contains("Right")) {

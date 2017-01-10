@@ -1,5 +1,6 @@
 package club.nsdn.nyasamaoptics.Util.Font;
 
+import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ public class TextModel extends ModelBase {
         ModelRenderer shape = new ModelRenderer(this, 0, 0);
         shape.addBox(0F, 0F, -8F, 1, 1, thick);
         shape.setRotationPoint(x + LX - 8.0F, y + LY - 16.0F, 0F);
-        shape.setTextureSize(1, 1);
+        shape.setTextureSize(33, 17);
         shape.mirror = true;
         setRotation(shape, 0F, 0F, 0F);
         shapes.add(shape);
@@ -72,26 +73,26 @@ public class TextModel extends ModelBase {
         shapes = new LinkedList<ModelRenderer>();
         this.color = color;
 
-        textureWidth = 1;
-        textureHeight = 1;
+        textureWidth = 33;
+        textureHeight = 17;
 
-        String gbStr;
+        byte[] buf;
         try {
-            gbStr = new String(str.getBytes("utf-8"), "gb2312");
+            buf = str.getBytes("GB2312");
         } catch (Exception e) {
-            System.out.println(e.toString());
-            gbStr = str;
+            NyaSamaOptics.log.error(e.getMessage());
+            buf = str.getBytes();
         }
 
         switch (align) {
             case FontLoader.ALIGN_CENTER:
-                drawString(font, -(gbStr.length() - 1) * 16, thick, gbStr.getBytes());
+                drawString(font, -(str.length() - 1) * 16, thick, buf);
                 break;
             case FontLoader.ALIGN_LEFT:
-                drawString(font, 0, thick, gbStr.getBytes());
+                drawString(font, 0, thick, buf);
                 break;
             case FontLoader.ALIGN_RIGHT:
-                drawString(font, -(gbStr.length() - 1) * 32, thick, gbStr.getBytes());
+                drawString(font, -(str.length() - 1) * 32, thick, buf);
                 break;
         }
 
@@ -100,7 +101,7 @@ public class TextModel extends ModelBase {
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
         setRotationAngles(entity, f, f1, f2, f3, f4, f5);
-        GL11.glColor3b((byte)((color & 0xFF0000) >> 16), (byte)((color & 0x00FF00) >> 8), (byte)(color & 0x0000FF));
+        GL11.glColor3f(((color & 0xFF0000) >> 16) / 255.0F, ((color & 0x00FF00) >> 8) / 255.0F, (color & 0x0000FF) / 255.0F);
         for (ModelRenderer i : shapes) {
             i.render(f5);
         }

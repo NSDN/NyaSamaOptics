@@ -105,11 +105,6 @@ public class HoloJet extends TileEntityBase {
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        return null;
-    }
-
-    @Override
     protected void setBoundsByMeta(int meta) {
         float x1 = 0.0F, y1 = 0.0F, z1 = 0.0F, x2 = 1.0F, y2 = 1.0F, z2 = 1.0F;
         switch (meta % 13) {
