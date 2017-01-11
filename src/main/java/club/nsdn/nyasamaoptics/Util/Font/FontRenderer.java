@@ -1,6 +1,7 @@
 package club.nsdn.nyasamaoptics.Util.Font;
 
 import club.nsdn.nyasamaoptics.Renderers.TileEntity.HoloJetModel;
+import club.nsdn.nyasamaoptics.TileEntities.HoloJet;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -36,54 +37,67 @@ public class FontRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float scale) {
+        HoloJet.TileText tileText = (HoloJet.TileText) tileEntity;
         GL11.glPushMatrix();
-        GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
+        {
+            GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
 
-        Tessellator.instance.setColorOpaque_F(1.0F, 1.0F, 1.0F);
+            Tessellator.instance.setColorOpaque_F(1.0F, 1.0F, 1.0F);
 
-        if (((HoloJet.TileText)tileEntity).model == null) {
-            ((HoloJet.TileText)tileEntity).createModel();
+            if (tileText.model == null) {
+                tileText.createModel();
+            }
+
+            GL11.glPushMatrix();
+            {
+                GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
+
+                int rotation;
+                switch (tileText.getBlockMetadata() % 13) {
+                    case 1:
+                        rotation = 0;
+                        GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
+                        break;
+                    case 2:
+                        rotation = 90;
+                        GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
+                        break;
+                    case 3:
+                        rotation = 180;
+                        GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
+                        break;
+                    case 4:
+                        rotation = 270;
+                        GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
+                        break;
+                }
+
+                Minecraft.getMinecraft().renderEngine.bindTexture(holoJet);
+                GL11.glColor3f(1.0F, 1.0F, 1.0F);
+                holoJetModel.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+
+                //Minecraft.getMinecraft().renderEngine.bindTexturetext;
+
+                GL11.glPushMatrix();
+                {
+                    GL11.glTranslatef(0.0F, -1.5F, 0.0F);
+                    GL11.glPushMatrix();
+                    {
+                        GL11.glTranslated(0.0, 1.0 - tileText.scaleY, (double) (16 - tileText.thick) / 32.0);
+                        GL11.glPushMatrix();
+                        {
+                            GL11.glScaled(tileText.scaleX, tileText.scaleY, tileText.scaleZ);
+                            if (tileText.model != null)
+                                tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+                        }
+                        GL11.glPopMatrix();
+                    }
+                    GL11.glPopMatrix();
+                }
+                GL11.glPopMatrix();
+            }
+            GL11.glPopMatrix();
         }
-
-        GL11.glPushMatrix();
-        GL11.glRotatef(180F, 0.0F, 0.0F, 1.0F);
-
-        int rotation = 0;
-        switch (tileEntity.getBlockMetadata() % 13) {
-            case 1:
-                rotation = 0;
-                GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
-                break;
-            case 2:
-                rotation = 90;
-                GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
-                break;
-            case 3:
-                rotation = 180;
-                GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
-                break;
-            case 4:
-                rotation = 270;
-                GL11.glRotatef(rotation, 0.0F, 1.0F, 0.0F);
-                break;
-        }
-
-        Minecraft.getMinecraft().renderEngine.bindTexture(holoJet);
-        GL11.glColor3f(1.0F, 1.0F, 1.0F);
-        holoJetModel.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-
-        //Minecraft.getMinecraft().renderEngine.bindTexture(text);
-
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0.0F, -1.0F, 0.0F);
-        GL11.glPushMatrix();
-        GL11.glScaled(((HoloJet.TileText)tileEntity).scaleX, ((HoloJet.TileText)tileEntity).scaleY, ((HoloJet.TileText)tileEntity).scaleZ);
-        GL11.glTranslated(((HoloJet.TileText)tileEntity).scaleX - 1, 1 -((HoloJet.TileText)tileEntity).scaleY, ((HoloJet.TileText)tileEntity).scaleZ - 1);
-        if (((HoloJet.TileText)tileEntity).model != null) ((HoloJet.TileText)tileEntity).model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-        GL11.glPopMatrix();
-        GL11.glPopMatrix();
-
-        GL11.glPopMatrix();
         GL11.glPopMatrix();
     }
 

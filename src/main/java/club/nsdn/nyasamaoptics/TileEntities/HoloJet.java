@@ -1,13 +1,14 @@
-package club.nsdn.nyasamaoptics.Util.Font;
+package club.nsdn.nyasamaoptics.TileEntities;
 
 
+import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
+import club.nsdn.nyasamaoptics.Util.Font.TextModel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.tileentity.TileEntity;
@@ -102,6 +103,7 @@ public class HoloJet extends TileEntityBase {
     public HoloJet(String name) {
         super(name);
         setIconLocation("holo_jet");
+        setCreativeTab(null);
     }
 
     @Override

@@ -5,7 +5,7 @@ package club.nsdn.nyasamaoptics.Blocks;
  */
 
 
-import club.nsdn.nyasamaoptics.Util.Font.HoloJet;
+import club.nsdn.nyasamaoptics.TileEntities.HoloJet;
 import net.minecraft.block.Block;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

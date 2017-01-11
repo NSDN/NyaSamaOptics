@@ -1,8 +1,8 @@
 package club.nsdn.nyasamaoptics.Items;
 
-import club.nsdn.nyasamaoptics.Blocks.BlockLoader;
+import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
-import club.nsdn.nyasamaoptics.Util.Font.HoloJet;
+import club.nsdn.nyasamaoptics.TileEntities.HoloJet;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -12,14 +12,19 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 /**
- * Created by drzzm32 on 2016.6.7.
+ * Created by drzzm32 on 2016.6.11.
  */
-public class ItemHoloJetLiShu extends ItemToolBase {
+public class ItemHoloJet extends ItemToolBase {
 
-    public ItemHoloJetLiShu() {
+    public Block theBlock;
+    public int theFont;
+
+    public ItemHoloJet(String name, Block block, int font) {
         super(ToolMaterial.IRON);
-        setUnlocalizedName("ItemHoloJetLiShu");
-        setTexName("holo_jet");
+        theBlock = block;
+        theFont = font;
+        setUnlocalizedName(name);
+        setTexName("holo_jet_conv");
     }
 
     @Override
@@ -40,12 +45,39 @@ public class ItemHoloJetLiShu extends ItemToolBase {
             return false;
         if (tileEntity instanceof TileEntitySign) {
             HoloJet.TileText tileText = new HoloJet.TileText();
-            tileText.content = ((TileEntitySign) tileEntity).signText[0];
-            tileText.color = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].replace(" ", "").split(",")[0], 16);
-            tileText.thick = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].replace(" ", "").split(",")[1], 10);
-            tileText.scaleX = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[0]);
-            tileText.scaleY = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[1]);
-            tileText.scaleZ = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[2]);
+            tileText.content = ((TileEntitySign) tileEntity).signText[0].isEmpty() ? "DUMMY" : ((TileEntitySign) tileEntity).signText[0];
+
+            try {
+                tileText.color = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].replace(" ", "").split(",")[0], 16);
+            } catch (Exception e) {
+                NyaSamaOptics.log.error(e.getMessage());
+                tileText.color = 0xFFFFFF;
+            }
+            try {
+                tileText.thick = Integer.parseInt(((TileEntitySign) tileEntity).signText[1].replace(" ", "").split(",")[1], 10);
+            } catch (Exception e) {
+                NyaSamaOptics.log.error(e.getMessage());
+                tileText.thick = 4;
+            }
+            try {
+                tileText.scaleX = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[0]);
+            } catch (Exception e) {
+                NyaSamaOptics.log.error(e.getMessage());
+                tileText.scaleX = 1.0;
+            }
+            try {
+                tileText.scaleY = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[1]);
+            } catch (Exception e) {
+                NyaSamaOptics.log.error(e.getMessage());
+                tileText.scaleY = 1.0;
+            }
+            try {
+                tileText.scaleZ = Double.parseDouble(((TileEntitySign) tileEntity).signText[2].replace(" ", "").split(",")[2]);
+            } catch (Exception e) {
+                NyaSamaOptics.log.error(e.getMessage());
+                tileText.scaleZ = 1.0;
+            }
+
             if (((TileEntitySign) tileEntity).signText[3].contains("Left")) {
                 tileText.align = FontLoader.ALIGN_LEFT;
             } else if (((TileEntitySign) tileEntity).signText[3].contains("Right")) {
@@ -58,19 +90,19 @@ public class ItemHoloJetLiShu extends ItemToolBase {
 
             int l = MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
             if (l == 0) {
-                world.setBlock(x, y, z, BlockLoader.blockHoloJetLiShu, 1, 2);
+                world.setBlock(x, y, z, theBlock, 1, 2);
             }
 
             if (l == 1) {
-                world.setBlock(x, y, z, BlockLoader.blockHoloJetLiShu, 2, 2);
+                world.setBlock(x, y, z, theBlock, 2, 2);
             }
 
             if (l == 2) {
-                world.setBlock(x, y, z, BlockLoader.blockHoloJetLiShu, 3, 2);
+                world.setBlock(x, y, z, theBlock, 3, 2);
             }
 
             if (l == 3) {
-                world.setBlock(x, y, z, BlockLoader.blockHoloJetLiShu, 4, 2);
+                world.setBlock(x, y, z, theBlock, 4, 2);
             }
 
             world.markBlockForUpdate(x, y, z);
@@ -81,13 +113,13 @@ public class ItemHoloJetLiShu extends ItemToolBase {
             if (tileEntity instanceof HoloJet.TileText) {
                 ((HoloJet.TileText) tileEntity).content = tileText.content;
                 ((HoloJet.TileText) tileEntity).color = tileText.color;
-                ((HoloJet.TileText) tileEntity).thick = tileText.thick;
+                ((HoloJet.TileText) tileEntity).thick = (int)((double)tileText.thick * tileText.scaleZ);
                 ((HoloJet.TileText) tileEntity).scaleX = tileText.scaleX;
                 ((HoloJet.TileText) tileEntity).scaleY = tileText.scaleY;
-                ((HoloJet.TileText) tileEntity).scaleZ = tileText.scaleZ;
+                ((HoloJet.TileText) tileEntity).scaleZ = 1.0;
                 ((HoloJet.TileText) tileEntity).align = tileText.align;
 
-                ((HoloJet.TileText) tileEntity).font = FontLoader.FONT_LISHU;
+                ((HoloJet.TileText) tileEntity).font = theFont;
 
                 return !world.isRemote;
             }
