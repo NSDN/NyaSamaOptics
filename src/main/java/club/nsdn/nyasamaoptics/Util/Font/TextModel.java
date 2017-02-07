@@ -59,7 +59,7 @@ public class TextModel extends ModelBase {
         int count = 0;
         for (int i = 0; i < str.length; i++) {
             if ((str[i] & 0xFF) < 0xA1) {
-                drawChar(FontLoader.ASCII_Consolas, x + count * 32, thick, str[i] & 0xFF, 0x00);
+                drawChar(FontLoader.ASCII, x + count * 32, thick, str[i] & 0xFF, 0x00);
                 count += 1;
             } else {
                 drawChar(font, x + count * 32, thick, str[i] & 0xFF, str[i + 1] & 0xFF);

@@ -3,6 +3,7 @@ package club.nsdn.nyasamaoptics.TileEntities;
 
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
 import club.nsdn.nyasamaoptics.Util.Font.TextModel;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,7 +13,6 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.tileentity.TileEntity;
-import club.nsdn.nyasamaoptics.TileEntities.TileEntityBase;
 
 /**
  * Created by drzzm on 2017.1.8.
@@ -30,6 +30,18 @@ public class HoloJet extends TileEntityBase {
         public double scaleZ;
         public int align;
         public int font;
+
+        public TileText() {
+            super();
+            content = "DUMMY";
+            color = 0xFFFFFF;
+            thick = 4;
+            scaleX = 1.0;
+            scaleY = 1.0;
+            scaleZ = 1.0;
+            align = FontLoader.ALIGN_CENTER;
+            font = FontLoader.FONT_DABIAOSONG;
+        }
 
         public void createModel() {
             model = FontLoader.getModel(font, align, content, color, thick);
@@ -101,14 +113,15 @@ public class HoloJet extends TileEntityBase {
     }
 
     public HoloJet(String name) {
-        super(name);
+        super(Material.glass, name);
         setIconLocation("holo_jet");
+        setLightLevel(1);
         setCreativeTab(null);
     }
 
     @Override
     protected void setBoundsByMeta(int meta) {
-        float x1 = 0.0F, y1 = 0.0F, z1 = 0.0F, x2 = 1.0F, y2 = 1.0F, z2 = 1.0F;
+        float x1 = 0.25F, y1 = 0.0F, z1 = 0.25F, x2 = 0.75F, y2 = 0.5F, z2 = 0.75F;
         switch (meta % 13) {
             case 1:
                 setBlockBounds(x1, y1, z1, x2, y2, z2);

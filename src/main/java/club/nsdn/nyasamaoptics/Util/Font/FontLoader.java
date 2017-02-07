@@ -10,10 +10,10 @@ import java.io.DataInputStream;
  * Created by drzzm on 2017.1.8.
  */
 public class FontLoader {
-    private static final String ASCII_Consolas_Path = "nyasamaoptics:fonts/ASCII_Consolas.bin";
+    private static final String ASCII_Path = "nyasamaoptics:fonts/ASCII.bin";
     private static final String GB2312_LiShu_Path = "nyasamaoptics:fonts/GB2312_LiShu.bin";
     private static final String GB2312_DaBiaoSong_Path = "nyasamaoptics:fonts/GB2312_DaBiaoSong.bin";
-    public static byte[] ASCII_Consolas;
+    public static byte[] ASCII;
     public static byte[] GB2312_LiShu;
     public static byte[] GB2312_DaBiaoSong;
 
@@ -34,7 +34,7 @@ public class FontLoader {
     }
 
     public FontLoader(IResourceManager manager) {
-        ASCII_Consolas = load(manager, ASCII_Consolas_Path);
+        ASCII = load(manager, ASCII_Path);
         GB2312_LiShu = load(manager, GB2312_LiShu_Path);
         GB2312_DaBiaoSong = load(manager, GB2312_DaBiaoSong_Path);
     }

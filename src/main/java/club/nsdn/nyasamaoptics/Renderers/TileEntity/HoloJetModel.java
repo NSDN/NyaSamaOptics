@@ -11,66 +11,56 @@ import org.lwjgl.opengl.GL11;
 
 public class HoloJetModel extends ModelBase {
 
-    ModelRenderer Shape1;
-    ModelRenderer Shape2;
-    ModelRenderer Shape3;
-    ModelRenderer Shape4;
-    ModelRenderer Shape5;
+    ModelRenderer Base;
+    ModelRenderer Body1;
+    ModelRenderer Body2;
+    ModelRenderer Body3;
+    ModelRenderer Head;
 
     public HoloJetModel() {
-        textureWidth = 64;
-        textureHeight = 17;
+        textureWidth = 32;
+        textureHeight = 10;
 
-        Shape1 = new ModelRenderer(this, 0, 0);
-        Shape1.addBox(0F, 0F, 0F, 2, 2, 2);
-        Shape1.setRotationPoint(-1F, 22F, -1F);
-        Shape1.setTextureSize(64, 17);
-        Shape1.mirror = true;
-        setRotation(Shape1, 0F, 0F, 0F);
-        Shape2 = new ModelRenderer(this, 0, 0);
-        Shape2.addBox(0F, 0F, 0F, 6, 2, 6);
-        Shape2.setRotationPoint(-3F, 20F, -3F);
-        Shape2.setTextureSize(64, 17);
-        Shape2.mirror = true;
-        setRotation(Shape2, 0F, 0F, 0F);
-        Shape3 = new ModelRenderer(this, 0, 0);
-        Shape3.addBox(0F, 0F, 0F, 10, 2, 10);
-        Shape3.setRotationPoint(-5F, 18F, -5F);
-        Shape3.setTextureSize(64, 17);
-        Shape3.mirror = true;
-        setRotation(Shape3, 0F, 0F, 0F);
-        Shape4 = new ModelRenderer(this, 0, 0);
-        Shape4.addBox(0F, 0F, 0F, 14, 1, 14);
-        Shape4.setRotationPoint(-7F, 17F, -7F);
-        Shape4.setTextureSize(64, 17);
-        Shape4.mirror = true;
-        setRotation(Shape4, 0F, 0F, 0F);
-        Shape5 = new ModelRenderer(this, 0, 0);
-        Shape5.addBox(0F, 0F, 0F, 16, 1, 16);
-        Shape5.setRotationPoint(-8F, 16F, -8F);
-        Shape5.setTextureSize(64, 17);
-        Shape5.mirror = true;
-        setRotation(Shape5, 0F, 0F, 0F);
+        Base = new ModelRenderer(this, 0, 0);
+        Base.addBox(0F, 0F, 0F, 4, 2, 4);
+        Base.setRotationPoint(-2F, 22F, -2F);
+        Base.setTextureSize(32, 10);
+        Base.mirror = true;
+        setRotation(Base, 0F, 0F, 0F);
+        Body1 = new ModelRenderer(this, 0, 0);
+        Body1.addBox(0F, 0F, 0F, 5, 2, 5);
+        Body1.setRotationPoint(-2.5F, 20F, -2.5F);
+        Body1.setTextureSize(32, 10);
+        Body1.mirror = true;
+        setRotation(Body1, 0F, 0F, 0F);
+        Body2 = new ModelRenderer(this, 0, 0);
+        Body2.addBox(0F, 0F, 0F, 6, 1, 6);
+        Body2.setRotationPoint(-3F, 19F, -3F);
+        Body2.setTextureSize(32, 10);
+        Body2.mirror = true;
+        setRotation(Body2, 0F, 0F, 0F);
+        Body3 = new ModelRenderer(this, 0, 0);
+        Body3.addBox(0F, 0F, 0F, 7, 1, 7);
+        Body3.setRotationPoint(-3.5F, 18F, -3.5F);
+        Body3.setTextureSize(32, 10);
+        Body3.mirror = true;
+        setRotation(Body3, 0F, 0F, 0F);
+        Head = new ModelRenderer(this, 0, 0);
+        Head.addBox(0F, 0F, 0F, 8, 2, 8);
+        Head.setRotationPoint(-4F, 16F, -4F);
+        Head.setTextureSize(32, 10);
+        Head.mirror = true;
+        setRotation(Head, 0F, 0F, 0F);
     }
 
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         super.render(entity, f, f1, f2, f3, f4, f5);
         setRotationAngles(entity, f, f1, f2, f3, f4, f5);
-        Shape1.render(f5);
-        Shape2.render(f5);
-        Shape3.render(f5);
-        Shape4.render(f5);
-        Shape5.render(f5);
-
-        GL11.glPushMatrix();
-        GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
-        GL11.glTranslatef(0.0F, -2.0F, 0.0F);
-        Shape1.render(f5);
-        Shape2.render(f5);
-        Shape3.render(f5);
-        Shape4.render(f5);
-        Shape5.render(f5);
-        GL11.glPopMatrix();
+        Base.render(f5);
+        Body1.render(f5);
+        Body2.render(f5);
+        Body3.render(f5);
+        Head.render(f5);
     }
 
     private void setRotation(ModelRenderer model, float x, float y, float z) {

@@ -12,7 +12,7 @@ public class BlockSign extends Block {
 
     public BlockSign() {
         super(Material.glass);
-        setBlockName("NyaSamaTelecomBlockSign");
+        setBlockName("NyaSamaOpticsBlockSign");
         setBlockTextureName("nyasamaoptics:logo");
         setHardness(2.0F);
         setLightLevel(1);
