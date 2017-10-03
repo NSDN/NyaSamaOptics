@@ -1,5 +1,6 @@
 package club.nsdn.nyasamaoptics.Event;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -17,7 +18,7 @@ public class EventRegister {
     }
 
     public static void registerClient() {
-
+        FMLCommonHandler.instance().bus().register(ClientTickHandler.instance());
     }
 
 }

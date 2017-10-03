@@ -15,6 +15,10 @@ public class TileEntityLoader {
                 HoloJet.TileText.class,
                 "tileText");
 
+        GameRegistry.registerTileEntity(
+                RGBLight.TileLight.class,
+                "tileLight");
+
     }
 
 }

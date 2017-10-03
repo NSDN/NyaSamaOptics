@@ -3,16 +3,16 @@ package club.nsdn.nyasamaoptics.TileEntities;
 
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
 import club.nsdn.nyasamaoptics.Util.Font.TextModel;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.tileentity.TileEntity;
 
 /**
  * Created by drzzm on 2017.1.8.
@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntity;
 public class HoloJet extends TileEntityBase {
 
     public static class TileText extends TileEntity {
+        @SideOnly(Side.CLIENT)
         public TextModel model;
 
         public String content;
@@ -40,7 +41,7 @@ public class HoloJet extends TileEntityBase {
             scaleY = 1.0;
             scaleZ = 1.0;
             align = FontLoader.ALIGN_CENTER;
-            font = FontLoader.FONT_DABIAOSONG;
+            font = FontLoader.FONT_SONG;
         }
 
         public void createModel() {
@@ -53,8 +54,14 @@ public class HoloJet extends TileEntityBase {
         }
 
         @Override
-        public void writeToNBT(NBTTagCompound tagCompound) {
-            super.writeToNBT(tagCompound);
+        @SideOnly(Side.CLIENT)
+        public AxisAlignedBB getRenderBoundingBox()
+        {
+            return INFINITE_EXTENT_AABB;
+        }
+
+        @Override
+        public NBTTagCompound toNBT(NBTTagCompound tagCompound) {
             tagCompound.setString("content", content);
             tagCompound.setInteger("color", color);
             tagCompound.setInteger("thick", thick);
@@ -63,38 +70,12 @@ public class HoloJet extends TileEntityBase {
             tagCompound.setDouble("scaleZ", scaleZ);
             tagCompound.setInteger("align", align);
             tagCompound.setInteger("font", font);
+            return super.toNBT(tagCompound);
         }
 
         @Override
-        public void readFromNBT(NBTTagCompound tagCompound) {
-            super.readFromNBT(tagCompound);
-            content = tagCompound.getString("content");
-            color = tagCompound.getInteger("color");
-            thick = tagCompound.getInteger("thick");
-            scaleX = tagCompound.getDouble("scaleX");
-            scaleY = tagCompound.getDouble("scaleY");
-            scaleZ = tagCompound.getDouble("scaleZ");
-            align = tagCompound.getInteger("align");
-            font = tagCompound.getInteger("font");
-        }
-
-        @Override
-        public Packet getDescriptionPacket() {
-            NBTTagCompound tagCompound = new NBTTagCompound();
-            tagCompound.setString("content", content);
-            tagCompound.setInteger("color", color);
-            tagCompound.setInteger("thick", thick);
-            tagCompound.setDouble("scaleX", scaleX);
-            tagCompound.setDouble("scaleY", scaleY);
-            tagCompound.setDouble("scaleZ", scaleZ);
-            tagCompound.setInteger("align", align);
-            tagCompound.setInteger("font", font);
-            return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tagCompound);
-        }
-
-        @Override
-        public void onDataPacket(NetworkManager manager, S35PacketUpdateTileEntity packet) {
-            NBTTagCompound tagCompound = packet.func_148857_g();
+        public void fromNBT(NBTTagCompound tagCompound) {
+            super.fromNBT(tagCompound);
             content = tagCompound.getString("content");
             color = tagCompound.getInteger("color");
             thick = tagCompound.getInteger("thick");
@@ -136,6 +117,15 @@ public class HoloJet extends TileEntityBase {
                 setBlockBounds(z1, y1, 1.0F - x2, z2, y2, 1.0F - x1);
                 break;
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
+        if (world.getTileEntity(x, y, z) instanceof TileText) {
+            TileText text = (TileText) world.getTileEntity(x, y, z);
+            return text.color;
+        }
+        return 16777215;
     }
 
     @Override

@@ -7,6 +7,10 @@ package club.nsdn.nyasamaoptics.TileEntities;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -20,6 +24,51 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import club.nsdn.nyasamaoptics.CreativeTab.CreativeTabLoader;
 
 public class TileEntityBase extends BlockContainer {
+
+    public static class TileEntity extends net.minecraft.tileentity.TileEntity {
+
+        public void fromNBT(NBTTagCompound tagCompound) {
+        }
+
+        public NBTTagCompound toNBT(NBTTagCompound tagCompound) {
+            return tagCompound;
+        }
+
+        @Override
+        public void writeToNBT(NBTTagCompound tagCompound) {
+            super.writeToNBT(tagCompound);
+            toNBT(tagCompound);
+        }
+
+        @Override
+        public void readFromNBT(NBTTagCompound tagCompound) {
+            super.readFromNBT(tagCompound);
+            fromNBT(tagCompound);
+        }
+
+        @Override
+        public Packet getDescriptionPacket() {
+            NBTTagCompound tagCompound = new NBTTagCompound();
+            toNBT(tagCompound);
+            return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tagCompound);
+        }
+
+        @Override
+        public void onDataPacket(NetworkManager manager, S35PacketUpdateTileEntity packet) {
+            NBTTagCompound tagCompound = packet.func_148857_g();
+            fromNBT(tagCompound);
+        }
+
+        public static void updateTileEntity(TileEntity tileEntity) {
+            if (tileEntity == null) return;
+            tileEntity.getWorldObj().markBlockForUpdate(
+                    tileEntity.xCoord,
+                    tileEntity.yCoord,
+                    tileEntity.zCoord
+            );
+        }
+
+    }
 
     protected String textureLocation = "";
     protected void setIconLocation(String textureLocation) { this.textureLocation = "nyasamaoptics" + ":" + textureLocation; }
@@ -60,6 +109,49 @@ public class TileEntityBase extends BlockContainer {
     @Override
     public boolean isOpaqueCube() {
         return false;
+    }
+
+    protected void setBoundsByXYZ(int meta, float x1, float y1, float z1, float x2, float y2, float z2) {
+        switch (meta % 13) {
+            case 1:
+                setBlockBounds(x1, y1, z1, x2, y2, z2);
+                break;
+            case 2:
+                setBlockBounds(1.0F - z2, y1, x1, 1.0F - z1, y2, x2);
+                break;
+            case 3:
+                setBlockBounds(1.0F - x2, y1, 1.0F - z2, 1.0F - x1, y2, 1.0F - z1);
+                break;
+            case 4:
+                setBlockBounds(z1, y1, 1.0F - x2, z2, y2, 1.0F - x1);
+                break;
+
+            case 7:
+                setBlockBounds(x1, z1, y1, x2, z2, y2);
+                break;
+            case 8:
+                setBlockBounds(1.0F - y2, z1, x1, 1.0F - y1, z2, x2);
+                break;
+            case 5:
+                setBlockBounds(1.0F - x2, z1, 1.0F - y2, 1.0F - x1, z2, 1.0F - y1);
+                break;
+            case 6:
+                setBlockBounds(y1, z1, 1.0F - x2, y2, z2, 1.0F - x1);
+                break;
+
+            case 9:
+                setBlockBounds(x1, 1.0F - y2, z1, x2, 1.0F - y1, z2);
+                break;
+            case 10:
+                setBlockBounds(1.0F - z2, 1.0F - y2, x1, 1.0F - z1, 1.0F - y1, x2);
+                break;
+            case 11:
+                setBlockBounds(1.0F - x2, 1.0F - y2, 1.0F - z2, 1.0F - x1, 1.0F - y1, 1.0F - z1);
+                break;
+            case 12:
+                setBlockBounds(z1, 1.0F - y2, 1.0F - x2, z2, 1.0F - y1, 1.0F - x1);
+                break;
+        }
     }
 
     protected void setBoundsByMeta(int meta) {
