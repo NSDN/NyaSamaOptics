@@ -74,17 +74,13 @@ public class PillarHeadRenderer extends TileEntitySpecialRenderer {
                     GL11.glPushMatrix();
                     {
                         GL11.glScaled(tileText.scale, tileText.scale, 1.0);
-                        if (tileText.model != null) {
-                            GL11.glTranslated(0.0, 0.0, 0.0625 * (3.9 - tileText.thick));
-                            tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-                            GL11.glPushMatrix();
-                            {
-                                GL11.glTranslated(0.0, 0.0, -0.0625 * (3.9 - tileText.thick));
-                                GL11.glRotated(180.0, 0.0, 1.0, 0.0);
-                                tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-                            }
-                            GL11.glPopMatrix();
+                        GL11.glPushMatrix();
+                        {
+                            doRenderText(tileText);
+                            GL11.glRotated(180.0, 0.0, 1.0, 0.0);
+                            doRenderText(tileText);
                         }
+                        GL11.glPopMatrix();
                     }
                     GL11.glPopMatrix();
                 }
@@ -95,6 +91,15 @@ public class PillarHeadRenderer extends TileEntitySpecialRenderer {
             RenderHelper.enableStandardItemLighting();
         }
         GL11.glPopMatrix();
+    }
+
+    private void doRenderText(PillarHead.TileText tileText) {
+        if (tileText.model != null) {
+            GL11.glPushMatrix();
+            GL11.glTranslated(0.0, 0.0, 0.0625 * (3.9 - tileText.thick));
+            tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+            GL11.glPopMatrix();
+        }
     }
 
 }
