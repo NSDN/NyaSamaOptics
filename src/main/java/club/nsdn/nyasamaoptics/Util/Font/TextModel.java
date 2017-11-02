@@ -55,6 +55,34 @@ public class TextModel extends ModelBase {
         }
     }
 
+    private void drawVerticalChar(byte[] font, int y, int thick, int first, int second) {
+        int offset, base;
+        if (first < 0xA1) {
+            for (int i = 0; i < 32; i++) {
+                for (int j = 0; j < 4; j++) {
+                    offset = first * 128 + i * 4 + j;
+                    for (int k = 0; k < 8; k++) {
+                        if ((font[offset] & (0x80 >> k)) > 0) {
+                            drawPixel(j * 8 + k, y + i, thick);
+                        }
+                    }
+                }
+            }
+        } else {
+            base = (first - 0xA1) * 0x5E + (second - 0xA1);
+            for (int i = 0; i < 32; i++) {
+                for (int j = 0; j < 4; j++) {
+                    offset = base * 128 + i * 4 + j;
+                    for (int k = 0; k < 8; k++) {
+                        if ((font[offset] & (0x80 >> k)) > 0) {
+                            drawPixel(j * 8 + k, y + i, thick);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void drawString(byte[] font, int x, int thick, byte[] str) {
         int count = 0;
         for (int i = 0; i < str.length; i++) {
@@ -63,6 +91,20 @@ public class TextModel extends ModelBase {
                 count += 1;
             } else {
                 drawChar(font, x + count * 32, thick, str[i] & 0xFF, str[i + 1] & 0xFF);
+                count += 1;
+                i += 1;
+            }
+        }
+    }
+
+    private void drawVerticalString(byte[] font, int thick, byte[] str) {
+        int count = 0;
+        for (int i = 0; i < str.length; i++) {
+            if ((str[i] & 0xFF) < 0xA1) {
+                drawVerticalChar(FontLoader.ASCII, count * 32, thick, str[i] & 0xFF, 0x00);
+                count += 1;
+            } else {
+                drawVerticalChar(font, count * 32, thick, str[i] & 0xFF, str[i + 1] & 0xFF);
                 count += 1;
                 i += 1;
             }
@@ -93,6 +135,9 @@ public class TextModel extends ModelBase {
                 break;
             case FontLoader.ALIGN_RIGHT:
                 drawString(font, -(str.length() - 1) * 32, thick, buf);
+                break;
+            case FontLoader.ALIGN_VERTICAL:
+                drawVerticalString(font, thick, buf);
                 break;
         }
 

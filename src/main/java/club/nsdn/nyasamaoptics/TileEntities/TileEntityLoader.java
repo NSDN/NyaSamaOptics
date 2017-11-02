@@ -19,6 +19,10 @@ public class TileEntityLoader {
                 RGBLight.TileLight.class,
                 "tileLight");
 
+        GameRegistry.registerTileEntity(
+                PillarHead.TileText.class,
+                "tilePillarHead");
+
     }
 
 }

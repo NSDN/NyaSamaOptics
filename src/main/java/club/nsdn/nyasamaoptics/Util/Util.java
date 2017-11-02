@@ -13,10 +13,10 @@ import org.lwjgl.opengl.Display;
  */
 public class Util {
 
-    public static NBTTagList getTagListFromBook(ItemStack itemStack) {
+    public static NBTTagList getTagListFromNGT(ItemStack itemStack) {
         if (itemStack == null) return null;
-        if (itemStack.getItem() instanceof ItemWritableBook ||
-                itemStack.getItem() instanceof ItemEditableBook) {
+        if (itemStack.getItem() instanceof ItemWritableBook &&
+                itemStack.getItem().getClass().getSimpleName().equals("ItemNGT")) {
             if (!itemStack.hasTagCompound()) return null;
             return itemStack.getTagCompound().getTagList("pages", 8);
         }

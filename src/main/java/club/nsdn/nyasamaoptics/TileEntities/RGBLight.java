@@ -1,11 +1,11 @@
 package club.nsdn.nyasamaoptics.TileEntities;
 
 import club.nsdn.nyasamaoptics.Util.NSASM;
+import club.nsdn.nyasamaoptics.Util.RGBLightCore;
 import club.nsdn.nyasamaoptics.Util.Util;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -93,13 +93,6 @@ public class RGBLight extends TileEntityBase {
         return 16777215;
     }
 
-    public void setColor(TileLight light, EntityPlayer player, int value) {
-        light.color = value & 0xFFFFFF;
-        TileLight.updateTileEntity(light);
-        player.addChatComponentMessage(
-                new ChatComponentTranslation("info.light.color", Integer.toHexString(light.color).toUpperCase()));
-    }
-
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
         if (world.getTileEntity(x, y, z) == null) return false;
@@ -109,31 +102,38 @@ public class RGBLight extends TileEntityBase {
                 ItemStack stack = player.getCurrentEquippedItem();
                 if (stack != null) {
 
-                    NBTTagList list = Util.getTagListFromBook(stack);
-                    if (list == null) return true;
+                    NBTTagList list = Util.getTagListFromNGT(stack);
+                    if (list == null) return false;
                     String[][] code = NSASM.getCode(list);
-                    new NSASM(code) {
+                    new RGBLightCore(code) {
                         @Override
-                        public void loadFunc(LinkedHashMap<String, Operator> funcList) {
-                            funcList.put("clr", ((dst, src) -> {
-                                if (src != null) return Result.ERR;
-                                if (dst == null) return Result.ERR;
+                        public World getWorld() {
+                            return world;
+                        }
 
-                                if (dst.type == RegType.INT) {
-                                    setColor(light, player, (int) dst.data);
-                                    return Result.OK;
-                                }
-                                return Result.ERR;
-                            }));
+                        @Override
+                        public double getX() {
+                            return x;
+                        }
 
-                            funcList.replace("prt", ((dst, src) -> {
-                                if (src != null) return Result.ERR;
-                                if (dst == null) return Result.ERR;
-                                if (dst.type == RegType.STR) {
-                                    player.addChatComponentMessage(new ChatComponentText(((String) dst.data).substring(dst.strPtr)));
-                                } else player.addChatComponentMessage(new ChatComponentText(dst.data.toString()));
-                                return Result.OK;
-                            }));
+                        @Override
+                        public double getY() {
+                            return y;
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return z;
+                        }
+
+                        @Override
+                        public EntityPlayer getPlayer() {
+                            return player;
+                        }
+
+                        @Override
+                        public TileLight getLight() {
+                            return light;
                         }
                     }.run();
 

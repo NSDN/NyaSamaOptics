@@ -1,7 +1,7 @@
-package club.nsdn.nyasamaoptics.Util.Font;
+package club.nsdn.nyasamaoptics.Renderers.TileEntity;
 
-import club.nsdn.nyasamaoptics.Renderers.TileEntity.HoloJetModel;
 import club.nsdn.nyasamaoptics.TileEntities.HoloJet;
+import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
@@ -17,24 +17,17 @@ import org.lwjgl.opengl.GL11;
 /**
  * Created by drzzm on 2017.1.7.
  */
-public class FontRenderer extends TileEntitySpecialRenderer {
+public class HoloJetRenderer extends TileEntitySpecialRenderer {
 
     private World world;
     private ResourceLocation holoJet, text;
     private ModelBase holoJetModel;
 
-    public FontRenderer() {
+    public HoloJetRenderer() {
         world = Minecraft.getMinecraft().theWorld;
         holoJet = new ResourceLocation("nyasamaoptics", "textures/blocks/BrushedAluminum.png");
         text = new ResourceLocation("nyasamaoptics", "textures/blocks/white.png");
         holoJetModel = new HoloJetModel();
-    }
-
-    private void adjustRotatePivotViaMeta(World world, int x, int y, int z) {
-        int meta = world.getBlockMetadata(x, y, z);
-        GL11.glPushMatrix();
-        GL11.glRotatef(meta * (-90), 0.0F, 0.0F, 1.0F);
-        GL11.glPopMatrix();
     }
 
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float scale) {
@@ -91,14 +84,17 @@ public class FontRenderer extends TileEntitySpecialRenderer {
                 GL11.glColor3f(1.0F, 1.0F, 1.0F);
                 holoJetModel.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 
-                //Minecraft.getMinecraft().renderEngine.bindTexture(text);
+                Minecraft.getMinecraft().renderEngine.bindTexture(text);
 
                 GL11.glPushMatrix();
                 {
                     GL11.glTranslatef(0.0F, -1.5F, 0.0F);
                     GL11.glPushMatrix();
                     {
-                        GL11.glTranslated(0.0, 1.5 - tileText.scaleY, (double) (16 - tileText.thick) / 32.0);
+                        if (tileText.align != FontLoader.ALIGN_VERTICAL)
+                            GL11.glTranslated(0.0, 1.5 - tileText.scaleY, (double) (16 - tileText.thick) / 32.0);
+                        else
+                            GL11.glTranslated(0.0, 0.5 - 2 * tileText.scaleY * (tileText.content.length() - 1), (double) (16 - tileText.thick) / 32.0);
                         GL11.glPushMatrix();
                         {
                             GL11.glScaled(tileText.scaleX, tileText.scaleY, tileText.scaleZ);

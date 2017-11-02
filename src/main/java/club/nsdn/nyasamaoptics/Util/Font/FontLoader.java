@@ -25,6 +25,7 @@ public class FontLoader {
             result = stream.available();
             buffer = new byte[result];
             stream.readFully(buffer);
+            stream.close();
         } catch (Exception e) {
             System.out.println(e.toString());
             buffer = null;
@@ -44,6 +45,7 @@ public class FontLoader {
     public static final int ALIGN_LEFT = 2;
     public static final int ALIGN_RIGHT = 3;
     public static final int ALIGN_CENTER = 4;
+    public static final int ALIGN_VERTICAL = 5;
 
     public static TextModel getModel(int font, int align, String str, int color, int thick) {
         if (font == FONT_LISHU) {

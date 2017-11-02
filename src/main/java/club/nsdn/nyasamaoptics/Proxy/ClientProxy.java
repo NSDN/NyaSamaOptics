@@ -10,10 +10,8 @@ import club.nsdn.nyasamaoptics.Event.EventRegister;
 import club.nsdn.nyasamaoptics.Renderers.TileEntity.LightRenderer;
 import club.nsdn.nyasamaoptics.TileEntities.RGBLight;
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
-import club.nsdn.nyasamaoptics.Util.Font.FontRenderer;
 import cpw.mods.fml.common.event.*;
 import club.nsdn.nyasamaoptics.TileEntities.TileEntityModelBinder;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.client.Minecraft;
 
 public class ClientProxy extends CommonProxy {
