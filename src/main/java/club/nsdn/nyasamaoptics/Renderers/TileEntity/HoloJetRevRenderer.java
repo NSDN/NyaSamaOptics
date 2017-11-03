@@ -1,10 +1,10 @@
 package club.nsdn.nyasamaoptics.Renderers.TileEntity;
 
 import club.nsdn.nyasamaoptics.Renderers.RendererHelper;
-import club.nsdn.nyasamaoptics.TileEntities.HoloJet;
+import club.nsdn.nyasamaoptics.TileEntities.HoloJetRev;
 import club.nsdn.nyasamaoptics.TileEntities.PillarHead;
+import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -16,26 +16,30 @@ import net.minecraftforge.client.model.obj.WavefrontObject;
 import org.lwjgl.opengl.GL11;
 
 /**
- * Created by drzzm on 2017.11.2.
+ * Created by drzzm on 2017.11.3.
  */
-public class PillarHeadRenderer extends TileEntitySpecialRenderer {
+public class HoloJetRevRenderer extends TileEntitySpecialRenderer {
 
     private World world;
-    private ResourceLocation baseTexture, text;
-    private WavefrontObject baseModel;
+    private ResourceLocation baseTexture, jetTexture, text;
+    private WavefrontObject baseModel, jetModel;
 
-    public PillarHeadRenderer() {
+    public HoloJetRevRenderer() {
         world = Minecraft.getMinecraft().theWorld;
         baseTexture = new ResourceLocation("nyasamaoptics", "textures/blocks/light_shell.png");
+        jetTexture = new ResourceLocation("nyasamaoptics", "textures/blocks/light_base.png");
         text = new ResourceLocation("nyasamaoptics", "textures/blocks/white.png");
         baseModel = new WavefrontObject(
-                new ResourceLocation("nyasamaoptics", "models/blocks/" + "pillar_head" + "_base.obj")
+                new ResourceLocation("nyasamaoptics", "models/blocks/" + "holo_jet_rev" + "_base.obj")
+        );
+        jetModel = new WavefrontObject(
+                new ResourceLocation("nyasamaoptics", "models/blocks/" + "holo_jet_rev" + "_light.obj")
         );
     }
 
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float scale) {
-        if (!(tileEntity instanceof PillarHead.TileText)) return;
-        PillarHead.TileText tileText = (PillarHead.TileText) tileEntity;
+        if (!(tileEntity instanceof HoloJetRev.TileText)) return;
+        HoloJetRev.TileText tileText = (HoloJetRev.TileText) tileEntity;
         GL11.glPushMatrix();
         {
             GL11.glTranslatef((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
@@ -58,10 +62,28 @@ public class PillarHeadRenderer extends TileEntitySpecialRenderer {
 
             Tessellator.instance.setColorOpaque_F(1.0F, 1.0F, 1.0F);
 
-            int meta = tileText.getBlockMetadata();
-            int angle = (meta & 0x3) * 90;
             GL11.glColor3f(1.0F, 1.0F, 1.0F);
-            RendererHelper.renderWithResourceAndRotation(baseModel, angle, baseTexture);
+            int meta = tileText.getBlockMetadata();
+            float angle = ((meta - 1) % 4) * 90.0F;
+            GL11.glPushMatrix();
+            {
+                GL11.glRotatef(angle, 0.0F, -1.0F, 0.0F);
+                GL11.glPushMatrix();
+                {
+                    switch ((meta - 1) / 4) {
+                        case 1:
+                            GL11.glRotatef(90.0F, -1.0F, 0.0F, 0.0F);
+                            break;
+                        case 2:
+                            GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
+                            break;
+                    }
+                    RendererHelper.renderWithResource(baseModel, baseTexture);
+                    RendererHelper.renderWithResource(jetModel, jetTexture);
+                }
+                GL11.glPopMatrix();
+            }
+            GL11.glPopMatrix();
 
             GL11.glPushMatrix();
             {
@@ -71,15 +93,18 @@ public class PillarHeadRenderer extends TileEntitySpecialRenderer {
                 Minecraft.getMinecraft().renderEngine.bindTexture(text);
                 GL11.glPushMatrix();
                 {
-                    GL11.glTranslatef(0.0F, 0.5F, 0.0F);
+                    GL11.glTranslatef(0.0F, -1.5F, 0.0F);
                     GL11.glPushMatrix();
                     {
-                        GL11.glScaled(tileText.scale, tileText.scale, 1.0);
+                        if (tileText.align != FontLoader.ALIGN_VERTICAL)
+                            GL11.glTranslated(0.0, 1.5 - tileText.scale, (double) (16 - tileText.thick) / 32.0);
+                        else
+                            GL11.glTranslated(0.0, 0.5 - 2 * tileText.scale * (tileText.content.length() - 1), (double) (16 - tileText.thick) / 32.0);
                         GL11.glPushMatrix();
                         {
-                            doRenderText(tileText);
-                            GL11.glRotated(180.0, 0.0, 1.0, 0.0);
-                            doRenderText(tileText);
+                            GL11.glScaled(tileText.scale, tileText.scale, 1.0);
+                            if (tileText.model != null)
+                                tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
                         }
                         GL11.glPopMatrix();
                     }
@@ -92,15 +117,6 @@ public class PillarHeadRenderer extends TileEntitySpecialRenderer {
             RenderHelper.enableStandardItemLighting();
         }
         GL11.glPopMatrix();
-    }
-
-    private void doRenderText(PillarHead.TileText tileText) {
-        if (tileText.model != null) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(0.0, 0.0, 0.0625 * (3.9 - tileText.thick));
-            tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-            GL11.glPopMatrix();
-        }
     }
 
 }

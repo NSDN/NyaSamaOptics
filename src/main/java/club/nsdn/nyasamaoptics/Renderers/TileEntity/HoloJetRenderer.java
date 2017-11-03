@@ -31,6 +31,7 @@ public class HoloJetRenderer extends TileEntitySpecialRenderer {
     }
 
     public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float scale) {
+        if (!(tileEntity instanceof HoloJet.TileText)) return;
         HoloJet.TileText tileText = (HoloJet.TileText) tileEntity;
         GL11.glPushMatrix();
         {

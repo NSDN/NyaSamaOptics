@@ -23,6 +23,10 @@ public class TileEntityLoader {
                 PillarHead.TileText.class,
                 "tilePillarHead");
 
+        GameRegistry.registerTileEntity(
+                HoloJetRev.TileText.class,
+                "tileHoloJetRev");
+
     }
 
 }

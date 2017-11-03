@@ -3,6 +3,7 @@ package club.nsdn.nyasamaoptics.TileEntities;
 import club.nsdn.nyasamaoptics.CreativeTab.CreativeTabLoader;
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
 import club.nsdn.nyasamaoptics.Util.Font.TextModel;
+import club.nsdn.nyasamaoptics.Util.HoloJetRevCore;
 import club.nsdn.nyasamaoptics.Util.NSASM;
 import club.nsdn.nyasamaoptics.Util.PillarHeadCore;
 import club.nsdn.nyasamaoptics.Util.Util;
@@ -22,9 +23,9 @@ import net.minecraft.world.World;
 import java.util.HashSet;
 
 /**
- * Created by drzzm on 2017.11.2.
+ * Created by drzzm on 2017.11.3.
  */
-public class PillarHead extends TileEntityBase {
+public class HoloJetRev extends TileEntityBase {
 
     public static class TileText extends TileEntity {
         @SideOnly(Side.CLIENT)
@@ -45,7 +46,7 @@ public class PillarHead extends TileEntityBase {
             color = 0xFFFFFF;
             thick = 4;
             scale = 1.0;
-            align = FontLoader.ALIGN_VERTICAL;
+            align = FontLoader.ALIGN_CENTER;
             font = FontLoader.FONT_SONG;
         }
 
@@ -56,6 +57,7 @@ public class PillarHead extends TileEntityBase {
             hashSet.add(String.valueOf(color));
             hashSet.add(String.valueOf(thick));
             hashSet.add(String.valueOf(scale));
+            hashSet.add(String.valueOf(align));
             hashSet.add(String.valueOf(font));
 
             if (hash != hashSet.hashCode()) {
@@ -109,30 +111,17 @@ public class PillarHead extends TileEntityBase {
         return new TileText();
     }
 
-    public PillarHead() {
-        super(Material.glass, "PillarHead");
-        setIconLocation("pillar_head");
+    public HoloJetRev() {
+        super(Material.glass, "HoloJetRev");
+        setIconLocation("holo_jet_rev");
         setLightLevel(1);
         setCreativeTab(CreativeTabLoader.tabNyaSamaOptics);
     }
 
     @Override
     protected void setBoundsByMeta(int meta) {
-        float x1 = 0.0F, y1 = 0.0F, z1 = 0.0F, x2 = 1.0F, y2 = 1.0F, z2 = 1.0F;
-        switch (meta & 3) {
-            case 2:
-                setBlockBounds(x1, y1, z1, x2, y2, z2);
-                break;
-            case 3:
-                setBlockBounds(1.0F - z2, y1, x1, 1.0F - z1, y2, x2);
-                break;
-            case 0:
-                setBlockBounds(1.0F - x2, y1, 1.0F - z2, 1.0F - x1, y2, 1.0F - z1);
-                break;
-            case 1:
-                setBlockBounds(z1, y1, 1.0F - x2, z2, y2, 1.0F - x1);
-                break;
-        }
+        float x = 1.0F, y = 0.25F, z = 0.5F;
+        setBoundsByXYZ(meta, 0.5F - x / 2, 0.0F, 0.5F - z / 2, 0.5F + x / 2, y, 0.5F + z / 2);
     }
 
     @SideOnly(Side.CLIENT)
@@ -142,12 +131,6 @@ public class PillarHead extends TileEntityBase {
             return text.color;
         }
         return 16777215;
-    }
-
-    @Override
-    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack itemStack) {
-        int meta = MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-        world.setBlockMetadataWithNotify(x, y, z, meta, 2);
     }
 
     @Override
@@ -162,7 +145,7 @@ public class PillarHead extends TileEntityBase {
                     NBTTagList list = Util.getTagListFromNGT(stack);
                     if (list == null) return false;
                     String[][] code = NSASM.getCode(list);
-                    new PillarHeadCore(code) {
+                    new HoloJetRevCore(code) {
                         @Override
                         public World getWorld() {
                             return world;

@@ -1,6 +1,7 @@
 package club.nsdn.nyasamaoptics.Blocks;
 
 import club.nsdn.nyasamaoptics.TileEntities.HoloJet;
+import club.nsdn.nyasamaoptics.TileEntities.HoloJetRev;
 import club.nsdn.nyasamaoptics.TileEntities.PillarHead;
 import club.nsdn.nyasamaoptics.TileEntities.RGBLight;
 import net.minecraft.block.Block;
@@ -29,6 +30,8 @@ public class BlockLoader {
 
         blocks.put("block_holojet_lishu", new HoloJet("BlockHoloJetLiShu"));
         blocks.put("block_holojet_song", new HoloJet("BlockHoloJetSong"));
+
+        blocks.put("block_holojet_rev", new HoloJetRev());
 
         blocks.put("block_pillar_head", new PillarHead());
         blocks.put("block_pillar_body", new RGBLight("PillarBody", "pillar_body", 1.0F, 1.0F, 0.5F));

@@ -1,43 +1,55 @@
 package club.nsdn.nyasamaoptics.Util;
 
+import club.nsdn.nyasamaoptics.TileEntities.HoloJetRev;
 import club.nsdn.nyasamaoptics.TileEntities.PillarHead;
-import club.nsdn.nyasamaoptics.TileEntities.RGBLight;
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentTranslation;
 
 import java.util.LinkedHashMap;
 
 /**
- * Created by drzzm32 on 2017.11.2.
+ * Created by drzzm32 on 2017.11.3.
  */
-public abstract class PillarHeadCore extends NSASM {
+public abstract class HoloJetRevCore extends NSASM {
 
-    public PillarHeadCore(String[][] code) {
+    public HoloJetRevCore(String[][] code) {
         super(code);
     }
 
-    public void setContent(PillarHead.TileText text, String value) {
+    public void setContent(HoloJetRev.TileText text, String value) {
         text.content = value;
-        PillarHead.TileText.updateThis(text);
+        HoloJetRev.TileText.updateThis(text);
     }
 
-    public void setColor(PillarHead.TileText text, int value) {
+    public void setColor(HoloJetRev.TileText text, int value) {
         text.color = value & 0xFFFFFF;
-        PillarHead.TileText.updateThis(text);
+        HoloJetRev.TileText.updateThis(text);
     }
 
-    public void setThick(PillarHead.TileText text, int value) {
+    public void setThick(HoloJetRev.TileText text, int value) {
         text.thick = value;
-        PillarHead.TileText.updateThis(text);
+        HoloJetRev.TileText.updateThis(text);
     }
 
-    public void setScale(PillarHead.TileText text, float value) {
+    public void setScale(HoloJetRev.TileText text, float value) {
         text.scale = value;
-        PillarHead.TileText.updateThis(text);
+        HoloJetRev.TileText.updateThis(text);
     }
 
-    public void setFont(PillarHead.TileText text, String value) {
+    public void setAlign(HoloJetRev.TileText text, String value) {
+        if (value.toLowerCase().equals("center"))
+            text.align = FontLoader.ALIGN_CENTER;
+        else if (value.toLowerCase().equals("vertical"))
+            text.align = FontLoader.ALIGN_VERTICAL;
+        else if (value.toLowerCase().equals("left"))
+            text.align = FontLoader.ALIGN_LEFT;
+        else if (value.toLowerCase().equals("right"))
+            text.align = FontLoader.ALIGN_RIGHT;
+        else
+            text.align = FontLoader.ALIGN_CENTER;
+        HoloJetRev.TileText.updateThis(text);
+    }
+
+    public void setFont(HoloJetRev.TileText text, String value) {
         if (value.toLowerCase().equals("kai"))
             text.font = FontLoader.FONT_KAI;
         else if (value.toLowerCase().equals("song"))
@@ -46,7 +58,7 @@ public abstract class PillarHeadCore extends NSASM {
             text.font = FontLoader.FONT_LISHU;
         else
             text.font = FontLoader.FONT_SONG;
-        PillarHead.TileText.updateThis(text);
+        HoloJetRev.TileText.updateThis(text);
     }
 
     @Override
@@ -94,6 +106,16 @@ public abstract class PillarHeadCore extends NSASM {
             }
             return Result.ERR;
         }));
+        funcList.put("aln", ((dst, src) -> {
+            if (src != null) return Result.ERR;
+            if (dst == null) return Result.ERR;
+
+            if (dst.type == RegType.STR) {
+                setAlign(getTile(), dst.data.toString());
+                return Result.OK;
+            }
+            return Result.ERR;
+        }));
         funcList.put("font", ((dst, src) -> {
             if (src != null) return Result.ERR;
             if (dst == null) return Result.ERR;
@@ -106,6 +128,6 @@ public abstract class PillarHeadCore extends NSASM {
         }));
     }
 
-    public abstract PillarHead.TileText getTile();
+    public abstract HoloJetRev.TileText getTile();
 
 }

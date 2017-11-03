@@ -11,9 +11,11 @@ import java.io.DataInputStream;
  */
 public class FontLoader {
     private static final String ASCII_Path = "nyasamaoptics:fonts/ASCII.bin";
+    private static final String GB2312_Kai_Path = "nyasamaoptics:fonts/GB2312_Kai.bin";
     private static final String GB2312_LiShu_Path = "nyasamaoptics:fonts/GB2312_LiShu.bin";
     private static final String GB2312_Song_Path = "nyasamaoptics:fonts/GB2312_SourceHanSerif.bin";
     public static byte[] ASCII;
+    public static byte[] GB2312_Kai;
     public static byte[] GB2312_LiShu;
     public static byte[] GB2312_Song;
 
@@ -36,19 +38,26 @@ public class FontLoader {
 
     public FontLoader(IResourceManager manager) {
         ASCII = load(manager, ASCII_Path);
+        GB2312_Kai = load(manager, GB2312_Kai_Path);
         GB2312_LiShu = load(manager, GB2312_LiShu_Path);
         GB2312_Song = load(manager, GB2312_Song_Path);
     }
 
     public static final int FONT_LISHU = 0;
     public static final int FONT_SONG = 1;
+    public static final int FONT_KAI = 2;
+
+    public static final int ALIGN_NULL = 0;
+    public static final int ALIGN_NOP = 1;
     public static final int ALIGN_LEFT = 2;
     public static final int ALIGN_RIGHT = 3;
     public static final int ALIGN_CENTER = 4;
     public static final int ALIGN_VERTICAL = 5;
 
     public static TextModel getModel(int font, int align, String str, int color, int thick) {
-        if (font == FONT_LISHU) {
+        if (font == FONT_KAI) {
+            return new TextModel(GB2312_Kai, align, str, color, thick);
+        } else if (font == FONT_LISHU) {
             return new TextModel(GB2312_LiShu, align, str, color, thick);
         } else if (font == FONT_SONG) {
             return new TextModel(GB2312_Song, align, str, color, thick);

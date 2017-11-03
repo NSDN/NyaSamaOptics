@@ -4,9 +4,7 @@ package club.nsdn.nyasamaoptics.TileEntities;
  * Created by drzzm32 on 2017.1.6.
  */
 
-import club.nsdn.nyasamaoptics.Renderers.TileEntity.LightRenderer;
-import club.nsdn.nyasamaoptics.Renderers.TileEntity.HoloJetRenderer;
-import club.nsdn.nyasamaoptics.Renderers.TileEntity.PillarHeadRenderer;
+import club.nsdn.nyasamaoptics.Renderers.TileEntity.*;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 
@@ -25,6 +23,10 @@ public class TileEntityModelBinder {
         ClientRegistry.bindTileEntitySpecialRenderer(
                 PillarHead.TileText.class,
                 new PillarHeadRenderer());
+
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                HoloJetRev.TileText.class,
+                new HoloJetRevRenderer());
 
     }
 
