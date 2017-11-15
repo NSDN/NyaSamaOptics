@@ -40,6 +40,10 @@ public abstract class PillarHeadCore extends NSASM {
     public void setFont(PillarHead.TileText text, String value) {
         if (value.toLowerCase().equals("kai"))
             text.font = FontLoader.FONT_KAI;
+        else if (value.toLowerCase().equals("hei"))
+            text.font = FontLoader.FONT_HEI;
+        else if (value.toLowerCase().equals("long"))
+            text.font = FontLoader.FONT_LONG;
         else if (value.toLowerCase().equals("song"))
             text.font = FontLoader.FONT_SONG;
         else if (value.toLowerCase().equals("lishu"))

@@ -2,7 +2,6 @@ package club.nsdn.nyasamaoptics.Renderers.TileEntity;
 
 import club.nsdn.nyasamaoptics.Renderers.RendererHelper;
 import club.nsdn.nyasamaoptics.TileEntities.HoloJetRev;
-import club.nsdn.nyasamaoptics.TileEntities.PillarHead;
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
@@ -96,10 +95,12 @@ public class HoloJetRevRenderer extends TileEntitySpecialRenderer {
                     GL11.glTranslatef(0.0F, -1.5F, 0.0F);
                     GL11.glPushMatrix();
                     {
-                        if (tileText.align != FontLoader.ALIGN_VERTICAL)
-                            GL11.glTranslated(0.0, 1.5 - tileText.scale, (double) (16 - tileText.thick) / 32.0);
-                        else
+                        if (tileText.align == FontLoader.ALIGN_UP)
                             GL11.glTranslated(0.0, 0.5 - 2 * tileText.scale * (tileText.content.length() - 1), (double) (16 - tileText.thick) / 32.0);
+                        else if (tileText.align == FontLoader.ALIGN_DOWN)
+                            GL11.glTranslated(0.0, 2.5 - tileText.scale, (double) (16 - tileText.thick) / 32.0);
+                        else
+                            GL11.glTranslated(0.0, 1.5 - tileText.scale, (double) (16 - tileText.thick) / 32.0);
                         GL11.glPushMatrix();
                         {
                             GL11.glScaled(tileText.scale, tileText.scale, 1.0);

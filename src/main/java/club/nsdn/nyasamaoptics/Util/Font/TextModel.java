@@ -136,7 +136,10 @@ public class TextModel extends ModelBase {
             case FontLoader.ALIGN_RIGHT:
                 drawString(font, -(str.length() - 1) * 32, thick, buf);
                 break;
-            case FontLoader.ALIGN_VERTICAL:
+            case FontLoader.ALIGN_UP:
+                drawVerticalString(font, thick, buf);
+                break;
+            case FontLoader.ALIGN_DOWN:
                 drawVerticalString(font, thick, buf);
                 break;
         }

@@ -85,7 +85,7 @@ public class ItemHoloJet extends ItemToolBase {
             } else if (((TileEntitySign) tileEntity).signText[3].contains("Center")) {
                 tileText.align = FontLoader.ALIGN_CENTER;
             } else if (((TileEntitySign) tileEntity).signText[3].contains("Vertical")) {
-                tileText.align = FontLoader.ALIGN_VERTICAL;
+                tileText.align = FontLoader.ALIGN_UP;
             } else {
                 tileText.align = FontLoader.ALIGN_CENTER;
             }

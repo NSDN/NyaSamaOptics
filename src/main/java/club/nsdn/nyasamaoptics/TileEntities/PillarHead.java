@@ -45,7 +45,7 @@ public class PillarHead extends TileEntityBase {
             color = 0xFFFFFF;
             thick = 4;
             scale = 1.0;
-            align = FontLoader.ALIGN_VERTICAL;
+            align = FontLoader.ALIGN_DOWN;
             font = FontLoader.FONT_SONG;
         }
 

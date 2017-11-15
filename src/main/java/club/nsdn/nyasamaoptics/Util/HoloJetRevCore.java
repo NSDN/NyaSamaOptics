@@ -1,7 +1,6 @@
 package club.nsdn.nyasamaoptics.Util;
 
 import club.nsdn.nyasamaoptics.TileEntities.HoloJetRev;
-import club.nsdn.nyasamaoptics.TileEntities.PillarHead;
 import club.nsdn.nyasamaoptics.Util.Font.FontLoader;
 
 import java.util.LinkedHashMap;
@@ -38,8 +37,10 @@ public abstract class HoloJetRevCore extends NSASM {
     public void setAlign(HoloJetRev.TileText text, String value) {
         if (value.toLowerCase().equals("center"))
             text.align = FontLoader.ALIGN_CENTER;
-        else if (value.toLowerCase().equals("vertical"))
-            text.align = FontLoader.ALIGN_VERTICAL;
+        else if (value.toLowerCase().equals("up"))
+            text.align = FontLoader.ALIGN_UP;
+        else if (value.toLowerCase().equals("down"))
+            text.align = FontLoader.ALIGN_DOWN;
         else if (value.toLowerCase().equals("left"))
             text.align = FontLoader.ALIGN_LEFT;
         else if (value.toLowerCase().equals("right"))
@@ -52,6 +53,10 @@ public abstract class HoloJetRevCore extends NSASM {
     public void setFont(HoloJetRev.TileText text, String value) {
         if (value.toLowerCase().equals("kai"))
             text.font = FontLoader.FONT_KAI;
+        else if (value.toLowerCase().equals("hei"))
+            text.font = FontLoader.FONT_HEI;
+        else if (value.toLowerCase().equals("long"))
+            text.font = FontLoader.FONT_LONG;
         else if (value.toLowerCase().equals("song"))
             text.font = FontLoader.FONT_SONG;
         else if (value.toLowerCase().equals("lishu"))

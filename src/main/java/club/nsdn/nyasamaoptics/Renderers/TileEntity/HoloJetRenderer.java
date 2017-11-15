@@ -92,7 +92,7 @@ public class HoloJetRenderer extends TileEntitySpecialRenderer {
                     GL11.glTranslatef(0.0F, -1.5F, 0.0F);
                     GL11.glPushMatrix();
                     {
-                        if (tileText.align != FontLoader.ALIGN_VERTICAL)
+                        if (tileText.align != FontLoader.ALIGN_UP)
                             GL11.glTranslated(0.0, 1.5 - tileText.scaleY, (double) (16 - tileText.thick) / 32.0);
                         else
                             GL11.glTranslated(0.0, 0.5 - 2 * tileText.scaleY * (tileText.content.length() - 1), (double) (16 - tileText.thick) / 32.0);
