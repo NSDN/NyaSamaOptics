@@ -8,13 +8,9 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.Mod.EventHandler;
-import club.nsdn.nyasamaoptics.Proxy.CommonProxy;
+import club.nsdn.nyasamaoptics.proxy.CommonProxy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.PrintStream;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
 
 @Mod(modid = NyaSamaOptics.MODID, version = NyaSamaOptics.VERSION)
 public class NyaSamaOptics {
@@ -22,12 +18,12 @@ public class NyaSamaOptics {
     @Mod.Instance("NyaSamaOptics")
     public static NyaSamaOptics instance;
     public static final String MODID = "NyaSamaOptics";
-    public static final String VERSION = "0.1";
+    public static final String VERSION = "0.2";
     public static final boolean isDebug = false;
     public static Logger log = LogManager.getLogger(MODID);
 
-    @SidedProxy(clientSide = "club.nsdn.nyasamaoptics.Proxy.ClientProxy",
-                serverSide = "club.nsdn.nyasamaoptics.Proxy.ServerProxy")
+    @SidedProxy(clientSide = "club.nsdn.nyasamaoptics.proxy.ClientProxy",
+                serverSide = "club.nsdn.nyasamaoptics.proxy.ServerProxy")
     public static CommonProxy proxy;
 
     public static NyaSamaOptics getInstance() { return instance; }
