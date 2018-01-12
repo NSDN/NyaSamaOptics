@@ -7,6 +7,7 @@ import club.nsdn.nyasamatelecom.api.util.NSASM;
 import club.nsdn.nyasamatelecom.api.util.Util;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -89,6 +90,7 @@ public class RGBLight extends TileBlock {
         setBoundsByXYZ(meta, 0.5F - x / 2, 0.0F, 0.5F - z / 2, 0.5F + x / 2, y, 0.5F + z / 2);
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
         if (world.getTileEntity(x, y, z) instanceof TileLight) {
@@ -96,6 +98,22 @@ public class RGBLight extends TileBlock {
             return light.color;
         }
         return 16777215;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getMixedBrightnessForBlock(IBlockAccess world, int x, int y, int z) {
+        Block block = world.getBlock(x, y, z);
+        TileEntity tileEntity = world.getTileEntity(x, y, z);
+        int light = block.getLightValue(world, x, y, z);
+
+        if (tileEntity == null) light = 0;
+        if (tileEntity instanceof TileLight)
+            light = (((TileLight) tileEntity).isEnabled ? light : 0);
+        else
+            light = 0;
+
+        return world.getLightBrightnessForSkyBlocks(x, y, z, light);
     }
 
     @Override
@@ -194,9 +212,6 @@ public class RGBLight extends TileBlock {
             } else {
                 light.isEnabled = true;
             }
-
-            if (light.isEnabled) setLightLevel(1.0F);
-            else setLightLevel(0.0F);
 
             if (light.isEnabled != light.prevIsEnabled) {
                 light.prevIsEnabled = light.isEnabled;

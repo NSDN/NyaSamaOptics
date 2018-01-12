@@ -104,7 +104,9 @@ public class HoloJetRevRenderer extends TileEntitySpecialRenderer {
                         GL11.glPushMatrix();
                         {
                             GL11.glScaled(tileText.scale, tileText.scale, 1.0);
-                            if (tileText.model != null && tileText.isEnabled)
+                            boolean control = true;
+                            if (tileText.getSender() != null) control = tileText.isEnabled;
+                            if (tileText.model != null && control)
                                 tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
                         }
                         GL11.glPopMatrix();

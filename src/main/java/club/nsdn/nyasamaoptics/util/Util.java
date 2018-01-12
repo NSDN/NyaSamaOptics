@@ -15,7 +15,7 @@ public class Util {
     @SideOnly(Side.CLIENT)
     public static void setTitle() {
         String prevTitle = Display.getTitle();
-        if (!prevTitle.contains("NSDN-MC")) {
+        if (!prevTitle.contains("NSDN-MC") && !prevTitle.contains("Biucraft")) {
             Display.setTitle(prevTitle + " | using mods by NSDN-MC");
         }
     }

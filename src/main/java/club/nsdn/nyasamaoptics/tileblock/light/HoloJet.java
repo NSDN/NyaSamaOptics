@@ -120,6 +120,7 @@ public class HoloJet extends TileBlock {
         }
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
         if (world.getTileEntity(x, y, z) instanceof TileText) {

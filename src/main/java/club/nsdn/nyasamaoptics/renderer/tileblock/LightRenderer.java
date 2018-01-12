@@ -88,7 +88,7 @@ public class LightRenderer extends TileEntitySpecialRenderer {
                 int color = tileLight.color;
                 GL11.glColor3f(((color & 0xFF0000) >> 16) / 255.0F, ((color & 0x00FF00) >> 8) / 255.0F, (color & 0x0000FF) / 255.0F);
                 Tessellator.instance.setBrightness(255);
-                if (!tileLight.isEnabled) {
+                if (!tileLight.isEnabled && tileLight.getSender() != null) {
                     GL11.glColor3f(0.1F, 0.1F, 0.1F);
                     Tessellator.instance.setBrightness(32);
                 }

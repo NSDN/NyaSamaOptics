@@ -93,7 +93,9 @@ public class PillarHeadRenderer extends TileEntitySpecialRenderer {
     }
 
     private void doRenderText(PillarHead.TileText tileText) {
-        if (tileText.model != null && tileText.isEnabled) {
+        boolean control = true;
+        if (tileText.getSender() != null) control = tileText.isEnabled;
+        if (tileText.model != null && control) {
             GL11.glPushMatrix();
             GL11.glTranslated(0.0, 0.0, 0.0625 * (3.9 - tileText.thick));
             tileText.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);

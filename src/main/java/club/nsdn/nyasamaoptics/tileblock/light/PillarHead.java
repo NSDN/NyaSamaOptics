@@ -10,6 +10,7 @@ import club.nsdn.nyasamatelecom.api.util.NSASM;
 import club.nsdn.nyasamatelecom.api.util.Util;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -144,6 +145,7 @@ public class PillarHead extends TileBlock {
         }
     }
 
+    @Override
     @SideOnly(Side.CLIENT)
     public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
         if (world.getTileEntity(x, y, z) instanceof TileText) {
@@ -151,6 +153,22 @@ public class PillarHead extends TileBlock {
             return text.color;
         }
         return 16777215;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public int getMixedBrightnessForBlock(IBlockAccess world, int x, int y, int z) {
+        Block block = world.getBlock(x, y, z);
+        TileEntity tileEntity = world.getTileEntity(x, y, z);
+        int light = block.getLightValue(world, x, y, z);
+
+        if (tileEntity == null) light = 0;
+        if (tileEntity instanceof TileText)
+            light = (((TileText) tileEntity).isEnabled ? light : 0);
+        else
+            light = 0;
+
+        return world.getLightBrightnessForSkyBlocks(x, y, z, light);
     }
 
     @Override
@@ -255,9 +273,6 @@ public class PillarHead extends TileBlock {
             } else {
                 light.isEnabled = true;
             }
-
-            if (light.isEnabled) setLightLevel(1.0F);
-            else setLightLevel(0.0F);
 
             if (light.isEnabled != light.prevIsEnabled) {
                 light.prevIsEnabled = light.isEnabled;
