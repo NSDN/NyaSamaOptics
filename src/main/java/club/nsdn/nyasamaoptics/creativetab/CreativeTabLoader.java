@@ -17,7 +17,7 @@ public class CreativeTabLoader {
         tabNyaSamaOptics = new CreativeTabs("tabNyaSamaOptics") {
             @Override
             public Item getTabIconItem() {
-                return Item.getItemFromBlock(BlockLoader.blocks.get("nyasamaoptics_logo"));
+                return Item.getItemFromBlock(BlockLoader.logo);
             }
         };
     }

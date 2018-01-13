@@ -1,5 +1,6 @@
 package club.nsdn.nyasamaoptics.tileblock.light;
 
+import club.nsdn.nyasamaoptics.block.BlockLoader;
 import club.nsdn.nyasamaoptics.creativetab.CreativeTabLoader;
 import club.nsdn.nyasamaoptics.tileblock.TileBlock;
 import club.nsdn.nyasamaoptics.util.font.FontLoader;
@@ -14,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -122,7 +124,7 @@ public class PillarHead extends TileBlock {
     public PillarHead() {
         super(Material.glass, "PillarHead");
         setIconLocation("pillar_head");
-        setLightLevel(1);
+        setLightLevel(0);
         setCreativeTab(CreativeTabLoader.tabNyaSamaOptics);
     }
 
@@ -153,22 +155,6 @@ public class PillarHead extends TileBlock {
             return text.color;
         }
         return 16777215;
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public int getMixedBrightnessForBlock(IBlockAccess world, int x, int y, int z) {
-        Block block = world.getBlock(x, y, z);
-        TileEntity tileEntity = world.getTileEntity(x, y, z);
-        int light = block.getLightValue(world, x, y, z);
-
-        if (tileEntity == null) light = 0;
-        if (tileEntity instanceof TileText)
-            light = (((TileText) tileEntity).isEnabled ? light : 0);
-        else
-            light = 0;
-
-        return world.getLightBrightnessForSkyBlocks(x, y, z, light);
     }
 
     @Override
@@ -263,6 +249,18 @@ public class PillarHead extends TileBlock {
         }
     }
 
+    public void b2b(World world, int x, int y, int z, Block dst, Block src) {
+        if (src == Blocks.air) {
+            if (world.getBlock(x, y, z).isAir(world, x, y, z)) {
+                world.setBlock(x, y, z, dst);
+            }
+        } else {
+            if (world.getBlock(x, y, z) == src) {
+                world.setBlock(x, y, z, dst);
+            }
+        }
+    }
+
     public void updateSignal(World world, int x , int y, int z) {
         if (world.getTileEntity(x, y, z) == null) return;
         if (world.getTileEntity(x, y, z) instanceof TileText) {
@@ -272,6 +270,22 @@ public class PillarHead extends TileBlock {
                 light.isEnabled = light.senderIsPowered();
             } else {
                 light.isEnabled = true;
+            }
+
+            if (light.isEnabled) {
+                b2b(world, x + 1, y, z, BlockLoader.light, Blocks.air);
+                b2b(world, x - 1, y, z, BlockLoader.light, Blocks.air);
+                b2b(world, x, y + 1, z, BlockLoader.light, Blocks.air);
+                b2b(world, x, y - 1, z, BlockLoader.light, Blocks.air);
+                b2b(world, x, y, z + 1, BlockLoader.light, Blocks.air);
+                b2b(world, x, y, z - 1, BlockLoader.light, Blocks.air);
+            } else {
+                b2b(world, x + 1, y, z, Blocks.air, BlockLoader.light);
+                b2b(world, x - 1, y, z, Blocks.air, BlockLoader.light);
+                b2b(world, x, y + 1, z, Blocks.air, BlockLoader.light);
+                b2b(world, x, y - 1, z, Blocks.air, BlockLoader.light);
+                b2b(world, x, y, z + 1, Blocks.air, BlockLoader.light);
+                b2b(world, x, y, z - 1, Blocks.air, BlockLoader.light);
             }
 
             if (light.isEnabled != light.prevIsEnabled) {

@@ -1,5 +1,6 @@
 package club.nsdn.nyasamaoptics.block;
 
+import club.nsdn.nyasamaoptics.api.LightBeam;
 import club.nsdn.nyasamaoptics.tileblock.light.HoloJet;
 import club.nsdn.nyasamaoptics.tileblock.light.HoloJetRev;
 import club.nsdn.nyasamaoptics.tileblock.light.PillarHead;
@@ -15,6 +16,8 @@ import java.util.LinkedHashMap;
  */
 public class BlockLoader {
 
+    public static Block logo;
+    public static Block light;
     public static LinkedHashMap<String, Block> blocks;
 
     private static void register(Block block, String name) {
@@ -26,12 +29,16 @@ public class BlockLoader {
 
         blocks.put("nyasamaoptics_block_sign", new BlockSign());
         blocks.put("nyasamaoptics_nsdn_logo", new BlockNSDNLogo());
-        blocks.put("nyasamaoptics_logo", new BlockNSOLogo());
+        logo = new BlockNSOLogo();
+        blocks.put("nyasamaoptics_logo", logo);
 
         blocks.put("block_holojet_lishu", new HoloJet("BlockHoloJetLiShu"));
         blocks.put("block_holojet_song", new HoloJet("BlockHoloJetSong"));
 
         blocks.put("block_holojet_rev", new HoloJetRev());
+
+        light = new LightBeam(RGBLight.class, LightBeam.TYPE_DOT);
+        blocks.put("lb_rgb_light", light);
 
         blocks.put("block_pillar_head", new PillarHead());
         blocks.put("block_pillar_body", new RGBLight("PillarBody", "pillar_body", 1.0F, 1.0F, 0.5F));
