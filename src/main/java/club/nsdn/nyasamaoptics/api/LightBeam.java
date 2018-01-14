@@ -2,7 +2,6 @@ package club.nsdn.nyasamaoptics.api;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -15,14 +14,14 @@ import java.util.Random;
  */
 public class LightBeam extends Block {
 
-    public final Class<? extends Block> source;
-    public final int lightType;
+    public Class<? extends Block> source;
+    public int lightType;
 
     public static final int TYPE_DOT = 0;
     public static final int TYPE_LINE = 1;
 
     public LightBeam(Class<? extends Block> source, int lightType) {
-        super(Material.air);
+        super(Material.vine);
         this.source = source;
         this.lightType = lightType;
         setLightLevel(1.0F);
@@ -30,13 +29,11 @@ public class LightBeam extends Block {
         setHardness(-1.0F);
         setResistance(0xFFFFFF);
         int zero = 0;
-        setBlockBounds(
-            zero, zero, zero, zero, zero, zero
-        );
+        setBlockBounds(zero, zero, zero, zero, zero, zero);
     }
 
     public LightBeam(Class<? extends Block> source, int lightType, float lightLevel) {
-        super(Material.air);
+        super(Material.vine);
         this.source = source;
         this.lightType = lightType;
         setLightLevel(lightLevel);
@@ -44,9 +41,7 @@ public class LightBeam extends Block {
         setHardness(-1.0F);
         setResistance(0xFFFFFF);
         int zero = 0;
-        setBlockBounds(
-            zero, zero, zero, zero, zero, zero
-        );
+        setBlockBounds(zero, zero, zero, zero, zero, zero);
     }
 
     @Override
@@ -105,12 +100,17 @@ public class LightBeam extends Block {
         if (!world.isRemote) checkNearby(world, x, y, z);
     }
 
-    @Override
-    public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
-        checkNearby(world, x, y, z);
+    public void lightCtl(World world, int x, int y, int z, boolean state) {
+        lightCtl(world, x, y, z, this, state);
     }
 
-    public ForgeDirection getDir(World world, int x, int y, int z) {
+    public void lightCtl(World world, int x, int y, int z, ForgeDirection dir, int length, boolean state) {
+        lightCtl(world, x, y, z, this, dir, length, state);
+    }
+
+    /******************************************************************************************************************/
+
+    public static ForgeDirection getDir(World world, int x, int y, int z) {
         switch (world.getBlockMetadata(x, y, z)) {
             case 0: return ForgeDirection.NORTH;
             case 1: return ForgeDirection.SOUTH;
@@ -122,7 +122,7 @@ public class LightBeam extends Block {
         return ForgeDirection.UNKNOWN;
     }
 
-    public void setDir(World world, int x, int y, int z, ForgeDirection dir) {
+    public static int getMetaFromDir(ForgeDirection dir) {
         int meta = -1;
         switch (dir) {
             case NORTH: meta = 0; break;
@@ -132,123 +132,112 @@ public class LightBeam extends Block {
             case UP:    meta = 4; break;
             case DOWN:  meta = 5; break;
         }
-        if (meta >= 0) {
-            world.setBlockMetadataWithNotify(x, y, z, meta, 3);
-        }
+        return meta;
     }
 
-    public void b2b(World world, int x, int y, int z, Block dst, Block src) {
-        if (src == Blocks.air) {
-            if (world.getBlock(x, y, z).isAir(world, x, y, z)) {
-                world.setBlock(x, y, z, dst);
-            }
+    public static boolean isSource(World world, int x, int y, int z) {
+        if (world.getBlock(x, y, z) instanceof LightBeam) {
+            LightBeam lightBeam = (LightBeam) world.getBlock(x, y, z);
+            return world.getBlock(x, y, z).getClass().isInstance(lightBeam.source);
+        }
+        return false;
+    }
+
+    public static boolean isMe(World world, int x, int y, int z) {
+        return world.getBlock(x, y, z).getClass().isInstance(LightBeam.class);
+    }
+
+    public static boolean placeLight(World world, int x, int y, int z, LightBeam lightBeam, int meta) {
+        if (meta == -1) {
+            if (isMe(world, x, y, z)) {
+                world.setBlockToAir(x, y, z);
+            } else return false;
         } else {
-            if (world.getBlock(x, y, z) == src) {
-                world.setBlock(x, y, z, dst);
-            }
-        }
-    }
-
-    public void lightCtl(World world, int x, int y, int z, boolean state) {
-        Block dst, src;
-        if (state) {
-            dst = this; src = Blocks.air;
-        } else {
-            dst = Blocks.air; src = this;
+            if (world.isAirBlock(x, y, z) && !isMe(world, x, y, z)) {
+                world.setBlock(x, y, z, lightBeam, meta, 3);
+            } else return false;
         }
 
-        if (lightType == TYPE_DOT) {
-            b2b(world, x + 1, y, z, dst, src);
-            b2b(world, x - 1, y, z, dst, src);
-            b2b(world, x, y + 1, z, dst, src);
-            b2b(world, x, y - 1, z, dst, src);
-            b2b(world, x, y, z + 1, dst, src);
-            b2b(world, x, y, z - 1, dst, src);
-        }
+        return true;
     }
 
-    public void lightCtl(World world, int x, int y, int z, ForgeDirection dir, int length, boolean state) {
-        Block dst, src;
-        if (state) {
-            dst = this; src = Blocks.air;
-        } else {
-            dst = Blocks.air; src = this;
-        }
+    public static void lightCtl(World world, int x, int y, int z, LightBeam lightBeam, boolean state) {
+        int meta = state ? 0 : -1;
 
-        if (lightType == TYPE_LINE) {
-            switch (dir) {
-                case NORTH:
-                    for (int i = 0; i < length; i++) {
-                        b2b(world, x, y, z - 1 - i, dst, src);
-                        if (state) setDir(world, x, y, z - 1 - i, dir);
-                    }
-                    break;
-                case SOUTH:
-                    for (int i = 0; i < length; i++) {
-                        b2b(world, x, y, z + 1 + i, dst, src);
-                        if (state) setDir(world, x, y, z + 1 + i, dir);
-                    }
-                    break;
-                case WEST:
-                    for (int i = 0; i < length; i++) {
-                        b2b(world, x - 1 - i, y, z, dst, src);
-                        if (state) setDir(world, x - 1 - i, y, z, dir);
-                    }
-                    break;
-                case EAST:
-                    for (int i = 0; i < length; i++) {
-                        b2b(world, x + 1 + i, y, z, dst, src);
-                        if (state) setDir(world, x + 1 + i, y, z, dir);
-                    }
-                    break;
-                case UP:
-                    for (int i = 0; i < length; i++) {
-                        b2b(world, x, y + 1 + i, z, dst, src);
-                        if (state) setDir(world, x, y + 1 + i, z, dir);
-                    }
-                    break;
-                case DOWN:
-                    for (int i = 0; i < length; i++) {
-                        b2b(world, x, y - 1 - i, z, dst, src);
-                        if (state) setDir(world, x, y - 1 - i, z, dir);
-                    }
-                    break;
-            }
-        }
+        placeLight(world, x + 1, y, z, lightBeam, meta);
+        placeLight(world, x - 1, y, z, lightBeam, meta);
+        placeLight(world, x, y + 1, z, lightBeam, meta);
+        placeLight(world, x, y - 1, z, lightBeam, meta);
+        placeLight(world, x, y, z + 1, lightBeam, meta);
+        placeLight(world, x, y, z - 1, lightBeam, meta);
     }
 
-    public boolean isSource(World world, int x, int y, int z) {
-        return world.getBlock(x, y, z).getClass() == source;
-    }
+    public static void lightCtl(World world, int x, int y, int z, LightBeam lightBeam, ForgeDirection dir, int length, boolean state) {
+        int meta = state ? getMetaFromDir(dir) : -1;
 
-    public boolean isMe(World world, int x, int y, int z) {
-        return world.getBlock(x, y, z) == this;
-    }
-
-    public void checkNearby(World world, int x, int y, int z) {
-        switch (lightType) {
-            case TYPE_DOT:
-                if (
-                    !isSource(world, x - 1, y, z) && !isSource(world, x + 1, y, z) &&
-                    !isSource(world, x, y - 1, z) && !isSource(world, x, y + 1, z) &&
-                    !isSource(world, x, y, z - 1) && !isSource(world, x, y, z + 1)
-                ) {
-                    world.setBlock(x, y, z, Blocks.air);
+        switch (dir) {
+            case NORTH:
+                for (int i = 0; i < length; i++) {
+                    if (!placeLight(world, x, y, z - 1 - i, lightBeam, meta)) break;
                 }
                 break;
-            case TYPE_LINE:
-                boolean result = true;
-                switch (getDir(world, x, y, z)) {
-                    case NORTH: result = !isSource(world, x, y, z + 1) && !isMe(world, x, y, z + 1); break;
-                    case SOUTH: result = !isSource(world, x, y, z - 1) && !isMe(world, x, y, z - 1); break;
-                    case WEST:  result = !isSource(world, x + 1, y, z) && !isMe(world, x + 1, y, z); break;
-                    case EAST:  result = !isSource(world, x - 1, y, z) && !isMe(world, x - 1, y, z); break;
-                    case UP:    result = !isSource(world, x, y - 1, z) && !isMe(world, x, y - 1, z); break;
-                    case DOWN:  result = !isSource(world, x, y + 1, z) && !isMe(world, x, y + 1, z); break;
+            case SOUTH:
+                for (int i = 0; i < length; i++) {
+                    if (!placeLight(world, x, y, z + 1 + i, lightBeam, meta)) break;
                 }
-                if (result) world.setBlock(x, y, z, Blocks.air);
+                break;
+            case WEST:
+                for (int i = 0; i < length; i++) {
+                    if (!placeLight(world, x - 1 - i, y, z, lightBeam, meta)) break;
+                }
+                break;
+            case EAST:
+                for (int i = 0; i < length; i++) {
+                    if (!placeLight(world, x + 1 + i, y, z, lightBeam, meta)) break;
+                }
+                break;
+            case UP:
+                for (int i = 0; i < length; i++) {
+                    if (!placeLight(world, x, y + 1 + i, z, lightBeam, meta)) break;
+                }
+                break;
+            case DOWN:
+                for (int i = 0; i < length; i++) {
+                    if (!placeLight(world, x, y - 1 - i, z, lightBeam, meta)) break;
+                }
                 break;
         }
+    }
+
+    public static void checkNearby(World world, int x, int y, int z) {
+        boolean keepAlive = false;
+
+        if (world.getBlock(x, y, z) instanceof LightBeam) {
+            LightBeam lightBeam = (LightBeam) world.getBlock(x, y, z);
+
+            switch (lightBeam.lightType) {
+                case TYPE_DOT:
+                    keepAlive |= isSource(world, x - 1, y, z);
+                    keepAlive |= isSource(world, x + 1, y, z);
+                    keepAlive |= isSource(world, x, y - 1, z);
+                    keepAlive |= isSource(world, x, y + 1, z);
+                    keepAlive |= isSource(world, x, y, z - 1);
+                    keepAlive |= isSource(world, x, y, z + 1);
+                    break;
+                case TYPE_LINE:
+                    switch (getDir(world, x, y, z)) {
+                        case NORTH: keepAlive = isSource(world, x, y, z + 1) || isMe(world, x, y, z + 1); break;
+                        case SOUTH: keepAlive = isSource(world, x, y, z - 1) || isMe(world, x, y, z - 1); break;
+                        case WEST:  keepAlive = isSource(world, x + 1, y, z) || isMe(world, x + 1, y, z); break;
+                        case EAST:  keepAlive = isSource(world, x - 1, y, z) || isMe(world, x - 1, y, z); break;
+                        case UP:    keepAlive = isSource(world, x, y - 1, z) || isMe(world, x, y - 1, z); break;
+                        case DOWN:  keepAlive = isSource(world, x, y + 1, z) || isMe(world, x, y + 1, z); break;
+                    }
+                    break;
+            }
+        }
+
+        if (!keepAlive) world.setBlockToAir(x, y, z);
     }
 
 }
