@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 public class BlockLoader {
 
     public static Block logo;
-    public static Block light;
+    public static LightBeam light;
     public static LinkedHashMap<String, Block> blocks;
 
     private static void register(Block block, String name) {

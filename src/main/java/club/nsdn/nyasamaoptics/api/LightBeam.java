@@ -35,6 +35,20 @@ public class LightBeam extends Block {
         );
     }
 
+    public LightBeam(Class<? extends Block> source, int lightType, float lightLevel) {
+        super(Material.air);
+        this.source = source;
+        this.lightType = lightType;
+        setLightLevel(lightLevel);
+        setLightOpacity(0);
+        setHardness(-1.0F);
+        setResistance(0xFFFFFF);
+        int zero = 0;
+        setBlockBounds(
+            zero, zero, zero, zero, zero, zero
+        );
+    }
+
     @Override
     public boolean isOpaqueCube() {
         return false;
@@ -123,6 +137,86 @@ public class LightBeam extends Block {
         }
     }
 
+    public void b2b(World world, int x, int y, int z, Block dst, Block src) {
+        if (src == Blocks.air) {
+            if (world.getBlock(x, y, z).isAir(world, x, y, z)) {
+                world.setBlock(x, y, z, dst);
+            }
+        } else {
+            if (world.getBlock(x, y, z) == src) {
+                world.setBlock(x, y, z, dst);
+            }
+        }
+    }
+
+    public void lightCtl(World world, int x, int y, int z, boolean state) {
+        Block dst, src;
+        if (state) {
+            dst = this; src = Blocks.air;
+        } else {
+            dst = Blocks.air; src = this;
+        }
+
+        if (lightType == TYPE_DOT) {
+            b2b(world, x + 1, y, z, dst, src);
+            b2b(world, x - 1, y, z, dst, src);
+            b2b(world, x, y + 1, z, dst, src);
+            b2b(world, x, y - 1, z, dst, src);
+            b2b(world, x, y, z + 1, dst, src);
+            b2b(world, x, y, z - 1, dst, src);
+        }
+    }
+
+    public void lightCtl(World world, int x, int y, int z, ForgeDirection dir, int length, boolean state) {
+        Block dst, src;
+        if (state) {
+            dst = this; src = Blocks.air;
+        } else {
+            dst = Blocks.air; src = this;
+        }
+
+        if (lightType == TYPE_LINE) {
+            switch (dir) {
+                case NORTH:
+                    for (int i = 0; i < length; i++) {
+                        b2b(world, x, y, z - 1 - i, dst, src);
+                        if (state) setDir(world, x, y, z - 1 - i, dir);
+                    }
+                    break;
+                case SOUTH:
+                    for (int i = 0; i < length; i++) {
+                        b2b(world, x, y, z + 1 + i, dst, src);
+                        if (state) setDir(world, x, y, z + 1 + i, dir);
+                    }
+                    break;
+                case WEST:
+                    for (int i = 0; i < length; i++) {
+                        b2b(world, x - 1 - i, y, z, dst, src);
+                        if (state) setDir(world, x - 1 - i, y, z, dir);
+                    }
+                    break;
+                case EAST:
+                    for (int i = 0; i < length; i++) {
+                        b2b(world, x + 1 + i, y, z, dst, src);
+                        if (state) setDir(world, x + 1 + i, y, z, dir);
+                    }
+                    break;
+                case UP:
+                    for (int i = 0; i < length; i++) {
+                        b2b(world, x, y + 1 + i, z, dst, src);
+                        if (state) setDir(world, x, y + 1 + i, z, dir);
+                    }
+                    break;
+                case DOWN:
+                    for (int i = 0; i < length; i++) {
+                        b2b(world, x, y - 1 - i, z, dst, src);
+                        if (state) setDir(world, x, y - 1 - i, z, dir);
+                    }
+                    break;
+            }
+        }
+    }
+
     public boolean isSource(World world, int x, int y, int z) {
         return world.getBlock(x, y, z).getClass() == source;
     }
@@ -132,7 +226,6 @@ public class LightBeam extends Block {
     }
 
     public void checkNearby(World world, int x, int y, int z) {
-        ForgeDirection dir = getDir(world, x, y, z);
         switch (lightType) {
             case TYPE_DOT:
                 if (
@@ -145,7 +238,7 @@ public class LightBeam extends Block {
                 break;
             case TYPE_LINE:
                 boolean result = true;
-                switch (dir) {
+                switch (getDir(world, x, y, z)) {
                     case NORTH: result = !isSource(world, x, y, z + 1) && !isMe(world, x, y, z + 1); break;
                     case SOUTH: result = !isSource(world, x, y, z - 1) && !isMe(world, x, y, z - 1); break;
                     case WEST:  result = !isSource(world, x + 1, y, z) && !isMe(world, x + 1, y, z); break;

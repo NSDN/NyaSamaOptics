@@ -188,18 +188,6 @@ public class RGBLight extends TileBlock {
         }
     }
 
-    public void b2b(World world, int x, int y, int z, Block dst, Block src) {
-        if (src == Blocks.air) {
-            if (world.getBlock(x, y, z).isAir(world, x, y, z)) {
-                world.setBlock(x, y, z, dst);
-            }
-        } else {
-            if (world.getBlock(x, y, z) == src) {
-                world.setBlock(x, y, z, dst);
-            }
-        }
-    }
-
     public void updateSignal(World world, int x , int y, int z) {
         if (world.getTileEntity(x, y, z) == null) return;
         if (world.getTileEntity(x, y, z) instanceof TileLight) {
@@ -211,21 +199,7 @@ public class RGBLight extends TileBlock {
                 light.isEnabled = true;
             }
 
-            if (light.isEnabled) {
-                b2b(world, x + 1, y, z, BlockLoader.light, Blocks.air);
-                b2b(world, x - 1, y, z, BlockLoader.light, Blocks.air);
-                b2b(world, x, y + 1, z, BlockLoader.light, Blocks.air);
-                b2b(world, x, y - 1, z, BlockLoader.light, Blocks.air);
-                b2b(world, x, y, z + 1, BlockLoader.light, Blocks.air);
-                b2b(world, x, y, z - 1, BlockLoader.light, Blocks.air);
-            } else {
-                b2b(world, x + 1, y, z, Blocks.air, BlockLoader.light);
-                b2b(world, x - 1, y, z, Blocks.air, BlockLoader.light);
-                b2b(world, x, y + 1, z, Blocks.air, BlockLoader.light);
-                b2b(world, x, y - 1, z, Blocks.air, BlockLoader.light);
-                b2b(world, x, y, z + 1, Blocks.air, BlockLoader.light);
-                b2b(world, x, y, z - 1, Blocks.air, BlockLoader.light);
-            }
+            BlockLoader.light.lightCtl(world, x, y, z, light.isEnabled);
 
             if (light.isEnabled != light.prevIsEnabled) {
                 light.prevIsEnabled = light.isEnabled;

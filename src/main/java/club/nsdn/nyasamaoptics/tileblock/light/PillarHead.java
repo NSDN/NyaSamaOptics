@@ -272,21 +272,7 @@ public class PillarHead extends TileBlock {
                 light.isEnabled = true;
             }
 
-            if (light.isEnabled) {
-                b2b(world, x + 1, y, z, BlockLoader.light, Blocks.air);
-                b2b(world, x - 1, y, z, BlockLoader.light, Blocks.air);
-                b2b(world, x, y + 1, z, BlockLoader.light, Blocks.air);
-                b2b(world, x, y - 1, z, BlockLoader.light, Blocks.air);
-                b2b(world, x, y, z + 1, BlockLoader.light, Blocks.air);
-                b2b(world, x, y, z - 1, BlockLoader.light, Blocks.air);
-            } else {
-                b2b(world, x + 1, y, z, Blocks.air, BlockLoader.light);
-                b2b(world, x - 1, y, z, Blocks.air, BlockLoader.light);
-                b2b(world, x, y + 1, z, Blocks.air, BlockLoader.light);
-                b2b(world, x, y - 1, z, Blocks.air, BlockLoader.light);
-                b2b(world, x, y, z + 1, Blocks.air, BlockLoader.light);
-                b2b(world, x, y, z - 1, Blocks.air, BlockLoader.light);
-            }
+            BlockLoader.light.lightCtl(world, x, y, z, light.isEnabled);
 
             if (light.isEnabled != light.prevIsEnabled) {
                 light.prevIsEnabled = light.isEnabled;
