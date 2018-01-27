@@ -20,6 +20,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.obj.WavefrontObject;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Random;
 
@@ -72,6 +73,7 @@ public class RGBLight extends TileBlock {
         return new TileLight();
     }
 
+    public boolean isFloodLight;
     public float x, y, z;
     public String resource;
     @SideOnly(Side.CLIENT)
@@ -83,6 +85,16 @@ public class RGBLight extends TileBlock {
         super(Material.glass, name);
         setIconLocation(resource);
         setLightLevel(0);
+        this.isFloodLight = false;
+        this.x = x; this.y = y; this.z = z;
+        this.resource = resource;
+    }
+
+    public RGBLight(String name, String resource, float x, float y, float z, boolean isFloodLight) {
+        super(Material.glass, name);
+        setIconLocation(resource);
+        setLightLevel(0);
+        this.isFloodLight = isFloodLight;
         this.x = x; this.y = y; this.z = z;
         this.resource = resource;
     }
@@ -188,6 +200,20 @@ public class RGBLight extends TileBlock {
         }
     }
 
+    public ForgeDirection getDirFromMeta(int meta) {
+        if (meta < 5) return ForgeDirection.UP;
+        else if (meta > 8) return ForgeDirection.DOWN;
+        else {
+            switch (meta) {
+                case 5: return ForgeDirection.NORTH;
+                case 6: return ForgeDirection.EAST;
+                case 7: return ForgeDirection.SOUTH;
+                case 8: return ForgeDirection.WEST;
+            }
+        }
+        return ForgeDirection.UNKNOWN;
+    }
+
     public void updateSignal(World world, int x , int y, int z) {
         if (world.getTileEntity(x, y, z) == null) return;
         if (world.getTileEntity(x, y, z) instanceof TileLight) {
@@ -199,7 +225,11 @@ public class RGBLight extends TileBlock {
                 light.isEnabled = true;
             }
 
-            BlockLoader.light.lightCtl(world, x, y, z, light.isEnabled);
+            int meta = world.getBlockMetadata(x, y, z);
+            if (((RGBLight) world.getBlock(x, y, z)).isFloodLight)
+                BlockLoader.lineLight.lightCtl(world, x, y, z, getDirFromMeta(meta), 16, light.isEnabled);
+            else
+                BlockLoader.light.lightCtl(world, x, y, z, light.isEnabled);
 
             if (light.isEnabled != light.prevIsEnabled) {
                 light.prevIsEnabled = light.isEnabled;
