@@ -1,9 +1,12 @@
 package cn.ac.nya.nsasm;
 
-import cn.ac.nya.nsasm.NSASM.*;
+import cn.ac.nya.nsasm.NSASM.Result;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  * Created by drzzm on 2017.4.21.
@@ -44,6 +47,10 @@ public class Util {
         }
         while (var.charAt(0) == '\t' || var.charAt(0) == ' ') {
             var = var.substring(1);
+            if (var.isEmpty()) return "";
+        }
+        while (var.charAt(var.length() - 1) == '\t' || var.charAt(var.length() - 1) == ' ') {
+            var = var.substring(0, var.length() - 1);
             if (var.isEmpty()) return "";
         }
 
@@ -196,7 +203,8 @@ public class Util {
                         else if (tmp.contains("}"))
                             count -= 1;
                         if (tmp.contains("(") && tmp.contains(")")) {
-                            count -= 1;
+                            if (tmp.contains("{") && tmp.contains("}"))
+                                count -= 1;
                         }
                         if (count == 0) {
                             segBuf.put(head, body);
