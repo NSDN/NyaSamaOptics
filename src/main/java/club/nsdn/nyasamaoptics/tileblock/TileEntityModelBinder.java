@@ -5,10 +5,7 @@ package club.nsdn.nyasamaoptics.tileblock;
  */
 
 import club.nsdn.nyasamaoptics.renderer.tileblock.*;
-import club.nsdn.nyasamaoptics.tileblock.light.HoloJet;
-import club.nsdn.nyasamaoptics.tileblock.light.HoloJetRev;
-import club.nsdn.nyasamaoptics.tileblock.light.PillarHead;
-import club.nsdn.nyasamaoptics.tileblock.light.RGBLight;
+import club.nsdn.nyasamaoptics.tileblock.light.*;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 
@@ -31,6 +28,10 @@ public class TileEntityModelBinder {
         ClientRegistry.bindTileEntitySpecialRenderer(
                 HoloJetRev.TileText.class,
                 new HoloJetRevRenderer());
+
+        ClientRegistry.bindTileEntitySpecialRenderer(
+                LEDPlate.TilePlate.class,
+                new LEDPlateRenderer());
 
     }
 

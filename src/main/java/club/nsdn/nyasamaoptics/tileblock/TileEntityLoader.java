@@ -4,10 +4,7 @@ package club.nsdn.nyasamaoptics.tileblock;
  * Created by drzzm32 on 2017.1.6.
  */
 
-import club.nsdn.nyasamaoptics.tileblock.light.HoloJet;
-import club.nsdn.nyasamaoptics.tileblock.light.HoloJetRev;
-import club.nsdn.nyasamaoptics.tileblock.light.PillarHead;
-import club.nsdn.nyasamaoptics.tileblock.light.RGBLight;
+import club.nsdn.nyasamaoptics.tileblock.light.*;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 
@@ -30,6 +27,10 @@ public class TileEntityLoader {
         GameRegistry.registerTileEntity(
                 HoloJetRev.TileText.class,
                 "tileHoloJetRev");
+
+        GameRegistry.registerTileEntity(
+                LEDPlate.TilePlate.class,
+                "tileLEDPlate");
 
     }
 

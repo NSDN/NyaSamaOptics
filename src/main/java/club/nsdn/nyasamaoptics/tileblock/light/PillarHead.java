@@ -249,18 +249,6 @@ public class PillarHead extends TileBlock {
         }
     }
 
-    public void b2b(World world, int x, int y, int z, Block dst, Block src) {
-        if (src == Blocks.air) {
-            if (world.getBlock(x, y, z).isAir(world, x, y, z)) {
-                world.setBlock(x, y, z, dst);
-            }
-        } else {
-            if (world.getBlock(x, y, z) == src) {
-                world.setBlock(x, y, z, dst);
-            }
-        }
-    }
-
     public void updateSignal(World world, int x , int y, int z) {
         if (world.getTileEntity(x, y, z) == null) return;
         if (world.getTileEntity(x, y, z) instanceof TileText) {

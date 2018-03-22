@@ -21,3 +21,5 @@ tile.BlockPlatformLightHalf.name=Half Platform Light
 tile.PillarHead.name=Pillar Head
 tile.PillarBody.name=Pillar Body
 tile.HoloJetRev.name=Holo Jet Rev
+tile.LEDPlate.name=LED Plate
+
