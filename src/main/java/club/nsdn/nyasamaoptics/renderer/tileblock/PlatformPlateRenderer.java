@@ -72,22 +72,27 @@ public class PlatformPlateRenderer extends TileEntitySpecialRenderer {
 
         if (te instanceof TilePlatformPlate) {
             TilePlatformPlate tilePlate = (TilePlatformPlate) te;
-            final float a = 68.0F, full = 1.8F / 16.0F, half = 0.5F / 16.0F;
-            GL11.glPushMatrix();
-            if (!isHalf) {
-                GL11.glTranslatef(0.0F, full, -(float) Math.tan(a) * full);
-                final float shift = 0.75F / 16.0F;
-                GL11.glTranslatef(0.0F, (float) Math.tan(a) * shift, shift);
-            } else {
-                GL11.glTranslatef(0.0F, half, -(float) Math.tan(a) * half);
-                final float shift = 1.5F / 16.0F;
-                GL11.glTranslatef(0.0F, (float) Math.tan(a) * shift, shift);
+
+            boolean control = true;
+            if (tilePlate.getSender() != null) control = tilePlate.isEnabled;
+            if (control) {
+                final float a = 68.0F, full = 1.8F / 16.0F, half = 0.5F / 16.0F;
+                GL11.glPushMatrix();
+                if (!isHalf) {
+                    GL11.glTranslatef(0.0F, full, -(float) Math.tan(a) * full);
+                    final float shift = 0.75F / 16.0F;
+                    GL11.glTranslatef(0.0F, (float) Math.tan(a) * shift, shift);
+                } else {
+                    GL11.glTranslatef(0.0F, half, -(float) Math.tan(a) * half);
+                    final float shift = 1.5F / 16.0F;
+                    GL11.glTranslatef(0.0F, (float) Math.tan(a) * shift, shift);
+                }
+                GL11.glPushMatrix();
+                GL11.glRotatef(a,1.0F, 0.0F, 0.0F);
+                doRenderString(tilePlate);
+                GL11.glPopMatrix();
+                GL11.glPopMatrix();
             }
-            GL11.glPushMatrix();
-            GL11.glRotatef(a,1.0F, 0.0F, 0.0F);
-            doRenderString(tilePlate);
-            GL11.glPopMatrix();
-            GL11.glPopMatrix();
         }
 
         GL11.glPopMatrix();
