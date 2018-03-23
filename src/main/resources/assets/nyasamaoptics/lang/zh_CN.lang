@@ -22,3 +22,5 @@ tile.PillarHead.name=全息灯柱(头部)
 tile.PillarBody.name=全息灯柱(主体)
 tile.HoloJetRev.name=II型全息投影仪
 tile.LEDPlate.name=LED显示屏
+tile.PlatformPlateFull.name=大站台屏
+tile.PlatformPlateHalf.name=站台屏

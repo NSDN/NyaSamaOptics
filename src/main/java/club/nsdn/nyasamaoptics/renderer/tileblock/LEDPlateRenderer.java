@@ -1,7 +1,7 @@
 package club.nsdn.nyasamaoptics.renderer.tileblock;
 
 import club.nsdn.nyasamaoptics.renderer.RendererHelper;
-import club.nsdn.nyasamaoptics.tileblock.light.LEDPlate;
+import club.nsdn.nyasamaoptics.tileblock.screen.LEDPlate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;

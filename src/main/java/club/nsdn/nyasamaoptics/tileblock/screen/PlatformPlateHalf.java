@@ -1,9 +1,9 @@
-package club.nsdn.nyasamaoptics.tileblock.light;
+package club.nsdn.nyasamaoptics.tileblock.screen;
 
 import club.nsdn.nyasamaoptics.block.BlockLoader;
 import club.nsdn.nyasamaoptics.creativetab.CreativeTabLoader;
 import club.nsdn.nyasamaoptics.tileblock.TileBlock;
-import club.nsdn.nyasamaoptics.util.LEDPlateCore;
+import club.nsdn.nyasamaoptics.util.PlatformPlateCore;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
 import club.nsdn.nyasamatelecom.api.util.NSASM;
 import club.nsdn.nyasamatelecom.api.util.Util;
@@ -12,80 +12,21 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import java.util.Random;
 
 /**
- * Created by drzzm on 2017.3.22.
+ * Created by drzzm on 2017.3.23.
  */
-public class LEDPlate extends TileBlock {
+public class PlatformPlateHalf extends TileBlock {
 
     public static final int ALIGN_CENTER = 0, ALIGN_LEFT = 1, ALIGN_RIGHT = 2;
 
-    public static class TilePlate extends TileEntityReceiver {
-
-        public String content;
-        public int color;
-        public int back;
-        public double scale;
-        public int align;
-
-        public boolean isEnabled;
-        public boolean prevIsEnabled;
-
-        public TilePlate() {
-            super();
-            content = "O";
-            color = 0xEE1111;
-            back = 0x000000;
-            scale = 1.0;
-            align = ALIGN_CENTER;
-        }
-
-        @Override
-        public boolean shouldRenderInPass(int pass) {
-            return true;
-        }
-
-        @Override
-        @SideOnly(Side.CLIENT)
-        public AxisAlignedBB getRenderBoundingBox()
-        {
-            return INFINITE_EXTENT_AABB;
-        }
-
-        @Override
-        public NBTTagCompound toNBT(NBTTagCompound tagCompound) {
-            tagCompound.setString("content", content);
-            tagCompound.setInteger("color", color);
-            tagCompound.setInteger("back", back);
-            tagCompound.setDouble("scale", scale);
-            tagCompound.setInteger("align", align);
-            tagCompound.setBoolean("isEnabled", isEnabled);
-            return super.toNBT(tagCompound);
-        }
-
-        @Override
-        public void fromNBT(NBTTagCompound tagCompound) {
-            super.fromNBT(tagCompound);
-            content = tagCompound.getString("content");
-            color = tagCompound.getInteger("color");
-            back = tagCompound.getInteger("back");
-            scale = tagCompound.getDouble("scale");
-            align = tagCompound.getInteger("align");
-            isEnabled = tagCompound.getBoolean("isEnabled");
-        }
-
-        public static void updateThis(TilePlate tilePlate) {
-            tilePlate.updateTileEntity(tilePlate);
-        }
-
+    public static class TilePlate extends TilePlatformPlate {
     }
 
     @Override
@@ -93,16 +34,17 @@ public class LEDPlate extends TileBlock {
         return new TilePlate();
     }
 
-    public LEDPlate() {
-        super(Material.glass, "LEDPlate");
-        setIconLocation("led_plate");
+
+    public PlatformPlateHalf() {
+        super(Material.glass, "PlatformPlateHalf");
+        setIconLocation("platform_plate_half");
         setLightLevel(0);
         setCreativeTab(CreativeTabLoader.tabNyaSamaOptics);
     }
 
     @Override
     protected void setBoundsByMeta(int meta) {
-        float x = 1.0F, y = 0.125F, z = 1.0F;
+        float x = 1.0F, y = 0.5F, z = 0.5F;
         setBoundsByXYZ(meta, 0.5F - x / 2, 0.0F, 0.5F - z / 2, 0.5F + x / 2, y, 0.5F + z / 2);
     }
 
@@ -111,7 +53,7 @@ public class LEDPlate extends TileBlock {
     public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
         if (world.getTileEntity(x, y, z) instanceof TilePlate) {
             TilePlate plate = (TilePlate) world.getTileEntity(x, y, z);
-            return plate.back;
+            return plate.color;
         }
         return 16777215;
     }
@@ -128,7 +70,7 @@ public class LEDPlate extends TileBlock {
                     NBTTagList list = Util.getTagListFromNGT(stack);
                     if (list == null) return false;
                     String[][] code = NSASM.getCode(list);
-                    new LEDPlateCore(code) {
+                    new PlatformPlateCore(code) {
                         @Override
                         public World getWorld() {
                             return world;
@@ -155,7 +97,7 @@ public class LEDPlate extends TileBlock {
                         }
 
                         @Override
-                        public TilePlate getTile() {
+                        public TilePlatformPlate getTile() {
                             return text;
                         }
                     }.run();

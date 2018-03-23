@@ -2,6 +2,7 @@ package club.nsdn.nyasamaoptics.block;
 
 import club.nsdn.nyasamaoptics.api.LightBeam;
 import club.nsdn.nyasamaoptics.tileblock.light.*;
+import club.nsdn.nyasamaoptics.tileblock.screen.*;
 import net.minecraft.block.Block;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -36,6 +37,8 @@ public class BlockLoader {
         blocks.put("block_holojet_rev", new HoloJetRev());
 
         blocks.put("block_led_plate", new LEDPlate());
+        blocks.put("block_platform_plate_full", new PlatformPlateFull());
+        blocks.put("block_platform_plate_half", new PlatformPlateHalf());
 
         light = new LightBeam(RGBLight.class, LightBeam.TYPE_DOT);
         blocks.put("lb_rgb_light", light);
