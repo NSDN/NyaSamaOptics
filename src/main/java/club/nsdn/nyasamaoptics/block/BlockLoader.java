@@ -59,6 +59,7 @@ public class BlockLoader {
         blocks.put("block_mosaic_light_multi_small", new RGBLight("BlockMosaicLightMultiSmall", "mosaic_light_multi_small", 1.0F, 0.25F, 0.625F));
         blocks.put("block_platform_light_full", new RGBLight("BlockPlatformLightFull", "platform_light_full", 1.0F, 1.0F, 0.625F));
         blocks.put("block_platform_light_half", new RGBLight("BlockPlatformLightHalf", "platform_light_half", 1.0F, 0.5F, 0.5F));
+        blocks.put("block_cuball_lamp", new RGBLight("BlockCuballLamp", "cuball_lamp", 1.0F, 1.0F, 1.0F));
 
         for (String name : blocks.keySet()) {
             register(blocks.get(name), name);
