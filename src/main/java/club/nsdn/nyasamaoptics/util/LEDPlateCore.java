@@ -31,7 +31,7 @@ public abstract class LEDPlateCore extends NSASM {
         LEDPlate.TilePlate.updateThis(text);
     }
 
-    public void setback(LEDPlate.TilePlate text, int value) {
+    public void setBack(LEDPlate.TilePlate text, int value) {
         text.back = value;
         LEDPlate.TilePlate.updateThis(text);
     }
@@ -75,12 +75,22 @@ public abstract class LEDPlateCore extends NSASM {
             }
             return Result.ERR;
         }));
+        funcList.put("fore", ((dst, src) -> {
+            if (src != null) return Result.ERR;
+            if (dst == null) return Result.ERR;
+
+            if (dst.type == RegType.INT) {
+                setColor(getTile(), (int) dst.data);
+                return Result.OK;
+            }
+            return Result.ERR;
+        }));
         funcList.put("back", ((dst, src) -> {
             if (src != null) return Result.ERR;
             if (dst == null) return Result.ERR;
 
             if (dst.type == RegType.INT) {
-                setback(getTile(), (int) dst.data);
+                setBack(getTile(), (int) dst.data);
                 return Result.OK;
             }
             return Result.ERR;
