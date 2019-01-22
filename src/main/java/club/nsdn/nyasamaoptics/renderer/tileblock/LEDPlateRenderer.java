@@ -87,9 +87,9 @@ public class LEDPlateRenderer extends TileEntitySpecialRenderer {
                     int fontColor = tilePlate.color, align = tilePlate.align;
                     double fontScale = tilePlate.scale; String content = tilePlate.content;
                     GL11.glPushMatrix();
-                    GL11.glRotatef( -90.0F,1.0F, 0.0F, 0.0F);
+                    GL11.glRotatef(-90.0F,1.0F, 0.0F, 0.0F);
                     GL11.glPushMatrix();
-                    GL11.glRotatef( 180.0F,0.0F, 1.0F, 0.0F);
+                    GL11.glRotatef(180.0F,0.0F, 1.0F, 0.0F);
                     GL11.glPushMatrix();
                     GL11.glTranslatef(0.0F, 0.0F, 0.375F - 0.01F);
                     renderString(content, fontScale, align, fontColor);

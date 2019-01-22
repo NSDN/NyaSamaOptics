@@ -30,6 +30,7 @@ public class TileEntityLoader {
         tileEntities.put("tileLEDPlate", LEDPlate.TilePlate.class);
         tileEntities.put("tilePlatformPlateFull", PlatformPlateFull.TilePlate.class);
         tileEntities.put("tilePlatformPlateHalf", PlatformPlateHalf.TilePlate.class);
+        tileEntities.put("tileStationLamp", StationLamp.TileLamp.class);
 
         for (String name : tileEntities.keySet()) {
             register(tileEntities.get(name), name);

@@ -37,6 +37,11 @@ public class RendererHelper {
         GL11.glPopMatrix();
     }
 
+    public static void renderWithResource4(WavefrontObject model, ResourceLocation texture) {
+        for (int i = 0; i < 4; i++)
+            renderWithResourceAndRotation(model, 90.0F * i, texture);
+    }
+
     public static void renderWithIconAndRotation(WavefrontObject model, float angle, IIcon icon, Tessellator tessellator) {
         for (GroupObject group : model.groupObjects) {
             for (Face face : group.faces) {

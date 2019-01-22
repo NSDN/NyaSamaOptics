@@ -32,6 +32,7 @@ public class TileEntityModelBinder {
         renderers.put(LEDPlate.TilePlate.class, new LEDPlateRenderer());
         renderers.put(PlatformPlateFull.TilePlate.class, new PlatformPlateRenderer(false));
         renderers.put(PlatformPlateHalf.TilePlate.class, new PlatformPlateRenderer(true));
+        renderers.put(StationLamp.TileLamp.class, new StationLampRenderer());
 
         for (Class<? extends TileEntity> tile : renderers.keySet()) {
             bind(renderers.get(tile), tile);

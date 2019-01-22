@@ -39,6 +39,7 @@ public class BlockLoader {
         blocks.put("block_led_plate", new LEDPlate());
         blocks.put("block_platform_plate_full", new PlatformPlateFull());
         blocks.put("block_platform_plate_half", new PlatformPlateHalf());
+        blocks.put("block_station_lamp", new StationLamp());
 
         light = new LightBeam(RGBLight.class, LightBeam.TYPE_DOT);
         blocks.put("lb_rgb_light", light);
