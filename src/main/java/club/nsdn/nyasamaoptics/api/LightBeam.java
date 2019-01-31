@@ -172,37 +172,12 @@ public class LightBeam extends Block {
     public static void lightCtl(World world, int x, int y, int z, LightBeam lightBeam, ForgeDirection dir, int length, boolean state) {
         int meta = state ? getMetaFromDir(dir) : -1;
 
-        switch (dir) {
-            case NORTH:
-                for (int i = 0; i < length; i++) {
-                    if (!placeLight(world, x, y, z - 1 - i, lightBeam, meta)) break;
-                }
-                break;
-            case SOUTH:
-                for (int i = 0; i < length; i++) {
-                    if (!placeLight(world, x, y, z + 1 + i, lightBeam, meta)) break;
-                }
-                break;
-            case WEST:
-                for (int i = 0; i < length; i++) {
-                    if (!placeLight(world, x - 1 - i, y, z, lightBeam, meta)) break;
-                }
-                break;
-            case EAST:
-                for (int i = 0; i < length; i++) {
-                    if (!placeLight(world, x + 1 + i, y, z, lightBeam, meta)) break;
-                }
-                break;
-            case UP:
-                for (int i = 0; i < length; i++) {
-                    if (!placeLight(world, x, y + 1 + i, z, lightBeam, meta)) break;
-                }
-                break;
-            case DOWN:
-                for (int i = 0; i < length; i++) {
-                    if (!placeLight(world, x, y - 1 - i, z, lightBeam, meta)) break;
-                }
-                break;
+        int tx, ty, tz;
+        for (int i = 1; i < length; i++) {
+            tx = x + dir.offsetX * i;
+            ty = y + dir.offsetY * i;
+            tz = z + dir.offsetZ * i;
+            if (!placeLight(world, tx, ty, tz, lightBeam, meta)) break;
         }
     }
 
