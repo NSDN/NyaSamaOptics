@@ -87,19 +87,8 @@ public class LightBeam extends Block {
     }
 
     @Override
-    public void onBlockAdded(World world, int x, int y, int z) {
-        super.onBlockAdded(world, x, y, z);
-        world.scheduleBlockUpdate(x, y, z, this, 1);
-    }
-
-    @Override
-    public int tickRate(World world) {
-        return 1;
-    }
-
-    @Override
-    public void updateTick(World world, int x, int y, int z, Random random) {
-        if (!world.isRemote) checkNearby(world, x, y, z);
+    public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+        checkNearby(world, x, y, z);
     }
 
     public void lightCtl(World world, int x, int y, int z, boolean state) {
@@ -137,16 +126,22 @@ public class LightBeam extends Block {
         return meta;
     }
 
-    public static boolean isSource(World world, int x, int y, int z) {
+    public static boolean isSource(World world, int x, int y, int z, ForgeDirection offset) {
         if (world.getBlock(x, y, z) instanceof LightBeam) {
             LightBeam lightBeam = (LightBeam) world.getBlock(x, y, z);
-            return world.getBlock(x, y, z).getClass().isInstance(lightBeam.source);
+            x +=offset.offsetX; y += offset.offsetY; z += offset.offsetZ;
+            return lightBeam.source.isInstance(world.getBlock(x, y, z));
         }
         return false;
     }
 
     public static boolean isMe(World world, int x, int y, int z) {
-        return world.getBlock(x, y, z).getClass().isInstance(LightBeam.class);
+        return world.getBlock(x, y, z) instanceof LightBeam;
+    }
+
+    public static boolean isMe(World world, int x, int y, int z, ForgeDirection offset) {
+        x +=offset.offsetX; y += offset.offsetY; z += offset.offsetZ;
+        return world.getBlock(x, y, z) instanceof LightBeam;
     }
 
     public static boolean placeLight(World world, int x, int y, int z, LightBeam lightBeam, int meta) {
@@ -219,22 +214,16 @@ public class LightBeam extends Block {
 
             switch (lightBeam.lightType) {
                 case TYPE_DOT:
-                    keepAlive |= isSource(world, x - 1, y, z);
-                    keepAlive |= isSource(world, x + 1, y, z);
-                    keepAlive |= isSource(world, x, y - 1, z);
-                    keepAlive |= isSource(world, x, y + 1, z);
-                    keepAlive |= isSource(world, x, y, z - 1);
-                    keepAlive |= isSource(world, x, y, z + 1);
+                    keepAlive |= isSource(world, x, y, z, ForgeDirection.UP);
+                    keepAlive |= isSource(world, x, y, z, ForgeDirection.DOWN);
+                    keepAlive |= isSource(world, x, y, z, ForgeDirection.NORTH);
+                    keepAlive |= isSource(world, x, y, z, ForgeDirection.SOUTH);
+                    keepAlive |= isSource(world, x, y, z, ForgeDirection.WEST);
+                    keepAlive |= isSource(world, x, y, z, ForgeDirection.EAST);
                     break;
                 case TYPE_LINE:
-                    switch (getDir(world, x, y, z)) {
-                        case NORTH: keepAlive = isSource(world, x, y, z + 1) || isMe(world, x, y, z + 1); break;
-                        case SOUTH: keepAlive = isSource(world, x, y, z - 1) || isMe(world, x, y, z - 1); break;
-                        case WEST:  keepAlive = isSource(world, x + 1, y, z) || isMe(world, x + 1, y, z); break;
-                        case EAST:  keepAlive = isSource(world, x - 1, y, z) || isMe(world, x - 1, y, z); break;
-                        case UP:    keepAlive = isSource(world, x, y - 1, z) || isMe(world, x, y - 1, z); break;
-                        case DOWN:  keepAlive = isSource(world, x, y + 1, z) || isMe(world, x, y + 1, z); break;
-                    }
+                    ForgeDirection dir = getDir(world, x, y, z).getOpposite();
+                    keepAlive = isSource(world, x, y, z, dir) || isMe(world, x, y, z, dir);
                     break;
             }
         }
