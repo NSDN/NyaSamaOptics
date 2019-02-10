@@ -18,7 +18,7 @@ public class EventRegister {
         MinecraftForge.EVENT_BUS.register(ToolHandler.instance());
 
         MinecraftForge.EVENT_BUS.register(TileEntityLoader.instance());
-        MinecraftForge.EVENT_BUS.register(TileEntityModelBinder.instance());
+
     }
 
     public static void registerServer() {
@@ -26,7 +26,7 @@ public class EventRegister {
     }
 
     public static void registerClient() {
-
+        MinecraftForge.EVENT_BUS.register(TileEntityModelBinder.instance());
     }
 
 }
