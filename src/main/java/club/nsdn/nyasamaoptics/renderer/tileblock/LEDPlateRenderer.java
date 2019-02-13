@@ -70,20 +70,21 @@ public class LEDPlateRenderer extends AbsTileEntitySpecialRenderer {
             RendererHelper.renderWithResource(modelShell, textureShell);
 
             if (te instanceof LEDPlate.TileEntityLEDPlate) {
-                LEDPlate.TileEntityLEDPlate tileEntityLEDPlate = (LEDPlate.TileEntityLEDPlate) te;
-                int backColor = tileEntityLEDPlate.back;
+                LEDPlate.TileEntityLEDPlate plate = (LEDPlate.TileEntityLEDPlate) te;
+                int backColor = plate.back;
                 GL11.glColor3f(((backColor & 0xFF0000) >> 16) / 255.0F, ((backColor & 0x00FF00) >> 8) / 255.0F, (backColor & 0x0000FF) / 255.0F);
-                if (!tileEntityLEDPlate.isEnabled && tileEntityLEDPlate.getSender() != null) {
+                if (!plate.isEnabled && plate.getSender() != null) {
                     GL11.glColor3f(0.33F, 0.33F, 0.33F);
                 }
                 RendererHelper.renderWithResource(modelLight, textureLight);
                 GL11.glColor3f(1.0F, 1.0F, 1.0F);
 
                 boolean control = true;
-                if (tileEntityLEDPlate.getSender() != null) control = tileEntityLEDPlate.isEnabled;
+                if (plate.getSender() != null) control = plate.isEnabled;
                 if (control) {
-                    int fontColor = tileEntityLEDPlate.color, align = tileEntityLEDPlate.align;
-                    double fontScale = tileEntityLEDPlate.scale; String content = tileEntityLEDPlate.content;
+                    int fontColor = plate.color, align = plate.align;
+                    double fontScale = plate.scale;
+                    String content = plate.inSpecial ? plate.specialBuffer : plate.content;
                     GL11.glPushMatrix();
                     GL11.glRotatef(-90.0F,1.0F, 0.0F, 0.0F);
                     GL11.glPushMatrix();

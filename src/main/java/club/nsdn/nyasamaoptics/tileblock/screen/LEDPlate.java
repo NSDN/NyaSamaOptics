@@ -24,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import java.util.LinkedHashMap;
 
 /**
  * Created by drzzm32 on 2019.1.30.
@@ -32,6 +33,15 @@ public class LEDPlate extends DeviceBase {
 
     public static final int ALIGN_CENTER = 0, ALIGN_LEFT = 1, ALIGN_RIGHT = 2;
 
+    @FunctionalInterface
+    public interface ISpecialCommand {
+        String runCmd(World world, BlockPos pos, String buffer, String[] args);
+    }
+
+    public static void registerCommand(String cmd, ISpecialCommand command) {
+        TileEntityLEDPlate.CMD_LIST.put(cmd, command);
+    }
+
     public static class TileEntityLEDPlate extends TileEntityReceiver {
 
         public String content;
@@ -39,6 +49,11 @@ public class LEDPlate extends DeviceBase {
         public int back;
         public double scale;
         public int align;
+
+        public boolean prevInSpecial;
+        public boolean inSpecial;
+        public String specialBuffer = "-= NSO-LED =-";
+        static LinkedHashMap<String, ISpecialCommand> CMD_LIST = new LinkedHashMap<>();
 
         public boolean isEnabled;
         public boolean prevIsEnabled;
@@ -74,18 +89,26 @@ public class LEDPlate extends DeviceBase {
             tagCompound.setDouble("scale", scale);
             tagCompound.setInteger("align", align);
             tagCompound.setBoolean("isEnabled", isEnabled);
+
+            tagCompound.setBoolean("inSpecial", inSpecial);
+            tagCompound.setString("specialBuffer", specialBuffer);
+
             return super.toNBT(tagCompound);
         }
 
         @Override
         public void fromNBT(NBTTagCompound tagCompound) {
             super.fromNBT(tagCompound);
+
             content = tagCompound.getString("content");
             color = tagCompound.getInteger("color");
             back = tagCompound.getInteger("back");
             scale = tagCompound.getDouble("scale");
             align = tagCompound.getInteger("align");
             isEnabled = tagCompound.getBoolean("isEnabled");
+
+            inSpecial = tagCompound.getBoolean("inSpecial");
+            specialBuffer = tagCompound.getString("specialBuffer");
         }
 
         public static void updateThis(TileEntityLEDPlate tileEntityLEDPlate) {
@@ -103,6 +126,20 @@ public class LEDPlate extends DeviceBase {
                     light.isEnabled = light.senderIsPowered();
                 } else {
                     light.isEnabled = true;
+                }
+
+                String cmd = light.content.split("\n")[0];
+                light.prevInSpecial = light.inSpecial;
+                light.inSpecial = CMD_LIST.containsKey(cmd);
+                if (light.isEnabled && light.inSpecial) {
+                    light.specialBuffer = CMD_LIST.get(cmd).runCmd(
+                            world, pos, light.specialBuffer, light.content.split("\n")
+                    );
+                    light.refresh();
+                } else {
+                    light.specialBuffer = "-= NSO-LED =-";
+                    if (light.inSpecial != light.prevInSpecial)
+                        light.refresh();
                 }
 
                 BlockLoader.light.lightCtl(world, pos, light.isEnabled);
