@@ -5,6 +5,10 @@ tile.NSOLogo.name=NyaSama Optics Logo
 
 item.NSOConv.name=NSO Conv
 
+tile.AdsorptionLamp.name=Adsorption Lamp
+tile.FluorescentLamp.name=Fluorescent Lamp
+tile.SpotLight.name=Spot Light
+
 info.light.color=Light's color set to %s
 tile.BlockAdsorptionLampLarge.name=Large Adsorption Lamp
 tile.BlockAdsorptionLampMono.name=Mono Adsorption Lamp

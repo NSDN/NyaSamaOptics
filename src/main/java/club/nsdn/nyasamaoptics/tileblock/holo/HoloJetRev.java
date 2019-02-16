@@ -1,6 +1,7 @@
 package club.nsdn.nyasamaoptics.tileblock.holo;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import club.nsdn.nyasamaoptics.api.ILightSource;
 import club.nsdn.nyasamaoptics.creativetab.CreativeTabLoader;
 import club.nsdn.nyasamaoptics.util.font.FontLoader;
 import club.nsdn.nyasamaoptics.util.HoloJetRevCore;
@@ -20,11 +21,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Created by drzzm32 on 2019.1.30.
  */
-public class HoloJetRev extends DeviceBase {
+public class HoloJetRev extends DeviceBase implements ILightSource {
 
     public static class TileEntityHoloJetRev extends TileEntityHoloText {
 
@@ -39,6 +41,12 @@ public class HoloJetRev extends DeviceBase {
             return 65536.0;
         }
 
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(World world, int i) {
+        return createNewTileEntity();
     }
 
     @Override

@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "nyasamaoptics:spot_light",
+    "textures": {
+      "base": "nyasamaoptics:blocks/light_base",
+      "shell": "nyasamaoptics:blocks/light_shell"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "vertical": {
+      "up": { "model": "nyasamaoptics:spot_light_up" },
+      "mid": { "model": "nyasamaoptics:spot_light_mid" }
+    },
+    "facing": {
+      "north": {  },
+      "east": { "y": 90 },
+      "south": { "y": 180 },
+      "west": { "y": 270 }
+    },
+    "powered": {
+      "true": {  },
+      "false": {  }
+    }
+  }
+}

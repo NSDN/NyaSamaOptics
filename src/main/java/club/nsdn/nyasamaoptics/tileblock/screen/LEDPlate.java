@@ -1,6 +1,7 @@
 package club.nsdn.nyasamaoptics.tileblock.screen;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import club.nsdn.nyasamaoptics.api.ILightSource;
 import club.nsdn.nyasamaoptics.block.BlockLoader;
 import club.nsdn.nyasamaoptics.creativetab.CreativeTabLoader;
 import club.nsdn.nyasamaoptics.util.LEDPlateCore;
@@ -24,12 +25,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 
 /**
  * Created by drzzm32 on 2019.1.30.
  */
-public class LEDPlate extends DeviceBase {
+public class LEDPlate extends DeviceBase implements ILightSource {
 
     public static final int ALIGN_CENTER = 0, ALIGN_LEFT = 1, ALIGN_RIGHT = 2;
 
@@ -151,6 +153,12 @@ public class LEDPlate extends DeviceBase {
             }
         }
 
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(World world, int i) {
+        return createNewTileEntity();
     }
 
     @Override

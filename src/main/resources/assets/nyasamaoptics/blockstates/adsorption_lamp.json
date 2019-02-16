@@ -1,0 +1,25 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "nyasamaoptics:adsorption_lamp",
+    "textures": {
+      "base": "nyasamaoptics:blocks/light_base",
+      "shell": "nyasamaoptics:blocks/light_shell"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "vertical": {
+      "down": {  },
+      "mid": { "model": "nyasamaoptics:adsorption_lamp_mid" },
+      "up": { "model": "nyasamaoptics:adsorption_lamp_up" }
+    },
+    "facing": {
+      "north": {  },
+      "east": { "y": 90 },
+      "south": { "y": 180 },
+      "west": { "y": 270 }
+    }
+  }
+}

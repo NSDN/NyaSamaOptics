@@ -1,6 +1,7 @@
 package club.nsdn.nyasamaoptics.tileblock.light;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import club.nsdn.nyasamaoptics.api.ILightSource;
 import club.nsdn.nyasamaoptics.block.BlockLoader;
 import club.nsdn.nyasamaoptics.creativetab.CreativeTabLoader;
 import club.nsdn.nyasamaoptics.util.RGBLightCore;
@@ -26,11 +27,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Created by drzzm32 on 2019.1.30.
  */
-public class RGBLight extends DeviceBase {
+public class RGBLight extends DeviceBase implements ILightSource {
 
     public static class TileEntityRGBLight extends TileEntityReceiver {
 
@@ -119,6 +121,12 @@ public class RGBLight extends DeviceBase {
                 }
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(World world, int i) {
+        return createNewTileEntity();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package club.nsdn.nyasamaoptics.tileblock.screen;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import club.nsdn.nyasamaoptics.api.ILightSource;
 import club.nsdn.nyasamaoptics.block.BlockLoader;
 import club.nsdn.nyasamaoptics.creativetab.CreativeTabLoader;
 import club.nsdn.nyasamaoptics.util.StationLampCore;
@@ -27,11 +28,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Created by drzzm32 on 2019.1.30.
  */
-public class StationLamp extends DeviceBase {
+public class StationLamp extends DeviceBase implements ILightSource {
 
     public static final int ALIGN_CENTER = 0, ALIGN_LEFT = 1, ALIGN_RIGHT = 2;
 
@@ -117,6 +119,12 @@ public class StationLamp extends DeviceBase {
             }
         }
 
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(World world, int i) {
+        return createNewTileEntity();
     }
 
     @Override

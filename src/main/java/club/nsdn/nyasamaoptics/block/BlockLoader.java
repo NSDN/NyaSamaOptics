@@ -78,6 +78,11 @@ public class BlockLoader {
         logo = new BlockLogo();
         blocks.add(logo);
 
+        blocks.add(new BlockAdsorptionLamp());
+        blocks.add(new BlockFluorescentLamp());
+
+        blocks.add(new BlockSpotLight());
+
         blocks.add(new HoloJetRev());
 
         blocks.add(new LEDPlate());
@@ -85,9 +90,9 @@ public class BlockLoader {
         blocks.add(new PlatformPlateHalf());
         blocks.add(new StationLamp());
 
-        light = new LightBeam(RGBLight.class, LightBeam.TYPE_DOT);
+        light = new LightBeam(LightBeam.TYPE_DOT);
         blocks.add(light);
-        lineLight = new LightBeam(RGBLight.class, LightBeam.TYPE_LINE);
+        lineLight = new LightBeam(LightBeam.TYPE_LINE);
         blocks.add(lineLight);
 
         blocks.add(new PillarHead());

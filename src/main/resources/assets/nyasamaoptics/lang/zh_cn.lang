@@ -5,6 +5,10 @@ tile.NSOLogo.name=喵玉光学标志
 
 item.NSOConv.name=NSO-Conv
 
+tile.AdsorptionLamp.name=长明吸顶灯
+tile.FluorescentLamp.name=长明日光灯
+tile.SpotLight.name=长明聚光灯
+
 info.light.color=灯颜色设置为 %s
 tile.BlockAdsorptionLampLarge.name=大吸顶灯
 tile.BlockAdsorptionLampMono.name=吸顶灯

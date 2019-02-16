@@ -23,15 +23,13 @@ public class LightBeam extends Block {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
-    public Class<? extends Block> source;
     public int lightType;
 
     public static final int TYPE_DOT = 0;
     public static final int TYPE_LINE = 1;
 
-    public LightBeam(Class<? extends Block> source, int lightType) {
+    public LightBeam(int lightType) {
         super(Material.VINE);
-        this.source = source;
         this.lightType = lightType;
         setLightLevel(1.0F);
         setLightOpacity(0);
@@ -41,9 +39,8 @@ public class LightBeam extends Block {
         setRegistryName(NyaSamaOptics.MODID, "light_beam_" + lightType);
     }
 
-    public LightBeam(Class<? extends Block> source, int lightType, float lightLevel) {
+    public LightBeam(int lightType, float lightLevel) {
         super(Material.VINE);
-        this.source = source;
         this.lightType = lightType;
         setLightLevel(lightLevel);
         setLightOpacity(0);
@@ -106,9 +103,8 @@ public class LightBeam extends Block {
     }
 
     @Override
-    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
-        if (world instanceof World)
-            checkNearby((World) world, pos);
+    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos neighbor) {
+        checkNearby(world, pos);
     }
 
     public void lightCtl(World world, BlockPos pos, boolean state) {
@@ -130,11 +126,7 @@ public class LightBeam extends Block {
     }
 
     public static boolean isSource(World world, BlockPos pos, EnumFacing offset) {
-        if (world.getBlockState(pos).getBlock() instanceof LightBeam) {
-            LightBeam lightBeam = (LightBeam) world.getBlockState(pos).getBlock();
-            return lightBeam.source.isInstance(world.getBlockState(pos.offset(offset)).getBlock());
-        }
-        return false;
+        return world.getBlockState(pos.offset(offset)).getBlock() instanceof ILightSource;
     }
 
     public static boolean isMe(World world, BlockPos pos) {
