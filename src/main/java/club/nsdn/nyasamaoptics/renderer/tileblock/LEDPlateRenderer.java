@@ -32,6 +32,11 @@ public class LEDPlateRenderer extends AbsTileEntitySpecialRenderer {
     }
 
     @Override
+    public boolean isGlobalRenderer(TileEntityBase tileEntityBase) {
+        return true;
+    }
+
+    @Override
     public void render(@Nonnull TileEntityBase te, double x, double y, double z, float partialTicks, int destroyStage, float partial) {
         int meta = te.META;
 
