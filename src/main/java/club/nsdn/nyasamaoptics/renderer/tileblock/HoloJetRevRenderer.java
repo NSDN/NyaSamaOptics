@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -36,7 +37,7 @@ public class HoloJetRevRenderer extends AbsTileEntitySpecialRenderer {
     }
 
     @Override
-    public boolean isGlobalRenderer(TileEntityBase tileEntityBase) {
+    public boolean isGlobalRenderer(TileEntity tileEntity) {
         return true;
     }
 
