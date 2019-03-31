@@ -17,7 +17,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import org.thewdj.optics.IOpticalDevice;
 
 import javax.annotation.Nonnull;
 
@@ -81,6 +83,16 @@ public class NSOConv extends ToolBase {
 
                     String str = "[NSO] META: 0x" + Integer.toHexString(tileEntityBase.META).toUpperCase();
                     player.sendMessage(new TextComponentString(str));
+
+                    return EnumActionResult.SUCCESS;
+                } else if (tileEntity instanceof IOpticalDevice) {
+                    IOpticalDevice device = (IOpticalDevice) tileEntity;
+
+                    String str = "[NSO] " + String.format(
+                            "I: %1.1f mW, O: %1.1f mW",
+                            device.mWInput(), device.mWOutput()
+                    );
+                    player.sendMessage(new TextComponentString(TextFormatting.AQUA + str));
 
                     return EnumActionResult.SUCCESS;
                 }
