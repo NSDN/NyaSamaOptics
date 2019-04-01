@@ -13,6 +13,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import org.thewdj.optics.ILightBeam;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +21,7 @@ import javax.annotation.Nullable;
 /**
  * Created by drzzm32 on 2019.1.30.
  */
-public class LightBeam extends Block {
+public class LightBeam extends Block implements ILightBeam {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
 
