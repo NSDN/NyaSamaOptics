@@ -30,8 +30,8 @@ public class TextModel extends ModelBase {
         int offset, base;
         if (first < 0xA1) {
             for (int i = 0; i < 32; i++) {
-                for (int j = 0; j < 4; j++) {
-                    offset = first * 128 + i * 4 + j;
+                for (int j = 0; j < 2; j++) {
+                    offset = first * 64 + i * 2 + j;
                     for (int k = 0; k < 8; k++) {
                         if ((font[offset] & (0x80 >> k)) > 0) {
                             drawPixel(x + j * 8 + k, i, thick);
@@ -58,11 +58,11 @@ public class TextModel extends ModelBase {
         int offset, base;
         if (first < 0xA1) {
             for (int i = 0; i < 32; i++) {
-                for (int j = 0; j < 4; j++) {
-                    offset = first * 128 + i * 4 + j;
+                for (int j = 0; j < 2; j++) {
+                    offset = first * 64 + i * 2 + j;
                     for (int k = 0; k < 8; k++) {
                         if ((font[offset] & (0x80 >> k)) > 0) {
-                            drawPixel(j * 8 + k, y + i, thick);
+                            drawPixel(8 + j * 8 + k, y + i, thick);
                         }
                     }
                 }
@@ -86,11 +86,11 @@ public class TextModel extends ModelBase {
         int count = 0;
         for (int i = 0; i < str.length; i++) {
             if ((str[i] & 0xFF) < 0xA1) {
-                drawChar(FontLoader.ASCII, x + count * 32, thick, str[i] & 0xFF, 0x00);
+                drawChar(FontLoader.ASCII, x + count * 16, thick, str[i] & 0xFF, 0x00);
                 count += 1;
             } else {
-                drawChar(font, x + count * 32, thick, str[i] & 0xFF, str[i + 1] & 0xFF);
-                count += 1;
+                drawChar(font, x + count * 16, thick, str[i] & 0xFF, str[i + 1] & 0xFF);
+                count += 2;
                 i += 1;
             }
         }
@@ -126,13 +126,13 @@ public class TextModel extends ModelBase {
 
         switch (align) {
             case FontLoader.ALIGN_CENTER:
-                drawString(font, -(str.length() - 1) * 16, thick, buf);
+                drawString(font, -(buf.length - 2) * 8, thick, buf);
                 break;
             case FontLoader.ALIGN_LEFT:
                 drawString(font, 0, thick, buf);
                 break;
             case FontLoader.ALIGN_RIGHT:
-                drawString(font, -(str.length() - 1) * 32, thick, buf);
+                drawString(font, -(buf.length - 1) * 16, thick, buf);
                 break;
             case FontLoader.ALIGN_UP:
                 drawVerticalString(font, thick, buf);
