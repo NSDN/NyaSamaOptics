@@ -63,6 +63,8 @@ public abstract class HoloJetRevCore extends NSASM {
             text.font = FontLoader.FONT_KAI;
         else if (value.toLowerCase().equals("hei"))
             text.font = FontLoader.FONT_HEI;
+        else if (value.toLowerCase().equals("yan"))
+            text.font = FontLoader.FONT_YAN;
         else if (value.toLowerCase().equals("long"))
             text.font = FontLoader.FONT_LONG;
         else if (value.toLowerCase().equals("song"))
@@ -87,6 +89,16 @@ public abstract class HoloJetRevCore extends NSASM {
             return Result.ERR;
         }));
         funcList.put("clr", ((dst, src) -> {
+            if (src != null) return Result.ERR;
+            if (dst == null) return Result.ERR;
+
+            if (dst.type == RegType.INT) {
+                setColor(getTile(), (int) dst.data);
+                return Result.OK;
+            }
+            return Result.ERR;
+        }));
+        funcList.put("fore", ((dst, src) -> {
             if (src != null) return Result.ERR;
             if (dst == null) return Result.ERR;
 

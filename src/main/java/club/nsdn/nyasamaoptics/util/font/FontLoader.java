@@ -16,12 +16,14 @@ public class FontLoader {
     private static final String GB2312_Song_Path = "nyasamaoptics:fonts/gb2312_sourcehanserif.bin";
     private static final String GB2312_Hei_Path = "nyasamaoptics:fonts/gb2312_sourcehansans.bin";
     private static final String GB2312_Long_Path = "nyasamaoptics:fonts/gb2312_long.bin";
+    private static final String GB2312_Yan_Path = "nyasamaoptics:fonts/gb2312_yan.bin";
     public static byte[] ASCII;
     public static byte[] GB2312_Kai;
     public static byte[] GB2312_LiShu;
     public static byte[] GB2312_Song;
     public static byte[] GB2312_Hei;
     public static byte[] GB2312_Long;
+    public static byte[] GB2312_Yan;
 
     private byte[] load(IResourceManager manager, String path) {
         int result = -1;
@@ -47,6 +49,7 @@ public class FontLoader {
         GB2312_Song = load(manager, GB2312_Song_Path);
         GB2312_Hei = load(manager, GB2312_Hei_Path);
         GB2312_Long = load(manager, GB2312_Long_Path);
+        GB2312_Yan = load(manager, GB2312_Yan_Path);
     }
 
     public static final int FONT_LISHU = 0;
@@ -54,6 +57,7 @@ public class FontLoader {
     public static final int FONT_KAI = 2;
     public static final int FONT_HEI = 3;
     public static final int FONT_LONG = 4;
+    public static final int FONT_YAN = 5;
 
     public static final int ALIGN_NULL = 0;
     public static final int ALIGN_NOP = 1;
@@ -74,6 +78,8 @@ public class FontLoader {
             return new TextModel(GB2312_Hei, align, str, thick);
         } else if (font == FONT_LONG) {
             return new TextModel(GB2312_Long, align, str, thick);
+        } else if (font == FONT_YAN) {
+            return new TextModel(GB2312_Yan, align, str, thick);
         }
         return null;
     }

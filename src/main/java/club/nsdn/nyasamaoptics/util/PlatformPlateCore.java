@@ -70,6 +70,16 @@ public abstract class PlatformPlateCore extends NSASM {
             }
             return Result.ERR;
         }));
+        funcList.put("fore", ((dst, src) -> {
+            if (src != null) return Result.ERR;
+            if (dst == null) return Result.ERR;
+
+            if (dst.type == RegType.INT) {
+                setColor(getTile(), (int) dst.data);
+                return Result.OK;
+            }
+            return Result.ERR;
+        }));
         funcList.put("scl", ((dst, src) -> {
             if (src != null) return Result.ERR;
             if (dst == null) return Result.ERR;
