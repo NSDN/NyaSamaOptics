@@ -5,8 +5,6 @@ import club.nsdn.nyasamatelecom.api.render.AbsTileEntitySpecialRenderer;
 import club.nsdn.nyasamatelecom.api.render.RendererHelper;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import cn.ac.nya.forgeobj.WavefrontObject;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -41,16 +39,7 @@ public class LightRenderer extends AbsTileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y  + 0.5F, (float) z + 0.5F);
 
-        RenderHelper.disableStandardItemLighting();
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-
-        if (Minecraft.isAmbientOcclusionEnabled()) {
-            GL11.glShadeModel(GL11.GL_SMOOTH);
-        } else {
-            GL11.glShadeModel(GL11.GL_FLAT);
-        }
+        //RendererHelper.beginSpecialLighting();
 
         GL11.glPushMatrix();
 
@@ -83,6 +72,8 @@ public class LightRenderer extends AbsTileEntitySpecialRenderer {
             GL11.glColor3f(1.0F, 1.0F, 1.0F);
             RendererHelper.renderWithResource(light.modelShell, textureShell);
 
+            RendererHelper.beginSpecialLighting();
+
             if (te instanceof RGBLight.TileEntityRGBLight) {
                 RGBLight.TileEntityRGBLight tileEntityRGBLight = (RGBLight.TileEntityRGBLight) te;
                 int color = tileEntityRGBLight.color;
@@ -99,7 +90,8 @@ public class LightRenderer extends AbsTileEntitySpecialRenderer {
 
         GL11.glPopMatrix();
 
-        RenderHelper.enableStandardItemLighting();
+        GL11.glColor3f(1.0F, 1.0F, 1.0F);
+        RendererHelper.endSpecialLighting();
 
         GL11.glPopMatrix();
     }

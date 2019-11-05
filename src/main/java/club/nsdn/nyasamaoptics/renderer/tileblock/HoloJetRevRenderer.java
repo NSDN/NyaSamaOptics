@@ -7,8 +7,6 @@ import club.nsdn.nyasamatelecom.api.render.RendererHelper;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import cn.ac.nya.forgeobj.WavefrontObject;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -53,19 +51,7 @@ public class HoloJetRevRenderer extends AbsTileEntitySpecialRenderer {
 
             tileEntityHoloJetRev.createModel();
 
-            RenderHelper.disableStandardItemLighting();
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glDisable(GL11.GL_CULL_FACE);
-
-            if (Minecraft.isAmbientOcclusionEnabled())
-            {
-                GL11.glShadeModel(GL11.GL_SMOOTH);
-            }
-            else
-            {
-                GL11.glShadeModel(GL11.GL_FLAT);
-            }
+            //RendererHelper.beginSpecialLighting();
 
             GL11.glColor3f(1.0F, 1.0F, 1.0F);
             float angle = (meta % 4) * 90.0F;
@@ -88,6 +74,8 @@ public class HoloJetRevRenderer extends AbsTileEntitySpecialRenderer {
                 GL11.glPopMatrix();
             }
             GL11.glPopMatrix();
+
+            RendererHelper.beginSpecialLighting();
 
             GL11.glPushMatrix();
             {
@@ -130,7 +118,7 @@ public class HoloJetRevRenderer extends AbsTileEntitySpecialRenderer {
             GL11.glPopMatrix();
 
             GL11.glColor3f(1.0F, 1.0F, 1.0F);
-            RenderHelper.enableStandardItemLighting();
+            RendererHelper.endSpecialLighting();
         }
         GL11.glPopMatrix();
     }

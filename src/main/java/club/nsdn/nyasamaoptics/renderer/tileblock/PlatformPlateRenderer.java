@@ -40,16 +40,7 @@ public class PlatformPlateRenderer extends AbsTileEntitySpecialRenderer {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y  + 0.5F, (float) z + 0.5F);
 
-        RenderHelper.disableStandardItemLighting();
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-
-        if (Minecraft.isAmbientOcclusionEnabled()) {
-            GL11.glShadeModel(GL11.GL_SMOOTH);
-        } else {
-            GL11.glShadeModel(GL11.GL_FLAT);
-        }
+        //RendererHelper.beginSpecialLighting();
 
         GL11.glPushMatrix();
 
@@ -69,6 +60,8 @@ public class PlatformPlateRenderer extends AbsTileEntitySpecialRenderer {
 
         GL11.glColor3f(1.0F, 1.0F, 1.0F);
         RendererHelper.renderWithResource(isHalf ? modelHalf : modelFull, texture);
+
+        RendererHelper.beginSpecialLighting();
 
         if (te instanceof TileEntityPlatformPlate) {
             TileEntityPlatformPlate tilePlate = (TileEntityPlatformPlate) te;
@@ -99,7 +92,8 @@ public class PlatformPlateRenderer extends AbsTileEntitySpecialRenderer {
 
         GL11.glPopMatrix();
 
-        RenderHelper.enableStandardItemLighting();
+        GL11.glColor3f(1.0F, 1.0F, 1.0F);
+        RendererHelper.endSpecialLighting();
 
         GL11.glPopMatrix();
     }
