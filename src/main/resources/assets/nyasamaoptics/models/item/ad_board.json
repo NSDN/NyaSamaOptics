@@ -1,6 +1,6 @@
 {
   "parent": "nyasamaoptics:block/tile_icon",
   "textures": {
-    "icon": "nyasamaoptics:block/led_plate"
+    "icon": "nyasamaoptics:block/ad_board"
   }
 }

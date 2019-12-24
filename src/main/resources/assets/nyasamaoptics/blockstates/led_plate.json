@@ -1,9 +1,14 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "white_concrete"
+    "model": "nyasamaoptics:led_plate",
+    "textures": {
+      "base": "nyasamaoptics:blocks/light_black",
+      "shell": "nyasamaoptics:blocks/light_shell"
+    }
   },
   "variants": {
-    "normal": [{}]
+    "normal": [{}],
+    "inventory": [{}]
   }
 }

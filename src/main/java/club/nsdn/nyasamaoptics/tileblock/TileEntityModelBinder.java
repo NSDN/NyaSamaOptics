@@ -2,6 +2,9 @@ package club.nsdn.nyasamaoptics.tileblock;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import club.nsdn.nyasamaoptics.renderer.tileblock.*;
+import club.nsdn.nyasamaoptics.tileblock.deco.AdBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.GuideBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.TextWall;
 import club.nsdn.nyasamaoptics.tileblock.holo.HoloJetRev;
 import club.nsdn.nyasamaoptics.tileblock.holo.PillarHead;
 import club.nsdn.nyasamaoptics.tileblock.light.*;
@@ -52,6 +55,9 @@ public class TileEntityModelBinder {
         renderers.put(PlatformPlateFull.TileEntityPlatformPlateFull.class, new PlatformPlateRenderer(false));
         renderers.put(PlatformPlateHalf.TileEntityPlatformPlateHalf.class, new PlatformPlateRenderer(true));
         renderers.put(StationLamp.TileEntityStationLamp.class, new StationLampRenderer());
+        renderers.put(AdBoard.TileEntityAdBoard.class, new AdBoardRenderer());
+        renderers.put(TextWall.TileEntityTextWall.class, new TextWallRenderer());
+        renderers.put(GuideBoard.TileEntityGuideBoard.class, new GuideBoardRenderer());
     }
 
 }

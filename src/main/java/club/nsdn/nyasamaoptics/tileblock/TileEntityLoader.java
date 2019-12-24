@@ -1,6 +1,9 @@
 package club.nsdn.nyasamaoptics.tileblock;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import club.nsdn.nyasamaoptics.tileblock.deco.AdBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.GuideBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.TextWall;
 import club.nsdn.nyasamaoptics.tileblock.holo.HoloJetRev;
 import club.nsdn.nyasamaoptics.tileblock.holo.PillarHead;
 import club.nsdn.nyasamaoptics.tileblock.light.*;
@@ -49,6 +52,9 @@ public class TileEntityLoader {
         tileEntities.add(PlatformPlateFull.TileEntityPlatformPlateFull.class);
         tileEntities.add(PlatformPlateHalf.TileEntityPlatformPlateHalf.class);
         tileEntities.add(StationLamp.TileEntityStationLamp.class);
+        tileEntities.add(AdBoard.TileEntityAdBoard.class);
+        tileEntities.add(TextWall.TileEntityTextWall.class);
+        tileEntities.add(GuideBoard.TileEntityGuideBoard.class);
     }
 
 }

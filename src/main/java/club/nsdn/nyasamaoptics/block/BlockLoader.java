@@ -2,6 +2,9 @@ package club.nsdn.nyasamaoptics.block;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import club.nsdn.nyasamaoptics.api.LightBeam;
+import club.nsdn.nyasamaoptics.tileblock.deco.AdBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.GuideBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.TextWall;
 import club.nsdn.nyasamaoptics.tileblock.holo.HoloJetRev;
 import club.nsdn.nyasamaoptics.tileblock.holo.PillarHead;
 import club.nsdn.nyasamaoptics.tileblock.light.*;
@@ -89,6 +92,16 @@ public class BlockLoader {
         blocks.add(new PlatformPlateFull());
         blocks.add(new PlatformPlateHalf());
         blocks.add(new StationLamp());
+
+        blocks.add(new AdBoard());
+        blocks.add(new TextWall("TextWall", "text_wall", false));
+        blocks.add(new TextWall("TextWallLit", "text_wall_lit", true));
+        blocks.add(new GuideBoard("GuideBoardNp", "guide_board_np", false, true));
+        blocks.add(new GuideBoard("GuideBoardSp", "guide_board_sp", false, false));
+        blocks.add(new GuideBoard("GuideBoardDp", "guide_board_dp", false, false));
+        blocks.add(new GuideBoard("GuideBoardNpLit", "guide_board_np_lit", true, true));
+        blocks.add(new GuideBoard("GuideBoardSpLit", "guide_board_sp_lit", true, false));
+        blocks.add(new GuideBoard("GuideBoardDpLit", "guide_board_dp_lit", true, false));
 
         light = new LightBeam(LightBeam.TYPE_DOT);
         blocks.add(light);

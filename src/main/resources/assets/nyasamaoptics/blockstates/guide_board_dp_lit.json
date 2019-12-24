@@ -1,0 +1,23 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "nyasamaoptics:guide_board_dp",
+    "textures": {
+      "shell": "nyasamaoptics:blocks/light_shell"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{
+      "textures": {
+        "shell": "nyasamaoptics:blocks/light_base"
+      }
+    }],
+    "facing": {
+      "north": {  },
+      "east": { "y": 90 },
+      "south": { "y": 180 },
+      "west": { "y": 270 }
+    }
+  }
+}
