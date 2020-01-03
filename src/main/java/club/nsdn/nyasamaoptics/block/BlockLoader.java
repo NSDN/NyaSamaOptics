@@ -4,6 +4,7 @@ import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import club.nsdn.nyasamaoptics.api.LightBeam;
 import club.nsdn.nyasamaoptics.tileblock.deco.AdBoard;
 import club.nsdn.nyasamaoptics.tileblock.deco.GuideBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.StationBoard;
 import club.nsdn.nyasamaoptics.tileblock.deco.TextWall;
 import club.nsdn.nyasamaoptics.tileblock.holo.HoloJetRev;
 import club.nsdn.nyasamaoptics.tileblock.holo.PillarHead;
@@ -94,6 +95,7 @@ public class BlockLoader {
         blocks.add(new StationLamp());
 
         blocks.add(new AdBoard());
+        blocks.add(new StationBoard());
         blocks.add(new TextWall("TextWall", "text_wall", false));
         blocks.add(new TextWall("TextWallLit", "text_wall_lit", true));
         blocks.add(new GuideBoard("GuideBoardNp", "guide_board_np", false, true));

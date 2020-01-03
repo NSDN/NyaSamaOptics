@@ -3,6 +3,7 @@ package club.nsdn.nyasamaoptics.tileblock;
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import club.nsdn.nyasamaoptics.tileblock.deco.AdBoard;
 import club.nsdn.nyasamaoptics.tileblock.deco.GuideBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.StationBoard;
 import club.nsdn.nyasamaoptics.tileblock.deco.TextWall;
 import club.nsdn.nyasamaoptics.tileblock.holo.HoloJetRev;
 import club.nsdn.nyasamaoptics.tileblock.holo.PillarHead;
@@ -55,6 +56,7 @@ public class TileEntityLoader {
         tileEntities.add(AdBoard.TileEntityAdBoard.class);
         tileEntities.add(TextWall.TileEntityTextWall.class);
         tileEntities.add(GuideBoard.TileEntityGuideBoard.class);
+        tileEntities.add(StationBoard.TileEntityStationBoard.class);
     }
 
 }

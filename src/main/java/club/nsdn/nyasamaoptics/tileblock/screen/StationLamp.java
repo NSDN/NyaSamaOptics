@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.LinkedList;
 
 /**
  * Created by drzzm32 on 2019.1.30.
@@ -39,10 +40,26 @@ public class StationLamp extends DeviceBase implements ILightSource {
 
     public static class TileEntityStationLamp extends TileEntityReceiver {
 
-        public String content;
-        public int color;
-        public int back;
-        public double scale;
+        public static class LampInfo {
+            public String content;
+            public int color;
+            public int back;
+            public double scale;
+
+            public static LampInfo get(String content, int color, int back, double scale) {
+                LampInfo info = new LampInfo();
+                info.content = content;
+                info.color = color;
+                info.back = back;
+                info.scale = scale;
+                return info;
+            }
+
+            public static LampInfo def() {
+                return get("DUMMY", 0xEE1111, 0x000000, 1.0);
+            }
+        }
+        public LinkedList<LampInfo> lampInfo;
         public String logo;
 
         public boolean isEnabled;
@@ -50,11 +67,11 @@ public class StationLamp extends DeviceBase implements ILightSource {
 
         public TileEntityStationLamp() {
             super();
-            content = "DUMMY";
-            color = 0xEE1111;
-            back = 0x000000;
-            scale = 1.0;
+
+            lampInfo = new LinkedList<>();
+            lampInfo.add(LampInfo.def());
             logo = "null";
+
             setInfo(4, 1, 1.375, 1);
         }
 
@@ -73,22 +90,39 @@ public class StationLamp extends DeviceBase implements ILightSource {
 
         @Override
         public NBTTagCompound toNBT(NBTTagCompound tagCompound) {
-            tagCompound.setString("content", content);
-            tagCompound.setInteger("color", color);
-            tagCompound.setInteger("back", back);
-            tagCompound.setDouble("scale", scale);
+            int i = 0;
+            for (LampInfo info : lampInfo) {
+                NBTTagCompound tag = new NBTTagCompound();
+                tag.setString("content", info.content);
+                tag.setInteger("color", info.color);
+                tag.setInteger("back", info.back);
+                tag.setDouble("scale", info.scale);
+                tagCompound.setTag("lampInfo" + i, tag);
+                i += 1;
+            }
             tagCompound.setString("logo", logo);
             tagCompound.setBoolean("isEnabled", isEnabled);
+
             return super.toNBT(tagCompound);
         }
 
         @Override
         public void fromNBT(NBTTagCompound tagCompound) {
             super.fromNBT(tagCompound);
-            content = tagCompound.getString("content");
-            color = tagCompound.getInteger("color");
-            back = tagCompound.getInteger("back");
-            scale = tagCompound.getDouble("scale");
+
+            if (tagCompound.hasKey("lampInfo0")) {
+                lampInfo.clear();
+                for (int i = 0; tagCompound.hasKey("lampInfo" + i); i++) {
+                    NBTTagCompound tag = tagCompound.getCompoundTag("lampInfo" + i);
+                    if (!tag.hasKey("content"))
+                        continue;
+                    String content = tag.getString("content");
+                    int color = tag.getInteger("color");
+                    int back = tag.getInteger("back");
+                    double scale = tag.getDouble("scale");
+                    lampInfo.add(LampInfo.get(content, color, back, scale));
+                }
+            }
             logo = tagCompound.getString("logo");
             isEnabled = tagCompound.getBoolean("isEnabled");
         }

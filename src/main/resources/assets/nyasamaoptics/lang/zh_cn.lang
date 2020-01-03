@@ -30,6 +30,7 @@ tile.PlatformPlateHalf.name=站台屏
 tile.BlockCuballLamp.name=枢轴方块
 tile.StationLamp.name=车站灯
 tile.AdBoard.name=广告牌
+tile.StationBoard.name=车站牌
 tile.TextWall.name=大字壁
 tile.TextWallLit.name=发光大字壁
 tile.GuideBoardNp.name=指向牌(无悬挂柱)

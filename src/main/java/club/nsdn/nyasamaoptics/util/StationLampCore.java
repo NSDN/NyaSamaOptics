@@ -22,23 +22,25 @@ public abstract class StationLampCore extends NSASM {
         return NetworkWrapper.instance;
     }
 
+    private StationLamp.TileEntityStationLamp.LampInfo buffer = StationLamp.TileEntityStationLamp.LampInfo.def();
+
     public void setContent(StationLamp.TileEntityStationLamp lamp, String value) {
-        lamp.content = value;
+        buffer.content = value;
         StationLamp.TileEntityStationLamp.updateThis(lamp);
     }
 
     public void setColor(StationLamp.TileEntityStationLamp lamp, int value) {
-        lamp.color = value & 0xFFFFFF;
+        buffer.color = value & 0xFFFFFF;
         StationLamp.TileEntityStationLamp.updateThis(lamp);
     }
 
     public void setBack(StationLamp.TileEntityStationLamp lamp, int value) {
-        lamp.back = value;
+        buffer.back = value;
         StationLamp.TileEntityStationLamp.updateThis(lamp);
     }
 
     public void setScale(StationLamp.TileEntityStationLamp lamp, float value) {
-        lamp.scale = value;
+        buffer.scale = value;
         StationLamp.TileEntityStationLamp.updateThis(lamp);
     }
 
@@ -49,6 +51,46 @@ public abstract class StationLampCore extends NSASM {
 
     @Override
     public void loadFunc(LinkedHashMap<String, Operator> funcList) {
+        funcList.put("inj", ((dst, src) -> {
+            if (src != null) return Result.ERR;
+            if (dst == null) {
+                getTile().lampInfo.add(buffer);
+                buffer = StationLamp.TileEntityStationLamp.LampInfo.def();
+                getTile().refresh();
+                return Result.OK;
+            } else if (dst.type == RegType.INT) {
+                int index = (int) dst.data;
+                if (index < 0 || index > getTile().lampInfo.size())
+                    return Result.ERR;
+                getTile().lampInfo.set(index, buffer);
+                buffer = StationLamp.TileEntityStationLamp.LampInfo.def();
+                getTile().refresh();
+                return Result.OK;
+            }
+            return Result.ERR;
+        }));
+        funcList.put("rej", ((dst, src) -> {
+            if (src != null) return Result.ERR;
+            if (dst == null) {
+                getTile().lampInfo.removeLast();
+                buffer = StationLamp.TileEntityStationLamp.LampInfo.def();
+                if (getTile().lampInfo.isEmpty())
+                    getTile().lampInfo.add(buffer);
+                getTile().refresh();
+                return Result.OK;
+            } else if (dst.type == RegType.INT) {
+                int index = (int) dst.data;
+                if (index < 0 || index > getTile().lampInfo.size())
+                    return Result.ERR;
+                getTile().lampInfo.remove(index);
+                buffer = StationLamp.TileEntityStationLamp.LampInfo.def();
+                if (getTile().lampInfo.isEmpty())
+                    getTile().lampInfo.add(buffer);
+                getTile().refresh();
+                return Result.OK;
+            }
+            return Result.ERR;
+        }));
         funcList.put("show", ((dst, src) -> {
             if (src != null) return Result.ERR;
             if (dst == null) return Result.ERR;

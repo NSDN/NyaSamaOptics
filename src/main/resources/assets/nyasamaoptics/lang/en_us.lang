@@ -30,6 +30,7 @@ tile.PlatformPlateHalf.name=Half Platform Plate
 tile.BlockCuballLamp.name=Cube-Ball Lamp
 tile.StationLamp.name=Station Lamp
 tile.AdBoard.name=AD Board
+tile.StationBoard.name=Station Board
 tile.TextWall.name=Text Wall
 tile.TextWallLit.name=Text Wall(Lit)
 tile.GuideBoardNp.name=Guide Board(No Pillar)

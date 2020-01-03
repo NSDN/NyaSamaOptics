@@ -1,0 +1,14 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "nyasamaoptics:station_board",
+    "textures": {
+      "base": "nyasamaoptics:blocks/light_base",
+      "fore": "nyasamaoptics:blocks/station_board_fore"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}]
+  }
+}

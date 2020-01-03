@@ -18,8 +18,14 @@ import javax.annotation.Nonnull;
  */
 public class StationLampRenderer extends AbsTileEntitySpecialRenderer {
 
-    private final WavefrontObject modelBase = new WavefrontObject(
-            new ResourceLocation("nyasamaoptics", "models/blocks/" + "station_lamp" + "_base.obj")
+    private final WavefrontObject modelTop = new WavefrontObject(
+            new ResourceLocation("nyasamaoptics", "models/blocks/" + "station_lamp" + "_top.obj")
+    );
+    private final WavefrontObject modelMid = new WavefrontObject(
+            new ResourceLocation("nyasamaoptics", "models/blocks/" + "station_lamp" + "_mid.obj")
+    );
+    private final WavefrontObject modelEnd = new WavefrontObject(
+            new ResourceLocation("nyasamaoptics", "models/blocks/" + "station_lamp" + "_end.obj")
     );
     private final WavefrontObject modelLogo = new WavefrontObject(
             new ResourceLocation("nyasamaoptics", "models/blocks/" + "station_lamp" + "_logo.obj")
@@ -50,38 +56,67 @@ public class StationLampRenderer extends AbsTileEntitySpecialRenderer {
         GL11.glRotatef(angle, 0.0F, -1.0F, 0.0F);
 
         if (te instanceof StationLamp.TileEntityStationLamp) {
-            StationLamp.TileEntityStationLamp tileEntityStationLamp = (StationLamp.TileEntityStationLamp) te;
+            StationLamp.TileEntityStationLamp lamp = (StationLamp.TileEntityStationLamp) te;
             GL11.glPushMatrix();
 
-            GL11.glColor3f(1.0F, 1.0F, 1.0F);
-            RendererHelper.renderWithResource(modelBase, textureBase);
+            boolean lightOff = false;
+            if (lamp.getSender() != null)
+                lightOff = !lamp.isEnabled;
 
-            RendererHelper.beginSpecialLighting();
+            int count = 0;
+            for (StationLamp.TileEntityStationLamp.LampInfo info : lamp.lampInfo) {
+                GL11.glPushMatrix();
+                GL11.glTranslated(0, count * 5.5 / 16, 0);
 
-            int backColor = tileEntityStationLamp.back;
-            if (!tileEntityStationLamp.isEnabled && tileEntityStationLamp.getSender() != null) {
-                GL11.glColor3f(0.33F, 0.33F, 0.33F);
+                GL11.glColor3f(1.0F, 1.0F, 1.0F);
+                RendererHelper.renderWithResource(count == 0 ? modelEnd : modelMid, textureBase);
+
+                RendererHelper.beginSpecialLighting();
+
+                int backColor = info.back;
+                if (lightOff)
+                    GL11.glColor3f(0.33F, 0.33F, 0.33F);
+                else
+                    GL11.glColor3f(
+                            ((backColor & 0xFF0000) >> 16) / 255.0F,
+                            ((backColor & 0x00FF00) >> 8) / 255.0F,
+                            (backColor & 0x0000FF) / 255.0F
+                    );
+                RendererHelper.renderWithResource4(modelBack, textureBack);
+                GL11.glColor3f(1.0F, 1.0F, 1.0F);
+
+                for (int i = 0; i < 4; i++)
+                    renderFore(info, 90.0F * i, lightOff);
+
+                RendererHelper.endSpecialLighting();
+
+                GL11.glPopMatrix();
+
+                count += 1;
             }
-            if (!tileEntityStationLamp.logo.equals("null")) {
-                ResourceLocation logo = new ResourceLocation(tileEntityStationLamp.logo);
-                RendererHelper.renderWithResource4(modelLogo, logo);
-            } else {
-                RendererHelper.renderWithResource4(modelLogo, textureLogo);
+
+            count -= 1;
+            GL11.glPushMatrix();
+            {
+                GL11.glTranslated(0, count * 5.5 / 16, 0);
+
+                GL11.glColor3f(1.0F, 1.0F, 1.0F);
+                RendererHelper.renderWithResource(modelTop, textureBase);
+
+                RendererHelper.beginSpecialLighting();
+
+                if (lightOff)
+                    GL11.glColor3f(0.33F, 0.33F, 0.33F);
+
+                if (!lamp.logo.equals("null")) {
+                    ResourceLocation logo = new ResourceLocation(lamp.logo);
+                    RendererHelper.renderWithResource4(modelLogo, logo);
+                } else {
+                    RendererHelper.renderWithResource4(modelLogo, textureLogo);
+                }
             }
+            GL11.glPopMatrix();
 
-            if (!tileEntityStationLamp.isEnabled && tileEntityStationLamp.getSender() != null)
-                GL11.glColor3f(0.33F, 0.33F, 0.33F);
-            else
-                GL11.glColor3f(
-                        ((backColor & 0xFF0000) >> 16) / 255.0F,
-                        ((backColor & 0x00FF00) >> 8) / 255.0F,
-                        (backColor & 0x0000FF) / 255.0F
-                );
-            RendererHelper.renderWithResource4(modelBack, textureBack);
-            GL11.glColor3f(1.0F, 1.0F, 1.0F);
-
-            for (int i = 0; i < 4; i++)
-                renderFore(tileEntityStationLamp, 90.0F * i);
 
             GL11.glPopMatrix();
         }
@@ -94,15 +129,13 @@ public class StationLampRenderer extends AbsTileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 
-    private void renderFore(StationLamp.TileEntityStationLamp tileEntityStationLamp, float angle) {
+    private void renderFore(StationLamp.TileEntityStationLamp.LampInfo info, float angle, boolean lightOff) {
         GL11.glPushMatrix();
         GL11.glRotatef(angle, 0.0F, 1.0F, 0.0F);
 
-        boolean control = true;
-        if (tileEntityStationLamp.getSender() != null) control = tileEntityStationLamp.isEnabled;
-        if (control) {
-            int fontColor = tileEntityStationLamp.color, align = StationLamp.ALIGN_CENTER;
-            double fontScale = tileEntityStationLamp.scale; String content = tileEntityStationLamp.content;
+        if (!lightOff) {
+            int fontColor = info.color, align = StationLamp.ALIGN_CENTER;
+            double fontScale = info.scale; String content = info.content;
             GL11.glPushMatrix();
             GL11.glRotatef(180.0F,0.0F, 0.0F, 1.0F);
             GL11.glPushMatrix();
