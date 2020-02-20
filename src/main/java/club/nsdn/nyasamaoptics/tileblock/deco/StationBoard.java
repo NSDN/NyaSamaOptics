@@ -41,6 +41,8 @@ public class StationBoard extends DeviceBase implements ILightSource {
         public int color2 = 0x323232;
         public double scale1 = 1;
         public double scale2 = 1;
+        public double offset1 = 0;
+        public double offset2 = 0;
         public boolean state1 = false;
         public boolean state2 = false;
 
@@ -72,6 +74,8 @@ public class StationBoard extends DeviceBase implements ILightSource {
             color2 = tagCompound.getInteger("color2");
             scale1 = tagCompound.getDouble("scale1");
             scale2 = tagCompound.getDouble("scale2");
+            offset1 = tagCompound.getDouble("offset1");
+            offset2 = tagCompound.getDouble("offset2");
             state1 = tagCompound.getBoolean("state1");
             state2 = tagCompound.getBoolean("state2");
         }
@@ -84,6 +88,8 @@ public class StationBoard extends DeviceBase implements ILightSource {
             tagCompound.setInteger("color2", color2);
             tagCompound.setDouble("scale1", scale1);
             tagCompound.setDouble("scale2", scale2);
+            tagCompound.setDouble("offset1", offset1);
+            tagCompound.setDouble("offset2", offset2);
             tagCompound.setBoolean("state1", state1);
             tagCompound.setBoolean("state2", state2);
 
@@ -235,6 +241,23 @@ public class StationBoard extends DeviceBase implements ILightSource {
                                     getTile().scale1 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
                                 else
                                     getTile().scale2 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
+
+                                getTile().refresh();
+
+                                return Result.OK;
+                            }));
+                            funcList.put("offset", ((dst, src) -> {
+                                if (src == null) return Result.ERR;
+                                if (dst == null) return Result.ERR;
+                                if (src.type != RegType.FLOAT && src.type != RegType.INT) return Result.ERR;
+                                if (dst.type != RegType.INT) return Result.ERR;
+
+                                int index = (int) dst.data;
+                                index = index < 0 ? 0 : (index > 1 ? 1 : index);
+                                if (index == 0)
+                                    getTile().offset1 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
+                                else
+                                    getTile().offset2 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
 
                                 getTile().refresh();
 

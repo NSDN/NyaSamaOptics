@@ -140,7 +140,7 @@ public class StationBoardRenderer extends AbsTileEntitySpecialRenderer {
                 GL11.glPushMatrix();
                 GL11.glRotatef(90.0F, -1.0F, 0.0F, 0.0F);
                 GL11.glPushMatrix();
-                GL11.glTranslated(0.25, 0, 0.125);
+                GL11.glTranslated(0.25 + board.offset1, 0, 0.125);
                 GL11.glPushMatrix();
                 GL11.glRotatef(-90.0F,1.0F, 0.0F, 0.0F);
                 GL11.glPushMatrix();
@@ -163,7 +163,7 @@ public class StationBoardRenderer extends AbsTileEntitySpecialRenderer {
                 GL11.glPushMatrix();
                 GL11.glRotatef(90.0F, -1.0F, 0.0F, 0.0F);
                 GL11.glPushMatrix();
-                GL11.glTranslated(-0.25, 0, 0.125);
+                GL11.glTranslated(-0.25 + board.offset2, 0, 0.125);
                 GL11.glPushMatrix();
                 GL11.glRotatef(-90.0F,1.0F, 0.0F, 0.0F);
                 GL11.glPushMatrix();
