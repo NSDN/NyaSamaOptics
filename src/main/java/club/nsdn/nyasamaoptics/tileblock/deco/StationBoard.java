@@ -246,7 +246,7 @@ public class StationBoard extends DeviceBase implements ILightSource {
 
                                 return Result.OK;
                             }));
-                            funcList.put("offset", ((dst, src) -> {
+                            funcList.put("shift", ((dst, src) -> {
                                 if (src == null) return Result.ERR;
                                 if (dst == null) return Result.ERR;
                                 if (src.type != RegType.FLOAT && src.type != RegType.INT) return Result.ERR;
