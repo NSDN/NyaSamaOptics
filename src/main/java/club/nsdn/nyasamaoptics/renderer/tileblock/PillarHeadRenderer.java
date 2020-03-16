@@ -6,7 +6,6 @@ import club.nsdn.nyasamatelecom.api.render.RendererHelper;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import cn.ac.nya.forgeobj.WavefrontObject;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -92,7 +91,7 @@ public class PillarHeadRenderer extends AbsTileEntitySpecialRenderer {
             );
             GL11.glPushMatrix();
             GL11.glTranslated(0.0, 0.0, 0.0625 * (3.9 - tileEntityPillarHead.thick));
-            tileEntityPillarHead.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+            tileEntityPillarHead.model.render();
             GL11.glPopMatrix();
         }
     }

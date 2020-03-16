@@ -7,7 +7,6 @@ import club.nsdn.nyasamatelecom.api.render.RendererHelper;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -83,7 +82,7 @@ public class GuideBoardRenderer extends AbsTileEntitySpecialRenderer {
                                 );
                                 GL11.glPushMatrix();
                                 GL11.glTranslated(0, 0.5, 0);
-                                text.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+                                text.model.render();
                                 GL11.glPopMatrix();
                             }
                         }

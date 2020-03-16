@@ -1,7 +1,6 @@
 package club.nsdn.nyasamaoptics.renderer.tileblock;
 
 import club.nsdn.nyasamaoptics.tileblock.deco.StationBoard;
-import club.nsdn.nyasamaoptics.tileblock.deco.TileEntityDecoText;
 import club.nsdn.nyasamaoptics.tileblock.screen.LEDPlate;
 import club.nsdn.nyasamatelecom.api.render.AbsTileEntitySpecialRenderer;
 import club.nsdn.nyasamatelecom.api.render.RendererHelper;
@@ -9,7 +8,6 @@ import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import cn.ac.nya.forgeobj.WavefrontObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -94,7 +92,7 @@ public class StationBoardRenderer extends AbsTileEntitySpecialRenderer {
                                 );
                                 GL11.glPushMatrix();
                                 GL11.glTranslated(0, 0.5, 0);
-                                board.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+                                board.model.render();
                                 GL11.glPopMatrix();
                             }
                         }

@@ -1,9 +1,14 @@
 package club.nsdn.nyasamaoptics.util.font;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.entity.Entity;
+import cn.ac.nya.rawmdl.RawQuadCube;
+import cn.ac.nya.rawmdl.RawQuadGroup;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 import java.util.LinkedList;
@@ -11,19 +16,20 @@ import java.util.LinkedList;
 /**
  * Created by drzzm32 on 2019.1.30.
  */
-public class TextModel extends ModelBase {
-    private LinkedList<ModelRenderer> shapes;
+public class TextModel {
 
-    private final float LX = -8, LY = 7, RX = 7, RY = 23;
+    private LinkedList<BakedQuad> quads = new LinkedList<>();
+    private RawQuadGroup group = new RawQuadGroup();
+    private static TextureAtlasSprite sprite =
+            Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("blocks/concrete_white");
+
+    private final float LX = -8, LY = 7;
 
     private void drawPixel(int x, int y, int thick) {
-        ModelRenderer shape = new ModelRenderer(this, 0, 0);
-        shape.addBox(0F, 0F, -8F, 1, 1, thick);
-        shape.setRotationPoint(x + LX - 8.0F, y + LY - 16.0F, 0F);
-        shape.setTextureSize(33, 17);
-        shape.mirror = true;
-        setRotation(shape, 0F, 0F, 0F);
-        shapes.add(shape);
+        group.add(
+                new RawQuadCube(0.0625F, 0.0625F, 0.0625F * thick, sprite)
+                        .translateCoord((x + LX - 8) / 16.0F, (y + LY - 16) / 16.0F, -0.5F)
+        );
     }
 
     private void drawChar(byte[] font, int x, int thick, int first, int second) {
@@ -111,11 +117,6 @@ public class TextModel extends ModelBase {
     }
 
     public TextModel(byte[] font, int align, String str, int thick) {
-        shapes = new LinkedList<ModelRenderer>();
-
-        textureWidth = 33;
-        textureHeight = 17;
-
         byte[] buf;
         try {
             buf = str.getBytes("GB2312");
@@ -142,23 +143,38 @@ public class TextModel extends ModelBase {
                 break;
         }
 
+        quads.clear();
+        group.bake(quads);
     }
 
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        super.render(entity, f, f1, f2, f3, f4, f5);
-        setRotationAngles(entity, f, f1, f2, f3, f4, f5);
-        for (ModelRenderer i : shapes) {
-            i.render(f5);
+    public void render() {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        buffer.setTranslation(0, 0, 0);
+        render(buffer);
+        tessellator.draw();
+    }
+
+    public void render(BufferBuilder buffer) {
+        buffer.setTranslation(0, 0, 0);
+
+        int i = 15728640;
+        for (BakedQuad quad: quads) {
+            buffer.addVertexData(quad.getVertexData());
+            buffer.putBrightness4(i, i, i, i);
+
+            float diffuse = 1;
+            if (quad.shouldApplyDiffuseLighting())
+                diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(quad.getFace());
+
+            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 4);
+            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 3);
+            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 2);
+            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 1);
+
+            buffer.putPosition(0, 0, 0);
         }
     }
 
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.rotateAngleX = x;
-        model.rotateAngleY = y;
-        model.rotateAngleZ = z;
-    }
-
-    public void setRotationAngles(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        super.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-    }
 }

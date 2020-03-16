@@ -7,7 +7,6 @@ import club.nsdn.nyasamatelecom.api.render.RendererHelper;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import cn.ac.nya.forgeobj.WavefrontObject;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -106,7 +105,7 @@ public class HoloJetRevRenderer extends AbsTileEntitySpecialRenderer {
                                         ((color & 0x00FF00) >> 8) / 255.0F,
                                         (color & 0x0000FF) / 255.0F
                                 );
-                                tileEntityHoloJetRev.model.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+                                tileEntityHoloJetRev.model.render();
                             }
                         }
                         GL11.glPopMatrix();
