@@ -51,9 +51,10 @@ public class TileEntityHoloText extends TileEntityReceiver {
         hashSet.add(String.valueOf(thick));
         hashSet.add(String.valueOf(scale));
         hashSet.add(String.valueOf(font));
+        hashSet.add(String.valueOf(color));
 
         if (hash != hashSet.hashCode()) {
-            model = FontLoader.getModel(font, align, content, thick);
+            model = FontLoader.getModel(font, align, content, thick, color);
             hash = hashSet.hashCode();
         }
     }

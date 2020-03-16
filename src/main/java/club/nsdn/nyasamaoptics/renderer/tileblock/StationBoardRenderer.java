@@ -84,15 +84,9 @@ public class StationBoardRenderer extends AbsTileEntitySpecialRenderer {
                         {
                             GL11.glScaled(board.scale, board.scale, 1.0);
                             if (board.model != null) {
-                                int color = board.color;
-                                GL11.glColor3f(
-                                        ((color & 0xFF0000) >> 16) / 255.0F,
-                                        ((color & 0x00FF00) >> 8) / 255.0F,
-                                        (color & 0x0000FF) / 255.0F
-                                );
                                 GL11.glPushMatrix();
                                 GL11.glTranslated(0, 0.5, 0);
-                                board.model.render();
+                                board.model.render(te);
                                 GL11.glPopMatrix();
                             }
                         }

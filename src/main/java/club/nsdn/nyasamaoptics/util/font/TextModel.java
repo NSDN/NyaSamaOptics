@@ -9,6 +9,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.util.LinkedList;
@@ -116,7 +119,7 @@ public class TextModel {
         }
     }
 
-    public TextModel(byte[] font, int align, String str, int thick) {
+    public TextModel(byte[] font, int align, String str, int thick, int color) {
         byte[] buf;
         try {
             buf = str.getBytes("GB2312");
@@ -144,22 +147,23 @@ public class TextModel {
         }
 
         quads.clear();
+        group.setColor(color);
         group.bake(quads);
     }
 
-    public void render() {
+    public void render(TileEntity te) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         buffer.setTranslation(0, 0, 0);
-        render(buffer);
+        render(te.getWorld(), te.getPos(), buffer);
         tessellator.draw();
     }
 
-    public void render(BufferBuilder buffer) {
+    public void render(World world, BlockPos pos, BufferBuilder buffer) {
         buffer.setTranslation(0, 0, 0);
 
-        int i = 15728640;
+        int i = world.getCombinedLight(pos, 1);
         for (BakedQuad quad: quads) {
             buffer.addVertexData(quad.getVertexData());
             buffer.putBrightness4(i, i, i, i);

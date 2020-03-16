@@ -61,6 +61,13 @@ public class TextWall extends DeviceBase {
             return 4096.0;
         }
 
+        @Nonnull
+        @Override
+        public AxisAlignedBB getRenderBoundingBox() {
+            int r = 8;
+            return Block.FULL_BLOCK_AABB.expand(r,r,r).expand(-r, -r, -r);
+        }
+
     }
 
     public static final PropertyDirection FACING = BlockHorizontal.FACING;

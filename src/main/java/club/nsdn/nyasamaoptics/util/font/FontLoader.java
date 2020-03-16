@@ -67,19 +67,19 @@ public class FontLoader {
     public static final int ALIGN_UP = 5;
     public static final int ALIGN_DOWN = 6;
 
-    public static TextModel getModel(int font, int align, String str, int thick) {
+    public static TextModel getModel(int font, int align, String str, int thick, int color) {
         if (font == FONT_KAI) {
-            return new TextModel(GB2312_Kai, align, str, thick);
+            return new TextModel(GB2312_Kai, align, str, thick, color);
         } else if (font == FONT_LISHU) {
-            return new TextModel(GB2312_LiShu, align, str, thick);
+            return new TextModel(GB2312_LiShu, align, str, thick, color);
         } else if (font == FONT_SONG) {
-            return new TextModel(GB2312_Song, align, str, thick);
+            return new TextModel(GB2312_Song, align, str, thick, color);
         } else if (font == FONT_HEI) {
-            return new TextModel(GB2312_Hei, align, str, thick);
+            return new TextModel(GB2312_Hei, align, str, thick, color);
         } else if (font == FONT_LONG) {
-            return new TextModel(GB2312_Long, align, str, thick);
+            return new TextModel(GB2312_Long, align, str, thick, color);
         } else if (font == FONT_YAN) {
-            return new TextModel(GB2312_Yan, align, str, thick);
+            return new TextModel(GB2312_Yan, align, str, thick, color);
         }
         return null;
     }

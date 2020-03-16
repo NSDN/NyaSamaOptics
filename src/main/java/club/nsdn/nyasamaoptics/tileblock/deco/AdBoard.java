@@ -10,6 +10,7 @@ import club.nsdn.nyasamatelecom.api.device.DeviceBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
 import club.nsdn.nyasamatelecom.api.util.NSASM;
 import club.nsdn.nyasamatelecom.api.util.Util;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +19,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -51,7 +53,14 @@ public class AdBoard extends DeviceBase implements ILightSource {
 
         @Override
         public double getMaxRenderDistanceSquared() {
-            return 65536.0;
+            return 1024.0;
+        }
+
+        @Nonnull
+        @Override
+        public AxisAlignedBB getRenderBoundingBox() {
+            int r = 3;
+            return Block.FULL_BLOCK_AABB.expand(r,r,r).expand(-r, -r, -r);
         }
 
         @Override

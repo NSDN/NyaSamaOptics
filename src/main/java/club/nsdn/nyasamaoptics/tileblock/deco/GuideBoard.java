@@ -56,7 +56,14 @@ public class GuideBoard extends DeviceBase {
 
         @Override
         public double getMaxRenderDistanceSquared() {
-            return 4096.0;
+            return 1024.0;
+        }
+
+        @Nonnull
+        @Override
+        public AxisAlignedBB getRenderBoundingBox() {
+            int r = 3;
+            return Block.FULL_BLOCK_AABB.expand(r,r,r).expand(-r, -r, -r);
         }
 
     }

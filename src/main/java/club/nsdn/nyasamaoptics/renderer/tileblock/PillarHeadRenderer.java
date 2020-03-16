@@ -83,15 +83,9 @@ public class PillarHeadRenderer extends AbsTileEntitySpecialRenderer {
         boolean control = true;
         if (tileEntityPillarHead.getSender() != null) control = tileEntityPillarHead.isEnabled;
         if (tileEntityPillarHead.model != null && control) {
-            int color = tileEntityPillarHead.color;
-            GL11.glColor3f(
-                    ((color & 0xFF0000) >> 16) / 255.0F,
-                    ((color & 0x00FF00) >> 8) / 255.0F,
-                    (color & 0x0000FF) / 255.0F
-            );
             GL11.glPushMatrix();
             GL11.glTranslated(0.0, 0.0, 0.0625 * (3.9 - tileEntityPillarHead.thick));
-            tileEntityPillarHead.model.render();
+            tileEntityPillarHead.model.render(tileEntityPillarHead);
             GL11.glPopMatrix();
         }
     }
