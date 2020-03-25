@@ -1,8 +1,11 @@
 package club.nsdn.nyasamaoptics.util.font;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import cn.ac.nya.mutable.MutableQuad;
+import cn.ac.nya.mutable.MutableVertex;
 import cn.ac.nya.rawmdl.RawQuadCube;
 import cn.ac.nya.rawmdl.RawQuadGroup;
+import com.google.common.primitives.Doubles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -15,6 +18,9 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.util.LinkedList;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by drzzm32 on 2019.1.30.
@@ -26,6 +32,8 @@ public class TextModel {
     private static TextureAtlasSprite sprite =
             Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("blocks/concrete_white");
 
+    private final ReentrantLock lock = new ReentrantLock();
+
     private final float LX = -8, LY = 7;
 
     private void drawPixel(int x, int y, int thick) {
@@ -33,6 +41,49 @@ public class TextModel {
                 new RawQuadCube(0.0625F, 0.0625F, 0.0625F * thick, sprite)
                         .translateCoord((x + LX - 8) / 16.0F, (y + LY - 16) / 16.0F, -0.5F)
         );
+    }
+
+    public static double dist(MutableVertex a, MutableVertex b) {
+        double x = a.position_x - b.position_x;
+        double y = a.position_y - b.position_y;
+        double z = a.position_z - b.position_z;
+        return x * x + y * y + z * z;
+    }
+
+    public static boolean dist(MutableVertex v, MutableQuad q) {
+        double a = dist(v, q.vertex_0), b = dist(v, q.vertex_1);
+        double c = dist(v, q.vertex_2), d = dist(v, q.vertex_3);
+        return Doubles.min(a, b, c, d) <= 0.0025;
+    }
+
+    public static boolean vertexEquals(BakedQuad a, BakedQuad b) {
+        if (a == b) return true;
+        MutableQuad x = new MutableQuad();
+        MutableQuad y = new MutableQuad();
+        x.fromBakedItem(a); y.fromBakedItem(b);
+
+        return dist(x.vertex_0, y) && dist(x.vertex_1, y) &&
+                dist(x.vertex_2, y) && dist(x.vertex_3, y);
+    }
+
+    public static void cullFace(LinkedList<BakedQuad> quads) {
+        LinkedList<BakedQuad> remove = new LinkedList<>();
+
+        for (BakedQuad left : quads)
+            quads.listIterator(quads.indexOf(left)).forEachRemaining((right) -> {
+                if (!left.equals(right)) {
+                    if (vertexEquals(left, right)) {
+                        if (!remove.contains(left))
+                            remove.add(left);
+                        if (left.getFace().equals(right.getFace().getOpposite())) {
+                            if (!remove.contains(right))
+                                remove.add(right);
+                        }
+                    }
+                }
+            });
+
+        quads.removeAll(remove);
     }
 
     private void drawChar(byte[] font, int x, int thick, int first, int second) {
@@ -147,9 +198,17 @@ public class TextModel {
         }
 
         quads.clear();
-        group.setColor(color);
-        group.bake(quads);
+
+        executor.schedule(() -> {
+            lock.lock();
+            group.setColor(color);
+            group.bake(quads);
+            cullFace(quads);
+            lock.unlock();
+        }, 10, TimeUnit.MILLISECONDS);
     }
+
+    public static ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(32);
 
     public void render(TileEntity te) {
         Tessellator tessellator = Tessellator.getInstance();
@@ -164,20 +223,23 @@ public class TextModel {
         buffer.setTranslation(0, 0, 0);
 
         int i = world.getCombinedLight(pos, 1);
-        for (BakedQuad quad: quads) {
-            buffer.addVertexData(quad.getVertexData());
-            buffer.putBrightness4(i, i, i, i);
+        if (lock.tryLock()) {
+            for (BakedQuad quad: quads) {
+                buffer.addVertexData(quad.getVertexData());
+                buffer.putBrightness4(i, i, i, i);
 
-            float diffuse = 1;
-            if (quad.shouldApplyDiffuseLighting())
-                diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(quad.getFace());
+                float diffuse = 1;
+                if (quad.shouldApplyDiffuseLighting())
+                    diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(quad.getFace());
 
-            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 4);
-            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 3);
-            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 2);
-            buffer.putColorMultiplier(diffuse, diffuse, diffuse, 1);
+                buffer.putColorMultiplier(diffuse, diffuse, diffuse, 4);
+                buffer.putColorMultiplier(diffuse, diffuse, diffuse, 3);
+                buffer.putColorMultiplier(diffuse, diffuse, diffuse, 2);
+                buffer.putColorMultiplier(diffuse, diffuse, diffuse, 1);
 
-            buffer.putPosition(0, 0, 0);
+                buffer.putPosition(0, 0, 0);
+            }
+            lock.unlock();
         }
     }
 
