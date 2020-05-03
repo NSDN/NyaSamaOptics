@@ -1,6 +1,7 @@
 package club.nsdn.nyasamaoptics.util.font;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import cn.ac.nya.NyaSamaLib;
 import cn.ac.nya.mutable.MutableQuad;
 import cn.ac.nya.mutable.MutableVertex;
 import cn.ac.nya.rawmdl.RawQuadCube;
@@ -208,7 +209,7 @@ public class TextModel {
         }, 10, TimeUnit.MILLISECONDS);
     }
 
-    public static ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(32);
+    public static ScheduledThreadPoolExecutor executor = NyaSamaLib.EXECUTOR;
 
     public void render(TileEntity te) {
         Tessellator tessellator = Tessellator.getInstance();
