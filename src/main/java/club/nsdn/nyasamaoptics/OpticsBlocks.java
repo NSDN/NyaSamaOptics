@@ -6,6 +6,7 @@ import club.nsdn.nyasamaoptics.block.BlockFluorescentLamp;
 import club.nsdn.nyasamaoptics.block.BlockLogo;
 import club.nsdn.nyasamaoptics.block.BlockNSDNLogo;
 import club.nsdn.nyasamaoptics.block.BlockSign;
+import club.nsdn.nyasamaoptics.block.BlockSpotLight;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
@@ -92,5 +93,19 @@ public final class OpticsBlocks {
         DeferredBlock<LightBeam> lightBeamLine = BLOCKS.register("light_beam_1",
                 () -> new LightBeam(beam, LightBeam.TYPE_LINE));
         ITEMS.registerSimpleBlockItem(lightBeamLine);
+        LIGHT_BEAM_LINE = lightBeamLine;
+
+        DeferredBlock<BlockSpotLight> spotLight = BLOCKS.register("spot_light",
+                () -> new BlockSpotLight(glass.lightLevel(state ->
+                        state.getValue(BlockSpotLight.POWERED) ? 15 : 0)));
+        ITEMS.registerSimpleBlockItem(spotLight);
+    }
+
+    /** Kept in a field because devices (the spotlight) need the beam block at runtime. */
+    private static DeferredBlock<LightBeam> LIGHT_BEAM_LINE;
+
+    /** The line-type light beam, or null before registration completes. */
+    public static LightBeam lineLight() {
+        return LIGHT_BEAM_LINE == null ? null : LIGHT_BEAM_LINE.get();
     }
 }
