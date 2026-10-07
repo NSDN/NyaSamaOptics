@@ -2,17 +2,26 @@ package club.nsdn.nyasamaoptics.tileblock.screen;
 
 import club.nsdn.nyasamaoptics.OpticsBlocks;
 import club.nsdn.nyasamaoptics.api.ILightSource;
+import club.nsdn.nyasamaoptics.util.LEDPlateCore;
 import club.nsdn.nyasamatelecom.api.device.DeviceBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
+import club.nsdn.nyasamatelecom.api.util.NSASM;
+import club.nsdn.nyasamatelecom.api.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
 import java.util.ArrayList;
@@ -46,11 +55,11 @@ import java.util.function.Supplier;
  *       ported: 1.21.1 removed both hooks from {@code BlockEntity} (verified with javap) and moved
  *       render bounds / view distance onto the renderer, which is where the optics renderers supply
  *       them.</li>
- *   <li><b>Deferred:</b> 1.12.2's {@code onBlockActivated} ran an {@code util.LEDPlateCore} program
- *       read off an NGT tablet to set content/colour/back/scale/align. {@code LEDPlateCore} and the
- *       optics network wrapper are not ported yet, so the hook is left out rather than silently
- *       dropped; see the note at the bottom of this class. {@code TileEntityLEDPlate.updateThis} is
- *       already in place for that core to call.</li>
+ *   <li><b>Script interaction (connected):</b> 1.12.2's {@code onBlockActivated} ran a
+ *       {@code util.LEDPlateCore} program read off an NGT tablet to set content/colour/back/scale/align.
+ *       {@code LEDPlateCore} is ported, so the hook is {@link #useItemOn} now -- no optics network
+ *       wrapper is needed any more, because the ported {@code NSASM} base no longer has
+ *       {@code getWrapper()}. {@code TileEntityLEDPlate.updateThis} is what the core calls.</li>
  * </ul>
  *
  * <p>Registration: 1.12.2 used {@code setLightLevel(0)} and a fixed registry name; the block is now
@@ -211,14 +220,64 @@ public class LEDPlate extends DeviceBase implements ILightSource {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    /*
-     * NOT PORTED HERE: 1.12.2's onBlockActivated ran an LEDPlateCore program (read off an NGT tablet
-     * through Util.getTagListFromNGT + NSASM.getCode) to set the panel's content, colour, back colour,
-     * scale and alignment. LEDPlateCore lives in the optics util package and needs the optics network
-     * wrapper, neither of which is ported yet, so the hook is deferred rather than dropped. In 1.21.1
-     * the hook to add is useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand,
-     * BlockHitResult) returning ItemInteractionResult (not InteractionResult); 1.12.2 returned true
-     * when the block entity was a TileEntityLEDPlate, so the modern version should return
-     * ItemInteractionResult.SUCCESS in that case and PASS_TO_DEFAULT_BLOCK_INTERACTION otherwise.
+    /**
+     * 1.12.2 {@code onBlockActivated}, carried over: the program read off the NGT tablet through
+     * {@code Util.getTagListFromNGT} + {@code NSASM.getCode} is run against this panel through an
+     * {@code LEDPlateCore} anonymous subclass supplying
+     * {@code getWorld/getX/getY/getZ/getPlayer/getTile} (no {@code getWrapper()} any more). The
+     * server-side guard, the main-hand stack and the early no-NGT-list exit are the original ones, and
+     * the boolean result maps as {@code SUCCESS} / {@code PASS_TO_DEFAULT_BLOCK_INTERACTION}.
      */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TileEntityLEDPlate) {
+            TileEntityLEDPlate text = (TileEntityLEDPlate) blockEntity;
+            if (!level.isClientSide) {
+                ItemStack stack = player.getMainHandItem();
+                if (!stack.isEmpty()) {
+
+                    ListTag list = Util.getTagListFromNGT(stack);
+                    if (list == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    String[][] code = NSASM.getCode(list);
+                    new LEDPlateCore(code) {
+                        @Override
+                        public Level getWorld() {
+                            return level;
+                        }
+
+                        @Override
+                        public double getX() {
+                            return pos.getX();
+                        }
+
+                        @Override
+                        public double getY() {
+                            return pos.getY();
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return pos.getZ();
+                        }
+
+                        @Override
+                        public Player getPlayer() {
+                            return player;
+                        }
+
+                        @Override
+                        public TileEntityLEDPlate getTile() {
+                            return text;
+                        }
+                    }.run();
+
+                }
+            }
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
 }

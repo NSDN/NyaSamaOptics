@@ -2,6 +2,8 @@ package club.nsdn.nyasamaoptics.tileblock.holo;
 
 import club.nsdn.nyasamaoptics.OpticsBlocks;
 import club.nsdn.nyasamaoptics.api.LightBeam;
+import club.nsdn.nyasamaoptics.util.font.FontLoader;
+import club.nsdn.nyasamaoptics.util.font.TextModel;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +11,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.HashSet;
 
 /**
  * Base block entity of the holographic text displays, ported from the 1.12.2 {@code TileEntityHoloText}.
@@ -39,16 +43,33 @@ import net.minecraft.world.level.block.state.BlockState;
  *       reproduce it -- the text of this family is drawn far outside its own block.</li>
  * </ul>
  *
- * <p><b>Deferred (D4 + font util):</b> the 1.12.2 class held a client-only {@code TextModel model}
- * field filled by {@code createModel()} through {@code FontLoader.getModel(font, align, content, thick,
- * color)}, and the renderer drew it. Neither {@code TextModel} nor {@code FontLoader} exists in v3 yet
- * -- the font assets are ported separately ({@code 00-PORT-PLAN.md} 4.1) and this class therefore has
- * no model field. The change-detection {@link #hash} field is kept, because it is the state a future
- * model cache keys on, but the hash is no longer computed here: it needs {@code TextModel}'s notion of
- * "what changed", which arrives with the font utility. The renderer port will rebuild the glyph model
- * from the fields below and restore the guard.</p>
+ * <p><b>Font model (connected):</b> the 1.12.2 class held a client-only {@code TextModel model} field
+ * filled by {@code createModel()} through {@code FontLoader.getModel(font, align, content, thick,
+ * color)}, and the renderer drew it. Both halves are back with the ported {@code util.font} package:
+ * {@link #model} and {@link #createModel()} are the 1.12.2 members, names and visibility unchanged, so
+ * the renderer port can keep calling {@code createModel()} and then reading {@code model} exactly as
+ * its 1.12.2 counterpart did.</p>
+ *
+ * <p>1.12.2 annotated the field and the method as client-only ({@code SideOnly(Side.CLIENT)}). That
+ * annotation is not available in v3 (Forge's side-only marker is on the forbidden list), so the members
+ * are plain ones and the client-only contract lives in this note instead: {@link #createModel()} must
+ * only be called from the renderer, which runs on the client. The {@code HashSet} change-stamp behind
+ * {@link #hash} is carried over verbatim, including its mix of the raw {@code content} and
+ * {@code String.valueOf(...)} of the numerics.</p>
+ *
+ * <p><b>Still deferred (renderer):</b> the drawing of {@link #model}
+ * ({@code TextModel#render(PoseStack, MultiBufferSource, int, int)} in the ported class) and the
+ * infinite render bounding box belong to the block entity renderer, which is ported separately.</p>
  */
 public class TileEntityHoloText extends TileEntityReceiver {
+
+    /**
+     * Glyph model of this display, or {@code null} until {@link #createModel()} has built one.
+     *
+     * <p>1.12.2 declared this client-only ({@code SideOnly(Side.CLIENT)}); see the class note for why
+     * the annotation is gone and what that means for callers.</p>
+     */
+    public TextModel model;
 
     public String content;
     public int color;
@@ -61,9 +82,9 @@ public class TileEntityHoloText extends TileEntityReceiver {
     public boolean prevIsEnabled;
 
     /**
-     * Change-detection stamp of the rendered model, {@code -1} meaning "no model built yet". Kept from
-     * 1.12.2 (which compared a {@code HashSet} hash of content/thick/scale/font/color against it); the
-     * computation itself waits on the font utility -- see the class note.
+     * Change-detection stamp of {@link #model}, {@code -1} meaning "no model built yet". 1.12.2 compared
+     * a {@code HashSet} hash of content/thick/scale/font/color against it, and {@link #createModel()}
+     * does the same.
      */
     public int hash = -1;
 
@@ -73,19 +94,32 @@ public class TileEntityHoloText extends TileEntityReceiver {
         color = 0xFFFFFF;
         thick = 4;
         scale = 1.0;
-        // 1.12.2: font = FontLoader.FONT_SONG, whose value is 1 -- the font constants are part of the
-        // deferred font utility (see the class note), so the literal stands in for it for now.
-        font = 1;
+        font = FontLoader.FONT_SONG;
     }
 
-    /*
-     * NOT PORTED HERE: 1.12.2's client-only createModel() built a TextModel through
-     * FontLoader.getModel(font, align, content, thick, color) and cached it under `hash`. It needs both
-     * the font utility (FontLoader/TextModel, ported with the rest of the optics util package) and the
-     * renderer that draws the model, so it is left out rather than stubbed into something that would
-     * silently render nothing. The fields it consumed (content/color/thick/scale/align/font) and the
-     * `hash` stamp all survive above.
+    /**
+     * Builds {@link #model} when the values it depends on have changed -- the 1.12.2 body verbatim,
+     * including the {@code HashSet} and its {@code String.valueOf} conversions.
+     *
+     * <p>1.12.2 marked this client-only ({@code SideOnly(Side.CLIENT)}); the annotation is gone (see the
+     * class note), so this must be called from the renderer on the client, which is what every 1.12.2
+     * renderer of this family did ({@code AdBoardRenderer}, {@code GuideBoardRenderer},
+     * {@code HoloJetRevRenderer}, {@code PillarHeadRenderer}, {@code StationBoardRenderer},
+     * {@code TextWallRenderer}).</p>
      */
+    public void createModel() {
+        HashSet<Object> hashSet = new HashSet<Object>();
+        hashSet.add(content);
+        hashSet.add(String.valueOf(thick));
+        hashSet.add(String.valueOf(scale));
+        hashSet.add(String.valueOf(font));
+        hashSet.add(String.valueOf(color));
+
+        if (hash != hashSet.hashCode()) {
+            model = FontLoader.getModel(font, align, content, thick, color);
+            hash = hashSet.hashCode();
+        }
+    }
 
     @Override
     public CompoundTag toNBT(CompoundTag tagCompound) {

@@ -2,13 +2,20 @@ package club.nsdn.nyasamaoptics.tileblock.screen;
 
 import club.nsdn.nyasamaoptics.OpticsBlocks;
 import club.nsdn.nyasamaoptics.api.ILightSource;
+import club.nsdn.nyasamaoptics.util.StationLampCore;
 import club.nsdn.nyasamatelecom.api.device.DeviceBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
+import club.nsdn.nyasamatelecom.api.util.NSASM;
+import club.nsdn.nyasamatelecom.api.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -16,6 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
 import java.util.ArrayList;
@@ -52,9 +60,11 @@ import java.util.function.Supplier;
  *       with javap); per-face sturdiness is derived from the collision shape, which
  *       {@code TileEntityBase.AABB()} already provides (the lamp's bottom face is the full 1x1
  *       footprint). Faking it with an inflated shape is deliberately avoided.</li>
- *   <li><b>Deferred:</b> 1.12.2's {@code onBlockActivated} ran an {@code util.StationLampCore} program
- *       (NGT tablet) to fill the lamp lines and the logo; that core and the optics network wrapper are
- *       not ported yet, so the hook is left out and recorded at the bottom of this class.</li>
+ *   <li><b>Script interaction (connected):</b> 1.12.2's {@code onBlockActivated} ran an
+ *       {@code util.StationLampCore} program (NGT tablet) to fill the lamp lines and the logo; the core
+ *       is ported, so the hook is {@link #useItemOn} now -- no optics network wrapper is needed any
+ *       more, because the ported {@code NSASM} base no longer has {@code getWrapper()} (the core's
+ *       {@code logo} function reports through {@code getPlayer().displayClientMessage}).</li>
  * </ul>
  *
  * <p>Registration: 1.12.2 used {@code Material.GLASS} with light level 0 and the fixed id
@@ -223,17 +233,68 @@ public class StationLamp extends DeviceBase implements ILightSource {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    /*
-     * NOT PORTED HERE: 1.12.2's onBlockActivated ran a StationLampCore program (NGT tablet) to fill the
-     * lampInfo list and the logo. StationLampCore lives in the optics util package and needs the optics
-     * network wrapper, neither of which is ported yet, so the hook is deferred rather than dropped. In
-     * 1.21.1 the hook to add is useItemOn(ItemStack, BlockState, Level, BlockPos, Player,
-     * InteractionHand, BlockHitResult) returning ItemInteractionResult; 1.12.2 returned true for a
-     * matching block entity and false otherwise, i.e. SUCCESS /
-     * PASS_TO_DEFAULT_BLOCK_INTERACTION.
+    /**
+     * 1.12.2 {@code onBlockActivated}, carried over: the program read off the NGT tablet is run against
+     * this lamp through a {@code StationLampCore} anonymous subclass supplying
+     * {@code getWorld/getX/getY/getZ/getPlayer/getTile} (no {@code getWrapper()} any more). The
+     * server-side guard, the main-hand stack and the early no-NGT-list exit are the original ones, and
+     * the boolean result maps as {@code SUCCESS} / {@code PASS_TO_DEFAULT_BLOCK_INTERACTION}.
      *
-     * Also for the renderer port: the tile entity's `logo` field stays a String (verbatim from 1.12.2),
-     * and the 1.12.2 renderer did `new ResourceLocation(lamp.logo)`. In 1.21.1 that becomes
-     * ResourceLocation.tryParse / parse with a validity guard, because a malformed path throws.
+     * <p>For the renderer port: the tile entity's {@code logo} field stays a String (verbatim from
+     * 1.12.2), and the 1.12.2 renderer did {@code new ResourceLocation(lamp.logo)}. In 1.21.1 that
+     * becomes ResourceLocation.tryParse / parse with a validity guard, because a malformed path
+     * throws.</p>
      */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TileEntityStationLamp) {
+            TileEntityStationLamp text = (TileEntityStationLamp) blockEntity;
+            if (!level.isClientSide) {
+                ItemStack stack = player.getMainHandItem();
+                if (!stack.isEmpty()) {
+
+                    ListTag list = Util.getTagListFromNGT(stack);
+                    if (list == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    String[][] code = NSASM.getCode(list);
+                    new StationLampCore(code) {
+                        @Override
+                        public Level getWorld() {
+                            return level;
+                        }
+
+                        @Override
+                        public double getX() {
+                            return pos.getX();
+                        }
+
+                        @Override
+                        public double getY() {
+                            return pos.getY();
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return pos.getZ();
+                        }
+
+                        @Override
+                        public Player getPlayer() {
+                            return player;
+                        }
+
+                        @Override
+                        public TileEntityStationLamp getTile() {
+                            return text;
+                        }
+                    }.run();
+
+                }
+            }
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
 }

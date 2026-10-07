@@ -4,15 +4,23 @@ import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import club.nsdn.nyasamaoptics.OpticsBlocks;
 import club.nsdn.nyasamaoptics.api.ILightSource;
 import club.nsdn.nyasamaoptics.api.LightBeam;
+import club.nsdn.nyasamaoptics.util.DecoTextCore;
+import club.nsdn.nyasamaoptics.util.font.FontLoader;
 import club.nsdn.nyasamatelecom.api.device.DeviceBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
+import club.nsdn.nyasamatelecom.api.util.NSASM;
+import club.nsdn.nyasamatelecom.api.util.Util;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -20,9 +28,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.LinkedHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -54,17 +64,19 @@ import java.util.function.Supplier;
  *       the block).</li>
  * </ul>
  *
- * <p><b>Deferred (script interaction, including this board's private functions):</b> 1.12.2's
+ * <p><b>Script interaction (connected, including this board's private functions):</b> 1.12.2's
  * {@code onBlockActivated} ran a {@code DecoTextCore} program read off the held NGT tablet, and
  * overrode {@code loadFunc(LinkedHashMap<String, Operator>)} to add five functions -- {@code label},
  * {@code color}, {@code scale}, {@code shift} and {@code state} -- each taking a {@code 0}/{@code 1}
- * side index and clamping it, then calling {@code refresh()}. {@code DecoTextCore} belongs to the optics
- * {@code util} package, which is not ported yet, so neither the hook nor the function table exists here.
- * This is the part to re-add first when the optics script dialect lands: the operand checks
+ * side index and clamping it, then calling {@code refresh()}. Both halves are back: the hook is
+ * {@link #useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)}
+ * and the function table lives in the anonymous {@code DecoTextCore} there. The operand checks
  * ({@code src.type != RegType.STR} etc.), the {@code index < 0 ? 0 : (index > 1 ? 1 : index)} clamp and
- * the {@code refresh()} calls are the board's whole scripting contract and must be reproduced exactly.
- * The 1.21.1 hook is {@code useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand,
- * BlockHitResult)} returning {@code ItemInteractionResult}.</p>
+ * the {@code refresh()} calls are reproduced exactly, including the original's unmasked
+ * {@code (int) src.data} for the colour (no {@code & 0xFFFFFF} was applied here in 1.12.2 either).</p>
+ *
+ * <p><b>Still deferred:</b> the render bounds noted above (4096.0 view distance squared, a 5-block
+ * render box) and the text drawing itself belong to the block entity renderer, ported separately.</p>
  */
 public class StationBoard extends DeviceBase implements ILightSource {
 
@@ -132,15 +144,13 @@ public class StationBoard extends DeviceBase implements ILightSource {
 
         public TileEntityStationBoard(BlockEntityType<?> type, BlockPos pos, BlockState state) {
             super(type, pos, state);
-            // 1.12.2: align = FontLoader.ALIGN_CENTER (== 4)
-            align = 4;
+            align = FontLoader.ALIGN_CENTER;
             setInfo(4, 1, 1, 0.25);
 
             content = "\u5e7b";
             color = 0x161616;
             scale = 0.3;
-            // 1.12.2: font = FontLoader.FONT_LONG (== 4)
-            font = 4;
+            font = FontLoader.FONT_LONG;
 
             subContent = "genso";
             subColor = 0x323232;
@@ -243,11 +253,155 @@ public class StationBoard extends DeviceBase implements ILightSource {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    /*
-     * NOT PORTED HERE: onBlockActivated ran a DecoTextCore program (read off an NGT tablet), whose
-     * loadFunc override added the label/color/scale/shift/state functions -- see the class note for the
-     * contract that must be reproduced when the optics script dialect is ported.
+    /**
+     * 1.12.2 {@code onBlockActivated}, carried over, together with the anonymous core's
+     * {@code loadFunc} override that adds this board's five side-indexed functions. Everything the old
+     * hook did is preserved: server-side only, main-hand stack, early exit when that stack carries no
+     * NGT list, and the boolean result mapped to {@code SUCCESS} /
+     * {@code PASS_TO_DEFAULT_BLOCK_INTERACTION}.
      */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TileEntityStationBoard) {
+            TileEntityStationBoard text = (TileEntityStationBoard) blockEntity;
+            if (!level.isClientSide) {
+                ItemStack stack = player.getMainHandItem();
+                if (!stack.isEmpty()) {
+
+                    ListTag list = Util.getTagListFromNGT(stack);
+                    if (list == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    String[][] code = NSASM.getCode(list);
+                    new DecoTextCore(code) {
+                        @Override
+                        public Level getWorld() {
+                            return level;
+                        }
+
+                        @Override
+                        public double getX() {
+                            return pos.getX();
+                        }
+
+                        @Override
+                        public double getY() {
+                            return pos.getY();
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return pos.getZ();
+                        }
+
+                        @Override
+                        public Player getPlayer() {
+                            return player;
+                        }
+
+                        @Override
+                        public TileEntityStationBoard getTile() {
+                            return text;
+                        }
+
+                        @Override
+                        public void loadFunc(LinkedHashMap<String, Operator> funcList) {
+                            super.loadFunc(funcList);
+                            funcList.put("label", ((dst, src) -> {
+                                if (src == null) return Result.ERR;
+                                if (dst == null) return Result.ERR;
+                                if (src.type != RegType.STR) return Result.ERR;
+                                if (dst.type != RegType.INT) return Result.ERR;
+
+                                int index = (int) dst.data;
+                                index = index < 0 ? 0 : (index > 1 ? 1 : index);
+                                if (index == 0)
+                                    getTile().label1 = (String) src.data;
+                                else
+                                    getTile().label2 = (String) src.data;
+
+                                getTile().refresh();
+
+                                return Result.OK;
+                            }));
+                            funcList.put("color", ((dst, src) -> {
+                                if (src == null) return Result.ERR;
+                                if (dst == null) return Result.ERR;
+                                if (src.type != RegType.INT) return Result.ERR;
+                                if (dst.type != RegType.INT) return Result.ERR;
+
+                                int index = (int) dst.data;
+                                index = index < 0 ? 0 : (index > 1 ? 1 : index);
+                                if (index == 0)
+                                    getTile().color1 = (int) src.data;
+                                else
+                                    getTile().color2 = (int) src.data;
+
+                                getTile().refresh();
+
+                                return Result.OK;
+                            }));
+                            funcList.put("scale", ((dst, src) -> {
+                                if (src == null) return Result.ERR;
+                                if (dst == null) return Result.ERR;
+                                if (src.type != RegType.FLOAT && src.type != RegType.INT) return Result.ERR;
+                                if (dst.type != RegType.INT) return Result.ERR;
+
+                                int index = (int) dst.data;
+                                index = index < 0 ? 0 : (index > 1 ? 1 : index);
+                                if (index == 0)
+                                    getTile().scale1 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
+                                else
+                                    getTile().scale2 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
+
+                                getTile().refresh();
+
+                                return Result.OK;
+                            }));
+                            funcList.put("shift", ((dst, src) -> {
+                                if (src == null) return Result.ERR;
+                                if (dst == null) return Result.ERR;
+                                if (src.type != RegType.FLOAT && src.type != RegType.INT) return Result.ERR;
+                                if (dst.type != RegType.INT) return Result.ERR;
+
+                                int index = (int) dst.data;
+                                index = index < 0 ? 0 : (index > 1 ? 1 : index);
+                                if (index == 0)
+                                    getTile().offset1 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
+                                else
+                                    getTile().offset2 = src.type == RegType.FLOAT ? (float) src.data : (int) src.data;
+
+                                getTile().refresh();
+
+                                return Result.OK;
+                            }));
+                            funcList.put("state", ((dst, src) -> {
+                                if (src == null) return Result.ERR;
+                                if (dst == null) return Result.ERR;
+                                if (src.type != RegType.INT) return Result.ERR;
+                                if (dst.type != RegType.INT) return Result.ERR;
+
+                                int index = (int) dst.data;
+                                index = index < 0 ? 0 : (index > 1 ? 1 : index);
+                                if (index == 0)
+                                    getTile().state1 = (((int) src.data) != 0);
+                                else
+                                    getTile().state2 = (((int) src.data) != 0);
+
+                                getTile().refresh();
+
+                                return Result.OK;
+                            }));
+                        }
+                    }.run();
+
+                }
+            }
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
 
     /** See {@code AdBoard#registerCodec} for why the block classes hand the codec to the shared table. */
     public static DeferredHolder<MapCodec<? extends Block>, MapCodec<? extends Block>> registerCodec(

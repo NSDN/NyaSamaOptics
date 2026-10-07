@@ -36,11 +36,9 @@ import java.util.Optional;
  * process) needs no code change here. {@link TextModel} is where the old implementation did depend on
  * a discarded pipeline, and that class documents its own mapping.</p>
  *
- * <p><b>Deferred (resources):</b> {@code assets/nyasamaoptics/fonts/*.bin} have not been copied into v3
- * yet (the optics module currently ships only {@code META-INF}), so every table loads as {@code null}
- * and {@link #getModel} returns {@code null} until the assets are moved over from the 1.12.2 tree.
- * This is a packaging task, not a code one; the loader logs the mismatch exactly as 1.12.2 did
- * ("should load: N, then loaded: -1").</p>
+ * <p><b>Resources:</b> {@code assets/nyasamaoptics/fonts/*.bin} are imported (7 files, ~6.1 MB: ascii.bin
+ * plus six GB2312 tables). If a table is null at runtime the resource failed to load, which this class
+ * logs exactly as it did in 1.12.2.</p>
  */
 public class FontLoader {
     private static final String ASCII_Path = "nyasamaoptics:fonts/ascii.bin";

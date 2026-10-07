@@ -1,14 +1,22 @@
 package club.nsdn.nyasamaoptics.tileblock.deco;
 
 import club.nsdn.nyasamaoptics.NyaSamaOptics;
+import club.nsdn.nyasamaoptics.util.DecoTextCore;
+import club.nsdn.nyasamaoptics.util.font.FontLoader;
 import club.nsdn.nyasamatelecom.api.device.DeviceBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
+import club.nsdn.nyasamatelecom.api.util.NSASM;
+import club.nsdn.nyasamatelecom.api.util.Util;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -16,12 +24,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -64,11 +74,15 @@ import java.util.function.Supplier;
  *       constructor shape used by these device ports).</li>
  * </ul>
  *
- * <p><b>Deferred (script interaction):</b> 1.12.2's {@code onBlockActivated} ran a {@code DecoTextCore}
- * program (read off an NGT tablet) against this board. {@code DecoTextCore} belongs to the optics
- * {@code util} package, which is not ported yet, so the hook is omitted rather than stubbed; in 1.21.1
- * it becomes {@code useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand,
- * BlockHitResult)} returning {@code ItemInteractionResult}.</p>
+ * <p><b>Script interaction (connected):</b> 1.12.2's {@code onBlockActivated} ran a {@code DecoTextCore}
+ * program (read off an NGT tablet) against this board; that is
+ * {@link #useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)}
+ * now, returning {@code ItemInteractionResult}. The 1.12.2 {@code true} -- a matching block entity --
+ * is {@code SUCCESS} and both {@code false} exits (wrong block entity, no NGT list on the held stack)
+ * are {@code PASS_TO_DEFAULT_BLOCK_INTERACTION}.</p>
+ *
+ * <p><b>Still deferred:</b> the render bounds noted above (1024.0 view distance squared, a 3-block
+ * render box) and the text drawing itself belong to the block entity renderer, ported separately.</p>
  */
 public class GuideBoard extends DeviceBase {
 
@@ -124,14 +138,12 @@ public class GuideBoard extends DeviceBase {
 
         public TileEntityGuideBoard(BlockEntityType<?> type, BlockPos pos, BlockState state) {
             super(type, pos, state);
-            // 1.12.2: align = FontLoader.ALIGN_CENTER (== 4)
-            align = 4;
+            align = FontLoader.ALIGN_CENTER;
             setInfo(4, 1, 0.75, 0.25);
 
             content = "\u9000\u51fa";
             scale = 0.15;
-            // 1.12.2: font = FontLoader.FONT_HEI (== 3)
-            font = 3;
+            font = FontLoader.FONT_HEI;
             offsetX = 0.15;
 
             subContent = "\u2191";
@@ -264,10 +276,65 @@ public class GuideBoard extends DeviceBase {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-    /*
-     * NOT PORTED HERE: onBlockActivated ran a DecoTextCore program (read off an NGT tablet) to rewrite
-     * this board's text -- waiting on the optics util package, as the class note says.
+    /**
+     * 1.12.2 {@code onBlockActivated}, carried over: the NGT tablet's program is run against this
+     * board's block entity through a {@code DecoTextCore} anonymous subclass supplying
+     * {@code getWorld/getX/getY/getZ/getPlayer/getTile} (no {@code getWrapper()} any more). The
+     * server-side guard, the main-hand stack and the early no-NGT-list exit are the original ones, and
+     * the boolean result maps as {@code SUCCESS} / {@code PASS_TO_DEFAULT_BLOCK_INTERACTION}.
      */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TileEntityGuideBoard) {
+            TileEntityGuideBoard text = (TileEntityGuideBoard) blockEntity;
+            if (!level.isClientSide) {
+                ItemStack stack = player.getMainHandItem();
+                if (!stack.isEmpty()) {
+
+                    ListTag list = Util.getTagListFromNGT(stack);
+                    if (list == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    String[][] code = NSASM.getCode(list);
+                    new DecoTextCore(code) {
+                        @Override
+                        public Level getWorld() {
+                            return level;
+                        }
+
+                        @Override
+                        public double getX() {
+                            return pos.getX();
+                        }
+
+                        @Override
+                        public double getY() {
+                            return pos.getY();
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return pos.getZ();
+                        }
+
+                        @Override
+                        public Player getPlayer() {
+                            return player;
+                        }
+
+                        @Override
+                        public TileEntityGuideBoard getTile() {
+                            return text;
+                        }
+                    }.run();
+
+                }
+            }
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
 
     /**
      * Registers this block's {@code MapCodec}, as {@code AdBoard#registerCodec} does; the

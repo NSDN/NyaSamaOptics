@@ -4,13 +4,21 @@ import club.nsdn.nyasamaoptics.NyaSamaOptics;
 import club.nsdn.nyasamaoptics.OpticsBlocks;
 import club.nsdn.nyasamaoptics.api.ILightSource;
 import club.nsdn.nyasamaoptics.api.LightBeam;
+import club.nsdn.nyasamaoptics.util.DecoTextCore;
+import club.nsdn.nyasamaoptics.util.font.FontLoader;
 import club.nsdn.nyasamatelecom.api.device.DeviceBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityBase;
 import club.nsdn.nyasamatelecom.api.tileentity.TileEntityReceiver;
+import club.nsdn.nyasamatelecom.api.util.NSASM;
+import club.nsdn.nyasamatelecom.api.util.Util;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -18,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -50,19 +59,22 @@ import java.util.function.Supplier;
  *       ({@code BlockEntityRenderer#getViewDistance} / {@code shouldRender}); the numbers are recorded
  *       here so the renderer port can reuse them <b>verbatim</b>: view distance squared 1024.0,
  *       render box radius 3.</li>
- *   <li>Font/alignment defaults come from the deferred font utility, so the 1.12.2
- *       {@code FontLoader.ALIGN_CENTER} (4) and {@code FontLoader.FONT_LONG} (4) appear as literals for
- *       now, each marked at the point of use.</li>
+ *   <li>Font/alignment defaults now reference the ported font utility directly:
+ *       {@code FontLoader.ALIGN_CENTER} and {@code FontLoader.FONT_LONG} take the place of the
+ *       literals this class carried while {@code util.font} was still missing.</li>
  * </ul>
  *
- * <p><b>Deferred (script interaction):</b> 1.12.2's {@code onBlockActivated} read an NSASM program off
+ * <p><b>Script interaction (connected):</b> 1.12.2's {@code onBlockActivated} read an NSASM program off
  * the held NGT tablet and ran a {@code DecoTextCore} against this block entity to rewrite its text.
- * {@code DecoTextCore} lives in the optics {@code util} package, which is not ported yet, so the hook is
- * omitted rather than stubbed. In 1.21.1 it becomes
- * {@code useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand, BlockHitResult)}
- * returning {@code ItemInteractionResult} (not {@code InteractionResult}). The 1.12.2 hook returned
- * {@code true} whenever the block entity matched, and {@code false} when the held stack carried no NGT
- * list -- that two-way outcome must be preserved when the hook is restored.</p>
+ * That is {@link #useItemOn(ItemStack, BlockState, Level, BlockPos, Player, InteractionHand,
+ * BlockHitResult)} now, returning {@code ItemInteractionResult} (not {@code InteractionResult}): the
+ * 1.12.2 {@code true} -- the block entity matched -- maps to {@code SUCCESS}, and the {@code false}
+ * cases (wrong block entity, or a held stack with no NGT list) map to
+ * {@code PASS_TO_DEFAULT_BLOCK_INTERACTION}.</p>
+ *
+ * <p><b>Still deferred (renderer):</b> the render bounds recorded above
+ * ({@code getMaxRenderDistanceSquared} 1024.0, a 3-block render box) and the drawing of the text model
+ * itself belong to the block entity renderer, which is ported separately.</p>
  */
 public class AdBoard extends DeviceBase implements ILightSource {
 
@@ -129,15 +141,13 @@ public class AdBoard extends DeviceBase implements ILightSource {
 
         public TileEntityAdBoard(BlockEntityType<?> type, BlockPos pos, BlockState state) {
             super(type, pos, state);
-            // 1.12.2: align = FontLoader.ALIGN_CENTER (== 4)
-            align = 4;
+            align = FontLoader.ALIGN_CENTER;
             setInfo(12, 1, 0.125, 1);
 
             content = "\u5e7b";
             color = 0x161616;
             scale = 0.3;
-            // 1.12.2: font = FontLoader.FONT_LONG (== 4)
-            font = 4;
+            font = FontLoader.FONT_LONG;
 
             subContent = "genso";
             subColor = 0x323232;
@@ -210,12 +220,73 @@ public class AdBoard extends DeviceBase implements ILightSource {
         setDeviceMeta(level, pos, 0);
     }
 
-    /*
-     * NOT PORTED HERE: onBlockActivated ran a DecoTextCore program (read off an NGT tablet) to rewrite
-     * this board's text. That needs the optics util package (DecoTextCore, FontLoader), so the hook is
-     * left out until then -- noted rather than silently dropped. See the class note for the exact
-     * 1.21.1 hook and its return-value mapping.
+    /**
+     * 1.12.2 {@code onBlockActivated}, carried over. When the clicked block holds this board's block
+     * entity, the program on the held NGT tablet is run against it through a {@code DecoTextCore}
+     * anonymous subclass -- {@code getWorld/getX/getY/getZ/getPlayer/getTile} are the hooks the ported
+     * core asks for (the 1.12.2 {@code getWrapper()} no longer exists).
+     *
+     * <p>Both 1.12.2 exits are kept: running off the main-hand stack only, on the logical server
+     * ({@code !level.isClientSide}), and returning early when that stack carries no NGT list. The
+     * boolean outcome maps one-to-one -- {@code true} (a matching block entity) is now
+     * {@code SUCCESS}, every {@code false} is {@code PASS_TO_DEFAULT_BLOCK_INTERACTION}.</p>
+     *
+     * <p>The stack is taken from {@code player.getMainHandItem()} exactly as the old
+     * {@code getHeldItemMainhand()} did, so an off-hand activation still reads the main hand. That is
+     * why the {@code itemStack} parameter of this hook is deliberately not the one used.</p>
      */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hitResult) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TileEntityAdBoard) {
+            TileEntityAdBoard text = (TileEntityAdBoard) blockEntity;
+            if (!level.isClientSide) {
+                ItemStack stack = player.getMainHandItem();
+                if (!stack.isEmpty()) {
+
+                    ListTag list = Util.getTagListFromNGT(stack);
+                    if (list == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    String[][] code = NSASM.getCode(list);
+                    new DecoTextCore(code) {
+                        @Override
+                        public Level getWorld() {
+                            return level;
+                        }
+
+                        @Override
+                        public double getX() {
+                            return pos.getX();
+                        }
+
+                        @Override
+                        public double getY() {
+                            return pos.getY();
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return pos.getZ();
+                        }
+
+                        @Override
+                        public Player getPlayer() {
+                            return player;
+                        }
+
+                        @Override
+                        public TileEntityAdBoard getTile() {
+                            return text;
+                        }
+                    }.run();
+
+                }
+            }
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
 
     /**
      * Registers this block's {@code MapCodec}. 1.20.5+ requires every custom block to have one and
