@@ -1,0 +1,6 @@
+{
+  "parent": "nyasamaoptics:block/guide_board_dp",
+  "textures": {
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+}

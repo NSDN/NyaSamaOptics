@@ -1,0 +1,6 @@
+{
+  "parent": "nyasamaoptics:block/text_wall_tag",
+  "textures": {
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+}

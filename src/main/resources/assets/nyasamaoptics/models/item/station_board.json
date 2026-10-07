@@ -1,0 +1,7 @@
+{
+  "parent": "nyasamaoptics:block/station_board",
+  "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "fore": "nyasamaoptics:block/station_board_fore"
+        }
+}

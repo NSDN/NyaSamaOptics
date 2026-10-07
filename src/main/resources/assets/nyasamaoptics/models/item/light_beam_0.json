@@ -1,0 +1,6 @@
+{
+  "parent": "nyasamaoptics:block/cube_block",
+  "textures": {
+          "texture": "nyasamaoptics:block/light_beam"
+        }
+}

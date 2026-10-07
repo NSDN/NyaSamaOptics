@@ -1,0 +1,7 @@
+{
+  "parent": "nyasamaoptics:block/adsorption_lamp",
+  "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+}

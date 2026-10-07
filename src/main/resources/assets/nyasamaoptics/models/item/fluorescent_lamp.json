@@ -1,0 +1,7 @@
+{
+  "parent": "nyasamaoptics:block/fluorescent_lamp",
+  "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+}

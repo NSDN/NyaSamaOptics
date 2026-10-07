@@ -1,0 +1,7 @@
+{
+  "parent": "nyasamaoptics:block/spot_light_up",
+  "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+}
