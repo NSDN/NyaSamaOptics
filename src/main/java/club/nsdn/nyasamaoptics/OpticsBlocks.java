@@ -1,5 +1,6 @@
 package club.nsdn.nyasamaoptics;
 
+import club.nsdn.nyasamaoptics.api.LightBeam;
 import club.nsdn.nyasamaoptics.block.BlockAdsorptionLamp;
 import club.nsdn.nyasamaoptics.block.BlockFluorescentLamp;
 import club.nsdn.nyasamaoptics.block.BlockLogo;
@@ -74,5 +75,22 @@ public final class OpticsBlocks {
         DeferredBlock<BlockFluorescentLamp> fluorescentLamp = BLOCKS.register("fluorescent_lamp",
                 () -> new BlockFluorescentLamp(glass));
         ITEMS.registerSimpleBlockItem(fluorescentLamp);
+
+        // Light beams: invisible, unbreakable, replaceable, no drops.
+        BlockBehaviour.Properties beam = BlockBehaviour.Properties.of()
+                .mapColor(MapColor.NONE)
+                .noCollission()
+                .noOcclusion()
+                .replaceable()
+                .strength(-1.0F, 3600000.0F)
+                .lightLevel(state -> 15)
+                .noLootTable();
+
+        DeferredBlock<LightBeam> lightBeamDot = BLOCKS.register("light_beam_0",
+                () -> new LightBeam(beam, LightBeam.TYPE_DOT));
+        ITEMS.registerSimpleBlockItem(lightBeamDot);
+        DeferredBlock<LightBeam> lightBeamLine = BLOCKS.register("light_beam_1",
+                () -> new LightBeam(beam, LightBeam.TYPE_LINE));
+        ITEMS.registerSimpleBlockItem(lightBeamLine);
     }
 }
