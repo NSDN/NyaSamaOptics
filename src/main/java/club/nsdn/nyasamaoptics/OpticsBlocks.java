@@ -1,6 +1,10 @@
 package club.nsdn.nyasamaoptics;
 
+import club.nsdn.nyasamaoptics.block.BlockAdsorptionLamp;
 import club.nsdn.nyasamaoptics.block.BlockFluorescentLamp;
+import club.nsdn.nyasamaoptics.block.BlockLogo;
+import club.nsdn.nyasamaoptics.block.BlockNSDNLogo;
+import club.nsdn.nyasamaoptics.block.BlockSign;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
@@ -46,15 +50,29 @@ public final class OpticsBlocks {
 
     static {
         BLOCK_TYPES.register("fluorescent_lamp", () -> BlockFluorescentLamp.CODEC);
+        BLOCK_TYPES.register("adsorption_lamp", () -> BlockAdsorptionLamp.CODEC);
 
-        // Glass material with a light level of 1 in 1.12.2 (its own light value is a full 15).
+        // Glass material: 1.12.2 used Material.GLASS with light level 1 and resistance 10.
+        BlockBehaviour.Properties glass = BlockBehaviour.Properties.of()
+                .mapColor(MapColor.NONE)
+                .sound(SoundType.GLASS)
+                .strength(2.0F, 10.0F)
+                .lightLevel(state -> 15)
+                .noOcclusion();
+
+        DeferredBlock<BlockSign> sign = BLOCKS.register("nso_sign", () -> new BlockSign(glass));
+        ITEMS.registerSimpleBlockItem(sign);
+        DeferredBlock<BlockNSDNLogo> nsdnLogo = BLOCKS.register("nso_nsdn", () -> new BlockNSDNLogo(glass));
+        ITEMS.registerSimpleBlockItem(nsdnLogo);
+        DeferredBlock<BlockLogo> logo = BLOCKS.register("nso_logo", () -> new BlockLogo(glass));
+        ITEMS.registerSimpleBlockItem(logo);
+
+        DeferredBlock<BlockAdsorptionLamp> adsorptionLamp = BLOCKS.register("adsorption_lamp",
+                () -> new BlockAdsorptionLamp(glass));
+        ITEMS.registerSimpleBlockItem(adsorptionLamp);
+
         DeferredBlock<BlockFluorescentLamp> fluorescentLamp = BLOCKS.register("fluorescent_lamp",
-                () -> new BlockFluorescentLamp(BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.NONE)
-                        .sound(SoundType.GLASS)
-                        .strength(2.0F, 10.0F)
-                        .lightLevel(state -> 15)
-                        .noOcclusion()));
+                () -> new BlockFluorescentLamp(glass));
         ITEMS.registerSimpleBlockItem(fluorescentLamp);
     }
 }
