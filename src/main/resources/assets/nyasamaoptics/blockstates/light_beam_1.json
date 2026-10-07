@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "facing=north": [
+      {
+        "model": "nyasamaoptics:block/cube_block",
+        "textures": {
+          "texture": "nyasamaoptics:block/light_beam"
+        }
+      }
+    ],
+    "facing=south": [
+      {
+        "model": "nyasamaoptics:block/cube_block",
+        "textures": {
+          "texture": "nyasamaoptics:block/light_beam"
+        }
+      }
+    ],
+    "facing=west": [
+      {
+        "model": "nyasamaoptics:block/cube_block",
+        "textures": {
+          "texture": "nyasamaoptics:block/light_beam"
+        }
+      }
+    ],
+    "facing=east": [
+      {
+        "model": "nyasamaoptics:block/cube_block",
+        "textures": {
+          "texture": "nyasamaoptics:block/light_beam"
+        }
+      }
+    ],
+    "facing=up": [
+      {
+        "model": "nyasamaoptics:block/cube_block",
+        "textures": {
+          "texture": "nyasamaoptics:block/light_beam"
+        }
+      }
+    ],
+    "facing=down": [
+      {
+        "model": "nyasamaoptics:block/cube_block",
+        "textures": {
+          "texture": "nyasamaoptics:block/light_beam"
+        }
+      }
+    ]
+  }
+}

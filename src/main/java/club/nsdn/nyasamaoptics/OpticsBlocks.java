@@ -7,7 +7,17 @@ import club.nsdn.nyasamaoptics.block.BlockLogo;
 import club.nsdn.nyasamaoptics.block.BlockNSDNLogo;
 import club.nsdn.nyasamaoptics.block.BlockSign;
 import club.nsdn.nyasamaoptics.block.BlockSpotLight;
+import club.nsdn.nyasamaoptics.tileblock.deco.AdBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.GuideBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.StationBoard;
+import club.nsdn.nyasamaoptics.tileblock.deco.TextWall;
+import club.nsdn.nyasamaoptics.tileblock.holo.HoloJetRev;
+import club.nsdn.nyasamaoptics.tileblock.holo.PillarHead;
 import club.nsdn.nyasamaoptics.tileblock.light.RGBLight;
+import club.nsdn.nyasamaoptics.tileblock.screen.LEDPlate;
+import club.nsdn.nyasamaoptics.tileblock.screen.PlatformPlateFull;
+import club.nsdn.nyasamaoptics.tileblock.screen.PlatformPlateHalf;
+import club.nsdn.nyasamaoptics.tileblock.screen.StationLamp;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
@@ -129,6 +139,90 @@ public final class OpticsBlocks {
             ITEMS.registerSimpleBlockItem(light);
             RGBLight.noteRegistered(light);
         }
+
+        // Decoration / hologram devices. Each supplies its own codec to the shared block-type table.
+        AdBoard.registerCodec(BLOCK_TYPES);
+        GuideBoard.registerCodec(BLOCK_TYPES);
+        StationBoard.registerCodec(BLOCK_TYPES);
+        TextWall.registerCodec(BLOCK_TYPES);
+        HoloJetRev.registerCodec(BLOCK_TYPES);
+        PillarHead.registerCodec(BLOCK_TYPES);
+
+        DeferredBlock<AdBoard> adBoard = BLOCKS.register("ad_board", () -> new AdBoard(deviceProps(false)));
+        ITEMS.registerSimpleBlockItem(adBoard);
+        AdBoard.noteRegistered(adBoard.get());
+
+        DeferredBlock<StationBoard> stationBoard = BLOCKS.register("station_board", () -> new StationBoard(deviceProps(false)));
+        ITEMS.registerSimpleBlockItem(stationBoard);
+        StationBoard.noteRegistered(stationBoard.get());
+
+        // TextWall and GuideBoard each have a lit variant; the difference is the light level.
+        DeferredBlock<TextWall> textWall = BLOCKS.register("text_wall", () -> new TextWall(deviceProps(false)));
+        ITEMS.registerSimpleBlockItem(textWall);
+        TextWall.noteRegistered(textWall.get());
+        DeferredBlock<TextWall> textWallLit = BLOCKS.register("text_wall_lit", () -> new TextWall(deviceProps(true)));
+        ITEMS.registerSimpleBlockItem(textWallLit);
+        TextWall.noteRegistered(textWallLit.get());
+
+        // GuideBoard: name, id, lit, noPillar -- from the 1.12.2 BlockLoader table.
+        String[][] guideBoards = new String[][] {
+                { "guide_board_np", "false", "true" },
+                { "guide_board_sp", "false", "false" },
+                { "guide_board_dp", "false", "false" },
+                { "guide_board_np_lit", "true", "true" },
+                { "guide_board_sp_lit", "true", "false" },
+                { "guide_board_dp_lit", "true", "false" },
+        };
+        for (String[] info : guideBoards) {
+            boolean lit = Boolean.parseBoolean(info[1]);
+            boolean noPillar = Boolean.parseBoolean(info[2]);
+            DeferredBlock<GuideBoard> board = BLOCKS.register(info[0],
+                    () -> new GuideBoard(deviceProps(lit)).withNoPillar(noPillar));
+            ITEMS.registerSimpleBlockItem(board);
+            GuideBoard.noteRegistered(board.get());
+        }
+
+        DeferredBlock<HoloJetRev> holoJetRev = BLOCKS.register("holo_jet_rev", () -> new HoloJetRev(deviceProps(false)));
+        ITEMS.registerSimpleBlockItem(holoJetRev);
+        HoloJetRev.noteRegistered(holoJetRev.get());
+
+        DeferredBlock<PillarHead> pillarHead = BLOCKS.register("pillar_head", () -> new PillarHead(deviceProps(false)));
+        ITEMS.registerSimpleBlockItem(pillarHead);
+        PillarHead.noteRegistered(pillarHead.get());
+
+        // Screen devices: centralised block entity types, no custom codec (they inherit Block#codec).
+        DeferredBlock<LEDPlate> ledPlate = BLOCKS.register("led_plate",
+                () -> new LEDPlate(deviceProps(false), OpticsBlockEntities::ledPlateType));
+        ITEMS.registerSimpleBlockItem(ledPlate);
+        LEDPlate.noteRegistered(ledPlate);
+
+        DeferredBlock<PlatformPlateFull> platformPlateFull = BLOCKS.register("platform_plate_full",
+                () -> new PlatformPlateFull(deviceProps(false), OpticsBlockEntities::platformPlateFullType));
+        ITEMS.registerSimpleBlockItem(platformPlateFull);
+        PlatformPlateFull.noteRegistered(platformPlateFull);
+
+        DeferredBlock<PlatformPlateHalf> platformPlateHalf = BLOCKS.register("platform_plate_half",
+                () -> new PlatformPlateHalf(deviceProps(false), OpticsBlockEntities::platformPlateHalfType));
+        ITEMS.registerSimpleBlockItem(platformPlateHalf);
+        PlatformPlateHalf.noteRegistered(platformPlateHalf);
+
+        DeferredBlock<StationLamp> stationLamp = BLOCKS.register("station_lamp",
+                () -> new StationLamp(deviceProps(false), OpticsBlockEntities::stationLampType));
+        ITEMS.registerSimpleBlockItem(stationLamp);
+        StationLamp.noteRegistered(stationLamp);
+    }
+
+    /**
+     * Fresh properties for a device block. A new instance per block on purpose: Properties is mutable,
+     * so sharing one across dozens of blocks would leak later tweaks into every sibling.
+     */
+    private static BlockBehaviour.Properties deviceProps(boolean lit) {
+        BlockBehaviour.Properties properties = BlockBehaviour.Properties.of()
+                .mapColor(MapColor.NONE)
+                .sound(SoundType.GLASS)
+                .strength(2.0F, 10.0F)
+                .noOcclusion();
+        return lit ? properties.lightLevel(state -> 15) : properties;
     }
 
     /** Kept in a field because devices (the spotlight) need the beam block at runtime. */

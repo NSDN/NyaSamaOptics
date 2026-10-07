@@ -1,0 +1,160 @@
+{
+  "variants": {
+    "vertical=up,facing=north,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ],
+    "vertical=up,facing=north,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ],
+    "vertical=up,facing=east,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 90
+      }
+    ],
+    "vertical=up,facing=east,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 90
+      }
+    ],
+    "vertical=up,facing=south,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 180
+      }
+    ],
+    "vertical=up,facing=south,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 180
+      }
+    ],
+    "vertical=up,facing=west,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 270
+      }
+    ],
+    "vertical=up,facing=west,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 270
+      }
+    ],
+    "vertical=mid,facing=north,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ],
+    "vertical=mid,facing=north,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ],
+    "vertical=mid,facing=east,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 90
+      }
+    ],
+    "vertical=mid,facing=east,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 90
+      }
+    ],
+    "vertical=mid,facing=south,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 180
+      }
+    ],
+    "vertical=mid,facing=south,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 180
+      }
+    ],
+    "vertical=mid,facing=west,powered=true": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 270
+      }
+    ],
+    "vertical=mid,facing=west,powered=false": [
+      {
+        "model": "nyasamaoptics:block/spot_light_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 270
+      }
+    ]
+  }
+}

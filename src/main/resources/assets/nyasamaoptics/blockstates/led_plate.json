@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "nyasamaoptics:block/led_plate",
+        "textures": {
+          "base": "nyasamaoptics:block/light_black",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ]
+  }
+}

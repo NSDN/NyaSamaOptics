@@ -1,0 +1,121 @@
+{
+  "variants": {
+    "vertical=down,facing=north": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ],
+    "vertical=down,facing=east": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 90
+      }
+    ],
+    "vertical=down,facing=south": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 180
+      }
+    ],
+    "vertical=down,facing=west": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 270
+      }
+    ],
+    "vertical=mid,facing=north": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ],
+    "vertical=mid,facing=east": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 90
+      }
+    ],
+    "vertical=mid,facing=south": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 180
+      }
+    ],
+    "vertical=mid,facing=west": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_mid",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 270
+      }
+    ],
+    "vertical=up,facing=north": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        }
+      }
+    ],
+    "vertical=up,facing=east": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 90
+      }
+    ],
+    "vertical=up,facing=south": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 180
+      }
+    ],
+    "vertical=up,facing=west": [
+      {
+        "model": "nyasamaoptics:block/adsorption_lamp_up",
+        "textures": {
+          "base": "nyasamaoptics:block/light_base",
+          "shell": "nyasamaoptics:block/light_shell"
+        },
+        "y": 270
+      }
+    ]
+  }
+}
