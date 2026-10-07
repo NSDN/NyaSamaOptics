@@ -90,6 +90,7 @@ public final class OpticsBlocks {
         DeferredBlock<LightBeam> lightBeamDot = BLOCKS.register("light_beam_0",
                 () -> new LightBeam(beam, LightBeam.TYPE_DOT));
         ITEMS.registerSimpleBlockItem(lightBeamDot);
+        LIGHT_BEAM_DOT = lightBeamDot;
         DeferredBlock<LightBeam> lightBeamLine = BLOCKS.register("light_beam_1",
                 () -> new LightBeam(beam, LightBeam.TYPE_LINE));
         ITEMS.registerSimpleBlockItem(lightBeamLine);
@@ -103,9 +104,15 @@ public final class OpticsBlocks {
 
     /** Kept in a field because devices (the spotlight) need the beam block at runtime. */
     private static DeferredBlock<LightBeam> LIGHT_BEAM_LINE;
+    private static DeferredBlock<LightBeam> LIGHT_BEAM_DOT;
 
     /** The line-type light beam, or null before registration completes. */
     public static LightBeam lineLight() {
         return LIGHT_BEAM_LINE == null ? null : LIGHT_BEAM_LINE.get();
+    }
+
+    /** The dot-type light beam, or null before registration completes. */
+    public static LightBeam dotLight() {
+        return LIGHT_BEAM_DOT == null ? null : LIGHT_BEAM_DOT.get();
     }
 }
