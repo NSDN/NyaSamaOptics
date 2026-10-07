@@ -49,14 +49,19 @@ import java.util.function.Supplier;
  */
 public class RGBLight extends DeviceBase implements ILightSource {
 
-    /** Blocks this class backs; filled by {@code OpticsBlocks} so the block entity type can name them. */
-    private static final List<Block> REGISTERED = new ArrayList<>();
+    /**
+     * Blocks this class backs; filled by {@code OpticsBlocks} with deferred holders so the block entity
+     * type can name them. Holders, not blocks: a type's supplier runs at registration time, which is
+     * after the blocks exist, whereas the static table that creates them runs earlier.
+     */
+    private static final List<net.neoforged.neoforge.registries.DeferredBlock<RGBLight>> REGISTERED =
+            new ArrayList<>();
 
     public static Block[] registeredBlocks() {
-        return REGISTERED.toArray(new Block[0]);
+        return REGISTERED.stream().map(net.neoforged.neoforge.registries.DeferredBlock::get).toArray(Block[]::new);
     }
 
-    public static void noteRegistered(Block block) {
+    public static void noteRegistered(net.neoforged.neoforge.registries.DeferredBlock<RGBLight> block) {
         REGISTERED.add(block);
     }
 

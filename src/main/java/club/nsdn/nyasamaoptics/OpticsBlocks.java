@@ -7,6 +7,7 @@ import club.nsdn.nyasamaoptics.block.BlockLogo;
 import club.nsdn.nyasamaoptics.block.BlockNSDNLogo;
 import club.nsdn.nyasamaoptics.block.BlockSign;
 import club.nsdn.nyasamaoptics.block.BlockSpotLight;
+import club.nsdn.nyasamaoptics.tileblock.light.RGBLight;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
@@ -100,6 +101,34 @@ public final class OpticsBlocks {
                 () -> new BlockSpotLight(glass.lightLevel(state ->
                         state.getValue(BlockSpotLight.POWERED) ? 15 : 0)));
         ITEMS.registerSimpleBlockItem(spotLight);
+
+        // The ten RGB light variants: name, id, box size, flood-light flag (from BlockLoader).
+        String[][] rgbLights = new String[][] {
+                { "PillarBody", "pillar_body", "1", "1", "0.5", "false" },
+                { "BlockAdsorptionLampLarge", "adsorption_lamp_large", "1", "0.125", "1", "false" },
+                { "BlockAdsorptionLampMono", "adsorption_lamp_mono", "0.25", "0.125", "0.25", "false" },
+                { "BlockAdsorptionLampMulti", "adsorption_lamp_multi", "1", "0.125", "0.25", "false" },
+                { "BlockFluorescentLight", "fluorescent_light", "1", "0.1875", "0.25", "false" },
+                { "BlockFluorescentLightFlock", "fluorescent_light_flock", "1", "0.25", "0.625", "false" },
+                { "BlockMosaicLightMono", "mosaic_light_mono", "1", "0.5", "1", "true" },
+                { "BlockMosaicLightMonoSmall", "mosaic_light_mono_small", "0.625", "0.25", "0.625", "true" },
+                { "BlockMosaicLightMulti", "mosaic_light_multi", "1", "0.5", "1", "false" },
+                { "BlockMosaicLightMultiSmall", "mosaic_light_multi_small", "1", "0.25", "0.625", "false" },
+                { "BlockPlatformLightFull", "platform_light_full", "1", "1", "0.625", "false" },
+                { "BlockPlatformLightHalf", "platform_light_half", "1", "0.5", "0.5", "false" },
+                { "BlockCuballLamp", "cuball_lamp", "1", "1", "1", "false" },
+        };
+        for (String[] info : rgbLights) {
+            String id = info[1];
+            float x = Float.parseFloat(info[2]);
+            float y = Float.parseFloat(info[3]);
+            float z = Float.parseFloat(info[4]);
+            boolean flood = Boolean.parseBoolean(info[5]);
+            DeferredBlock<RGBLight> light = BLOCKS.register(id,
+                    () -> new RGBLight(glass, OpticsBlockEntities::rgbLightType, id, x, y, z, flood));
+            ITEMS.registerSimpleBlockItem(light);
+            RGBLight.noteRegistered(light);
+        }
     }
 
     /** Kept in a field because devices (the spotlight) need the beam block at runtime. */

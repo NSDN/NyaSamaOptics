@@ -1,8 +1,10 @@
 package club.nsdn.nyasamaoptics;
 
 import net.minecraft.core.registries.Registries;
+import club.nsdn.nyasamaoptics.tileblock.light.RGBLight;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
@@ -36,5 +38,26 @@ public final class OpticsBlockEntities {
 
     public static void register(IEventBus modBus) {
         BLOCK_ENTITIES.register(modBus);
+    }
+
+    /**
+     * Shared by every RGB light variant.
+     *
+     * <p>Signature note, verified with javap against neoforge-21.1.256-merged.jar:
+     * {@code BlockEntityType$BlockEntitySupplier<T>} is {@code T create(BlockPos, BlockState)} -- the
+     * entity type is <b>not</b> passed in, unlike the {@code BlockEntity(BlockEntityType, BlockPos,
+     * BlockState)} constructor. Vanilla therefore resolves its own type holder lazily inside the
+     * supplier, which is what the lambda below does: {@code RGB_LIGHT.get()} is only evaluated when a
+     * block entity is actually created, long after registration.</p>
+     */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<?>> RGB_LIGHT =
+            BLOCK_ENTITIES.register("rgb_light", () -> BlockEntityType.Builder
+                    .of((pos, state) -> new RGBLight.TileEntityRGBLight(rgbLightType(), pos, state),
+                            RGBLight.registeredBlocks())
+                    .build(null));
+
+    /** Convenience accessor for the block classes and {@code DeviceBase}. */
+    public static BlockEntityType<?> rgbLightType() {
+        return RGB_LIGHT.get();
     }
 }
