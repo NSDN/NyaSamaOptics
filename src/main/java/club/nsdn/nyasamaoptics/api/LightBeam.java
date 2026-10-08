@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.thewdj.optics.ILightBeam;
+import cn.ac.nya.optics.ILightBeam;
 
 /**
  * A beam of light, ported from the 1.12.2 {@code club.nsdn.nyasamaoptics.api.LightBeam}.

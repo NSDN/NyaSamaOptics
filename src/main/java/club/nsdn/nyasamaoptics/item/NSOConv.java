@@ -47,7 +47,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * {@code else} of the {@code TileEntityBase} test and printed
  * {@code "[NSO] I: <mWInput> mW, O: <mWOutput> mW"} in
  * {@code net.minecraft.util.text.TextFormatting.AQUA}. The interface itself <i>has</i> been ported
- * ({@code core}: {@code org.thewdj.optics.IOpticalDevice} declares {@code mWInput()} and
+ * ({@code core}: {@code cn.ac.nya.optics.IOpticalDevice} declares {@code mWInput()} and
  * {@code mWOutput()}), but its only implementor in this tree is {@code opticzCraft}'s
  * {@code AbsOpticzDev}, which lives in another module and is not reachable from {@code nyasamaoptics};
  * no ported optics block entity implements it yet. The branch is therefore omitted rather than
