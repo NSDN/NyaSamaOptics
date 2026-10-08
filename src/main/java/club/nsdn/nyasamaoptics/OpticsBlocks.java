@@ -52,6 +52,13 @@ public final class OpticsBlocks {
     public static final DeferredRegister<MapCodec<? extends Block>> BLOCK_TYPES =
             DeferredRegister.create(BuiltInRegistries.BLOCK_TYPE, NyaSamaOptics.MODID);
 
+    /**
+     * 1.12.2 {@code BlockLoader.logo} (id {@code nso_logo}); also the icon of the module's creative tab,
+     * which asked for it as {@code itemBlocks.get(BlockLoader.logo).getDefaultInstance()} -- see
+     * {@code creativetab.CreativeTabLoader}.
+     */
+    public static DeferredBlock<BlockLogo> LOGO;
+
     private OpticsBlocks() {
     }
 
@@ -77,8 +84,8 @@ public final class OpticsBlocks {
         ITEMS.registerSimpleBlockItem(sign);
         DeferredBlock<BlockNSDNLogo> nsdnLogo = BLOCKS.register("nso_nsdn", () -> new BlockNSDNLogo(glass));
         ITEMS.registerSimpleBlockItem(nsdnLogo);
-        DeferredBlock<BlockLogo> logo = BLOCKS.register("nso_logo", () -> new BlockLogo(glass));
-        ITEMS.registerSimpleBlockItem(logo);
+        LOGO = BLOCKS.register("nso_logo", () -> new BlockLogo(glass));
+        ITEMS.registerSimpleBlockItem(LOGO);
 
         DeferredBlock<BlockAdsorptionLamp> adsorptionLamp = BLOCKS.register("adsorption_lamp",
                 () -> new BlockAdsorptionLamp(glass));

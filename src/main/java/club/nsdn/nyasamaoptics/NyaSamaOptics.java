@@ -1,5 +1,6 @@
 package club.nsdn.nyasamaoptics;
 
+import club.nsdn.nyasamaoptics.creativetab.CreativeTabLoader;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -17,6 +18,9 @@ import org.slf4j.LoggerFactory;
  * {@code docs/12-HANDOVER.md} as the calls that wire this module's registries in. The module's block
  * entity types stay unwired for now ({@link OpticsBlockEntities#register}): the devices that would
  * need them are still being ported, and the handover note records the remaining work.</p>
+ *
+ * <p>{@code CreativeTabLoader.register} restores the 1.12.2 {@code tabNyaSamaOptics}: 1.12.2 called its
+ * constructor from {@code CommonProxy.preInit}, and the deferred register takes that place.</p>
  */
 @Mod(NyaSamaOptics.MODID)
 public class NyaSamaOptics {
@@ -27,6 +31,7 @@ public class NyaSamaOptics {
     public NyaSamaOptics(IEventBus modBus, ModContainer container) {
         OpticsBlocks.register(modBus);
         OpticsItems.register(modBus);
+        CreativeTabLoader.register(modBus);
         LOGGER.info("[{}] v3 skeleton loaded (NeoForge, MC 1.21.1)", MODID);
     }
 }
