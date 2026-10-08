@@ -1,6 +1,3 @@
 {
-  "parent": "block/cube_all",
-  "textures": {
-    "all": "nyasamaoptics:block/nso_logo"
-  }
+  "parent": "nyasamaoptics:block/nso_logo"
 }

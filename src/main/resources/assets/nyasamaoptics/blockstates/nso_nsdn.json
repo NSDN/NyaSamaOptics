@@ -1,7 +1,7 @@
 {
   "variants": {
-    "": [
-      {}
-    ]
+    "": {
+      "model": "nyasamaoptics:block/nsdn_logo"
+    }
   }
 }
