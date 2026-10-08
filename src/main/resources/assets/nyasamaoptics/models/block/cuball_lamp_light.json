@@ -1,0 +1,9 @@
+{
+  "loader": "neoforge:obj",
+  "model": "nyasamaoptics:models/block/cuball_lamp_light.obj",
+  "mtl_override": "nyasamaoptics:models/block/cuball_lamp_light.mtl",
+  "automatic_culling": false,
+  "shade_quads": true,
+  "flip_v": false,
+  "emissive_ambient": false
+}

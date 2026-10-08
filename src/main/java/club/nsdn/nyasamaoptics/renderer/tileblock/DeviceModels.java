@@ -136,7 +136,7 @@ public final class DeviceModels {
                 // PillarHeadRenderer
                 "pillar_head_base",
                 // PlatformPlateRenderer
-                "platform_plate_full_base", "platform_plate_half_base",
+                "platform_light_full_base", "platform_light_half_base",
                 // StationBoardRenderer (whole model, plus the two parts it draws separately)
                 "station_board", "station_board__base", "station_board__1", "station_board__2",
                 // StationLampRenderer
