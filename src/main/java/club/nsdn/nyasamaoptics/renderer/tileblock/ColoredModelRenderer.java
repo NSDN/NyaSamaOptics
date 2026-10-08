@@ -41,6 +41,26 @@ public final class ColoredModelRenderer {
     private ColoredModelRenderer() {
     }
 
+    /**
+     * Per-vertex brightness of a uniform draw -- <b>this is not a colour array; never put the tint in
+     * it.</b>
+     *
+     * <p>{@code VertexConsumer#putBulkData(pose, quad, float[] brightness, red, green, blue, alpha, ...)}
+     * multiplies <em>each vertex</em> by {@code brightness[vertex]} -- verified in the 1.21.1
+     * {@code VertexConsumer} source: {@code f3 = brightness[l] * red * 255.0F} with {@code l} the vertex
+     * index 0..3. In vanilla the array carries the per-corner ambient-occlusion brightness
+     * ({@code ModelBlockRenderer} passes {@code aoFace.brightness}); the directional shade is the separate
+     * {@code red/green/blue} multiplier from {@code level.getShade(...)}.</p>
+     *
+     * <p>1.12.2's {@code GL11.glColor3f(r, g, b)} is the vertex colour, i.e. exactly those
+     * {@code red/green/blue} arguments -- so the tint goes there and this array stays pinned to 1. Putting
+     * the tint here instead multiplies vertex 0 by r, vertex 1 by g, vertex 2 by b and vertex 3 by 1: a
+     * four-corner gradient on every non-white tint (the RGB lamp colour, the 0.33 grey of a disabled
+     * sender, the optional back plate), invisible only when the tint happens to be white -- which is why
+     * this misuse stayed unnoticed.</p>
+     */
+    private static final float[] UNIFORM_BRIGHTNESS = { 1.0F, 1.0F, 1.0F, 1.0F };
+
     /** White -- the 1.12.2 default colour state, i.e. "no tint". */
     public static void render(BakedModel model, ResourceLocation texture, PoseStack poseStack,
                               MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
@@ -79,17 +99,22 @@ public final class ColoredModelRenderer {
         RandomSource random = RandomSource.create();
 
         BlockState state = null;
-        float[] color = { red, green, blue, 1.0F };
         int[] light = { packedLight, packedLight, packedLight, packedLight };
         for (Direction direction : Direction.values()) {
             for (BakedQuad quad : model.getQuads(state, direction, random)) {
-                // 1.12.2 left shading to the lighting pass; 1.21.1 applies it in putBulkData unless the
-                // third float is 1, so it is pinned to 1 to keep the flat fixed-function look.
-                consumer.putBulkData(pose, quad, color, 1.0F, 1.0F, 1.0F, 1.0F, light, packedOverlay, false);
+                // The tint travels in the red/green/blue arguments, never in the brightness array: that
+                // array is indexed per vertex and its element is one scalar applied to all three channels,
+                // so a tint placed there would scale vertex 0 by r, vertex 1 by g, vertex 2 by b and
+                // vertex 3 by 1 -- see UNIFORM_BRIGHTNESS. putBulkData adds no directional shade of its
+                // own (that is ModelBlockRenderer's diffuse pass), so the flat fixed-function look of
+                // 1.12.2 is kept.
+                consumer.putBulkData(pose, quad, UNIFORM_BRIGHTNESS, red, green, blue, 1.0F, light,
+                        packedOverlay, false);
             }
         }
         for (BakedQuad quad : model.getQuads(state, null, random)) {
-            consumer.putBulkData(pose, quad, color, 1.0F, 1.0F, 1.0F, 1.0F, light, packedOverlay, false);
+            consumer.putBulkData(pose, quad, UNIFORM_BRIGHTNESS, red, green, blue, 1.0F, light,
+                    packedOverlay, false);
         }
 
         poseStack.popPose();
