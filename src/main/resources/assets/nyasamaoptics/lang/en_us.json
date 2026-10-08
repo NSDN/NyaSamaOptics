@@ -35,5 +35,6 @@
   "block.nyasamaoptics.text_wall": "Text Wall",
   "block.nyasamaoptics.text_wall_lit": "Text Wall(Lit)",
   "info.light.color": "Light's color set to %s",
-  "itemGroup.tabNyaSamaOptics": "NyaSama Optics"
+  "itemGroup.tabNyaSamaOptics": "NyaSama Optics",
+  "item.nyasamaoptics.nso_conv": "NSO Conv"
 }

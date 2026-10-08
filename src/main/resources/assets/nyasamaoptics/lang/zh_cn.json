@@ -35,5 +35,6 @@
   "block.nyasamaoptics.text_wall": "大字壁",
   "block.nyasamaoptics.text_wall_lit": "发光大字壁",
   "info.light.color": "灯颜色设置为 %s",
-  "itemGroup.tabNyaSamaOptics": "喵玉光学"
+  "itemGroup.tabNyaSamaOptics": "喵玉光学",
+  "item.nyasamaoptics.nso_conv": "NSO-Conv"
 }
