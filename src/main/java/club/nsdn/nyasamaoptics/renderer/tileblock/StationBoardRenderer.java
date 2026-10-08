@@ -25,12 +25,12 @@ import java.util.Set;
  * <p>Kept verbatim: the {@code meta % 4} yaw about -Y, the {@code offset = 0.125F} used with
  * <b>opposite signs</b> for the glyph block ({@code +offset}) and the sub line ({@code -offset - 0.01F})
  * -- unique to this board -- the two-stage translation of the sub line (once before the -90 X rotation,
- * once at the outer level), and the label blocks' {@code 卤0.25 + offsetN} horizontal shift with their
+ * once at the outer level), and the label blocks' {@code ±0.25 + offsetN} horizontal shift with their
  * {@code 0.125} depth.</p>
  *
  * <p><b>Track B deferral, and what this class does instead.</b> {@code renderPartWithResource} is not
  * implemented (see the note in {@code nyasamatelecom}'s {@code RendererHelper} and
- * {@code docs/08-OBJ-PIPELINE.md} 搂5): 1.21.1's model system has no runtime per-group visibility, so the
+ * {@code docs/08-OBJ-PIPELINE.md} §5): 1.21.1's model system has no runtime per-group visibility, so the
  * pipeline splits named parts into separate models named {@code <stem>__<part>} (Track B). This renderer
  * therefore asks for {@code nyasamaoptics:block/station_board__base}, {@code __1} and {@code __2} -- the
  * pipeline's own naming -- and falls back to the whole {@code station_board} model when a part id is not

@@ -44,7 +44,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
  * reversed.</p>
  *
  * <p><b>What is not reproducible:</b> {@code renderEngine.bindTexture(_text)} bound
- * {@code textures/blocks/white.png} for the glyph pass. In 1.21.1 the glyph model is a
+ * {@code textures/blocks/white.png} for the glyph pass (1.12.2's plural folder name; the v3 assets
+ * live under {@code textures/block/}, see {@link ResourceLocations}). In 1.21.1 the glyph model is a
  * {@link TextModel} and {@code TextModel#render} chooses {@code TextureAtlas.LOCATION_BLOCKS} itself, so
  * the white plate is no longer bound. Geometry, colour (baked into the model by {@code TextModel}) and
  * transforms are unchanged.</p>

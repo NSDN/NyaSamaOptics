@@ -24,8 +24,9 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
  * <p><b>Changed in the port:</b> the glyph model comes from the block entity's own 1.12.2 seam --
  * {@code createModel()} then {@code model}, both restored on {@code TileEntityHoloText} by the tileblock
  * port -- so the original call order and the {@code model != null} guard survive. The
- * {@code renderEngine.bindTexture(_text)} / {@code textures/blocks/white.png} bind has no equivalent: a
- * {@code TextModel} carries its own texture ({@code TextModel#render} selects
+ * {@code renderEngine.bindTexture(_text)} / {@code textures/blocks/white.png} bind (1.12.2's plural
+ * folder name; the v3 assets live under {@code textures/block/}, see {@link ResourceLocations}) has
+ * no equivalent: a {@code TextModel} carries its own texture ({@code TextModel#render} selects
  * {@code TextureAtlas.LOCATION_BLOCKS}), so the white plate is unused here.</p>
  *
  * <p>Render bounds: 1.12.2 was a global renderer ({@code isGlobalRenderer} true, i.e. the text may be
