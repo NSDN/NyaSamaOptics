@@ -73,29 +73,34 @@ public final class OpticsBlocks {
         BLOCK_TYPES.register("adsorption_lamp", () -> BlockAdsorptionLamp.CODEC);
 
         // Glass material: 1.12.2 used Material.GLASS with light level 1 and resistance 10.
-        BlockBehaviour.Properties glass = BlockBehaviour.Properties.of()
-                .mapColor(MapColor.NONE)
-                .sound(SoundType.GLASS)
-                .strength(2.0F, 10.0F)
-                .lightLevel(state -> 15)
-                .noOcclusion();
-
-        DeferredBlock<BlockSign> sign = BLOCKS.register("nso_sign", () -> new BlockSign(glass));
+        //
+        // NOTE: this used to be a single `BlockBehaviour.Properties glass` local shared by every block
+        // below. `Properties` chains mutate in place and return `this`, so `spot_light` -- which bought
+        // its own light level by writing `glass.lightLevel(...)` -- silently handed that function to
+        // every later consumer of `glass`, including the RGB lights whose state has no POWERED. That is
+        // the sixth runClient crash -- integration/run/crash-reports/crash-2026-10-09_22.23.44-fml.txt,
+        // PORT-STATUS.md 8.3. Each block now asks for a fresh instance instead; see
+        // glassProps()/spotlightProps() at the bottom of this class.
+        DeferredBlock<BlockSign> sign = BLOCKS.register("nso_sign", () -> new BlockSign(glassProps()));
         ITEMS.registerSimpleBlockItem(sign);
-        DeferredBlock<BlockNSDNLogo> nsdnLogo = BLOCKS.register("nso_nsdn", () -> new BlockNSDNLogo(glass));
+        DeferredBlock<BlockNSDNLogo> nsdnLogo = BLOCKS.register("nso_nsdn", () -> new BlockNSDNLogo(glassProps()));
         ITEMS.registerSimpleBlockItem(nsdnLogo);
-        LOGO = BLOCKS.register("nso_logo", () -> new BlockLogo(glass));
+        LOGO = BLOCKS.register("nso_logo", () -> new BlockLogo(glassProps()));
         ITEMS.registerSimpleBlockItem(LOGO);
 
         DeferredBlock<BlockAdsorptionLamp> adsorptionLamp = BLOCKS.register("adsorption_lamp",
-                () -> new BlockAdsorptionLamp(glass));
+                () -> new BlockAdsorptionLamp(glassProps()));
         ITEMS.registerSimpleBlockItem(adsorptionLamp);
 
         DeferredBlock<BlockFluorescentLamp> fluorescentLamp = BLOCKS.register("fluorescent_lamp",
-                () -> new BlockFluorescentLamp(glass));
+                () -> new BlockFluorescentLamp(glassProps()));
         ITEMS.registerSimpleBlockItem(fluorescentLamp);
 
         // Light beams: invisible, unbreakable, replaceable, no drops.
+        //
+        // `beam` is still one shared instance, and deliberately so: nothing below ever calls a chained
+        // mutator on it, so there is nothing to leak. Sharing is only unsafe when a *reuse* site writes
+        // to the instance (configure once, then read only).
         BlockBehaviour.Properties beam = BlockBehaviour.Properties.of()
                 .mapColor(MapColor.NONE)
                 .noCollission()
@@ -115,8 +120,7 @@ public final class OpticsBlocks {
         LIGHT_BEAM_LINE = lightBeamLine;
 
         DeferredBlock<BlockSpotLight> spotLight = BLOCKS.register("spot_light",
-                () -> new BlockSpotLight(glass.lightLevel(state ->
-                        state.getValue(BlockSpotLight.POWERED) ? 15 : 0)));
+                () -> new BlockSpotLight(spotlightProps()));
         ITEMS.registerSimpleBlockItem(spotLight);
 
         // The ten RGB light variants: name, id, box size, flood-light flag (from BlockLoader).
@@ -142,7 +146,7 @@ public final class OpticsBlocks {
             float z = Float.parseFloat(info[4]);
             boolean flood = Boolean.parseBoolean(info[5]);
             DeferredBlock<RGBLight> light = BLOCKS.register(id,
-                    () -> new RGBLight(glass, OpticsBlockEntities::rgbLightType, id, x, y, z, flood));
+                    () -> new RGBLight(glassProps(), OpticsBlockEntities::rgbLightType, id, x, y, z, flood));
             ITEMS.registerSimpleBlockItem(light);
             RGBLight.noteRegistered(light);
         }
@@ -224,6 +228,39 @@ public final class OpticsBlocks {
                 () -> new StationLamp(deviceProps(false), OpticsBlockEntities::stationLampType));
         ITEMS.registerSimpleBlockItem(stationLamp);
         StationLamp.noteRegistered(stationLamp);
+    }
+
+    /**
+     * Fresh glass-material properties, one instance per block: 1.12.2 {@code Material.GLASS} with
+     * {@code setLightLevel(1)} (which 1.12.2 scaled to light level 15), {@code setHardness(2.0F)} and
+     * {@code setResistance(10.0F)}. A new instance every call on purpose -- {@code Properties} chains
+     * mutate in place, so a shared instance would leak one block's tweaks into every sibling.
+     */
+    private static BlockBehaviour.Properties glassProps() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.NONE)
+                .sound(SoundType.GLASS)
+                .strength(2.0F, 10.0F)
+                .lightLevel(state -> 15)
+                .noOcclusion();
+    }
+
+    /**
+     * The spotlight's own properties: {@link #glassProps()} with the light level replaced by the
+     * 1.12.2 {@code BlockSpotLight#getLightValue(IBlockState, IBlockAccess, BlockPos)} override,
+     * {@code state.getValue(POWERED) ? 15 : 0}.
+     *
+     * <p>The replacement has to go through the mutator because 1.21.1 {@code Properties} has no
+     * copy-constructor and no setter that returns a new instance (verified with {@code javap} on the
+     * merged jar: the only factories are {@code of()}, {@code ofFullCopy(BlockBehaviour)} and
+     * {@code ofLegacyCopy(BlockBehaviour)}, all of which take a <em>Block</em> or nothing). Calling it
+     * on the result of {@link #glassProps()} is safe precisely because that result is a brand-new
+     * instance with no other consumer. {@code POWERED}'s function must reach this block and no other:
+     * the RGB lights' state definition has no {@code POWERED}, so a shared instance makes them throw
+     * {@code IllegalArgumentException} while {@code StateHolder} is built.</p>
+     */
+    private static BlockBehaviour.Properties spotlightProps() {
+        return glassProps().lightLevel(state -> state.getValue(BlockSpotLight.POWERED) ? 15 : 0);
     }
 
     /**
