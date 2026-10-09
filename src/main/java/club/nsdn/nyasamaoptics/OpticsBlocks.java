@@ -148,6 +148,13 @@ public final class OpticsBlocks {
         }
 
         // Decoration / hologram devices. Each supplies its own codec to the shared block-type table.
+        //
+        // noteRegistered below is handed the *holder*, never holder.get(): this whole block runs from
+        // OpticsBlocks' class initialiser, i.e. during mod construction, and a DeferredHolder only
+        // becomes bound while its DeferredRegister consumes the RegisterEvent -- so holder.get() here
+        // throws NullPointerException: "Trying to access unbound value". Each device resolves the
+        // holders in registeredBlocks(), which its block entity type's supplier calls at registration
+        // time (same shape as RGBLight / LEDPlate / the platform plates / StationLamp further down).
         AdBoard.registerCodec(BLOCK_TYPES);
         GuideBoard.registerCodec(BLOCK_TYPES);
         StationBoard.registerCodec(BLOCK_TYPES);
@@ -157,19 +164,19 @@ public final class OpticsBlocks {
 
         DeferredBlock<AdBoard> adBoard = BLOCKS.register("ad_board", () -> new AdBoard(deviceProps(false)));
         ITEMS.registerSimpleBlockItem(adBoard);
-        AdBoard.noteRegistered(adBoard.get());
+        AdBoard.noteRegistered(adBoard);
 
         DeferredBlock<StationBoard> stationBoard = BLOCKS.register("station_board", () -> new StationBoard(deviceProps(false)));
         ITEMS.registerSimpleBlockItem(stationBoard);
-        StationBoard.noteRegistered(stationBoard.get());
+        StationBoard.noteRegistered(stationBoard);
 
         // TextWall and GuideBoard each have a lit variant; the difference is the light level.
         DeferredBlock<TextWall> textWall = BLOCKS.register("text_wall", () -> new TextWall(deviceProps(false)));
         ITEMS.registerSimpleBlockItem(textWall);
-        TextWall.noteRegistered(textWall.get());
+        TextWall.noteRegistered(textWall);
         DeferredBlock<TextWall> textWallLit = BLOCKS.register("text_wall_lit", () -> new TextWall(deviceProps(true)));
         ITEMS.registerSimpleBlockItem(textWallLit);
-        TextWall.noteRegistered(textWallLit.get());
+        TextWall.noteRegistered(textWallLit);
 
         // GuideBoard: name, id, lit, noPillar -- from the 1.12.2 BlockLoader table.
         String[][] guideBoards = new String[][] {
@@ -186,16 +193,16 @@ public final class OpticsBlocks {
             DeferredBlock<GuideBoard> board = BLOCKS.register(info[0],
                     () -> new GuideBoard(deviceProps(lit)).withNoPillar(noPillar));
             ITEMS.registerSimpleBlockItem(board);
-            GuideBoard.noteRegistered(board.get());
+            GuideBoard.noteRegistered(board);
         }
 
         DeferredBlock<HoloJetRev> holoJetRev = BLOCKS.register("holo_jet_rev", () -> new HoloJetRev(deviceProps(false)));
         ITEMS.registerSimpleBlockItem(holoJetRev);
-        HoloJetRev.noteRegistered(holoJetRev.get());
+        HoloJetRev.noteRegistered(holoJetRev);
 
         DeferredBlock<PillarHead> pillarHead = BLOCKS.register("pillar_head", () -> new PillarHead(deviceProps(false)));
         ITEMS.registerSimpleBlockItem(pillarHead);
-        PillarHead.noteRegistered(pillarHead.get());
+        PillarHead.noteRegistered(pillarHead);
 
         // Screen devices: centralised block entity types, no custom codec (they inherit Block#codec).
         DeferredBlock<LEDPlate> ledPlate = BLOCKS.register("led_plate",

@@ -116,15 +116,19 @@ public class StationBoard extends DeviceBase implements ILightSource {
         }
     }
 
-    /** The blocks this class backs; filled by the registration pass (there is exactly one station board). */
-    private static final java.util.List<Block> REGISTERED = new java.util.ArrayList<>();
+    /**
+     * The blocks this class backs; filled by the registration pass (there is exactly one station
+     * board) with the {@code DeferredBlock} holder, and resolved by {@link #registeredBlocks()} --
+     * which the block entity type supplier only calls at registration time.
+     */
+    private static final java.util.List<net.neoforged.neoforge.registries.DeferredBlock<StationBoard>> REGISTERED = new java.util.ArrayList<>();
 
     public static Block[] registeredBlocks() {
-        return REGISTERED.toArray(Block[]::new);
+        return REGISTERED.stream().map(net.neoforged.neoforge.registries.DeferredBlock::get).toArray(Block[]::new);
     }
 
-    /** Called by the registration pass with each block it registers. */
-    public static void noteRegistered(Block block) {
+    /** Called by the registration pass with the holder of each block it registers. */
+    public static void noteRegistered(net.neoforged.neoforge.registries.DeferredBlock<StationBoard> block) {
         REGISTERED.add(block);
     }
 

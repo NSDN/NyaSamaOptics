@@ -124,15 +124,20 @@ public class AdBoard extends DeviceBase implements ILightSource {
      * The blocks this class backs, handed to the block entity type as its {@code validBlocks}. 1.12.2
      * had exactly one ad board, but the list is filled by the registration pass the same way
      * {@code RGBLight.noteRegistered} fills its ten, so a second variant would need no change here.
+     *
+     * <p>The list holds the {@code DeferredBlock} <b>holders</b> and resolves them in
+     * {@link #registeredBlocks()}, which the block entity type's supplier calls only at registration
+     * time. Storing a resolved {@code Block} instead would mean dereferencing the holder during
+     * {@code OpticsBlocks}' class initialiser, where it is still unbound.</p>
      */
-    private static final java.util.List<Block> REGISTERED = new java.util.ArrayList<>();
+    private static final java.util.List<net.neoforged.neoforge.registries.DeferredBlock<AdBoard>> REGISTERED = new java.util.ArrayList<>();
 
     public static Block[] registeredBlocks() {
-        return REGISTERED.toArray(Block[]::new);
+        return REGISTERED.stream().map(net.neoforged.neoforge.registries.DeferredBlock::get).toArray(Block[]::new);
     }
 
-    /** Called by the registration pass with the block it just registered. */
-    public static void noteRegistered(Block block) {
+    /** Called by the registration pass with the holder of the block it just registered. */
+    public static void noteRegistered(net.neoforged.neoforge.registries.DeferredBlock<AdBoard> block) {
         REGISTERED.add(block);
     }
 
