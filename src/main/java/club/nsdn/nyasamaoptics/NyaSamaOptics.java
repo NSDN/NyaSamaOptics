@@ -14,10 +14,11 @@ import org.slf4j.LoggerFactory;
  * {@code @Mod.EventHandler} preInit/init/postInit; as in {@code nyasamabuilding} the proxies are
  * gone and registration happens on the mod bus, which is what the constructor does now.</p>
  *
- * <p>{@code OpticsBlocks.register} and {@code OpticsItems.register} are both listed in
- * {@code docs/12-HANDOVER.md} as the calls that wire this module's registries in. The module's block
- * entity types stay unwired for now ({@link OpticsBlockEntities#register}): the devices that would
- * need them are still being ported, and the handover note records the remaining work.</p>
+ * <p>{@code OpticsBlocks.register}, {@code OpticsItems.register} and
+ * {@code OpticsBlockEntities.register} are the calls that wire this module's registries in. The last
+ * one was missing through seven crashes: the block entity types were written down but never handed to
+ * the mod bus, so every {@code TypeHolder} in {@code tileblock/**} stayed unbound (crash 8,
+ * {@code EntityRenderersEvent$RegisterRenderers}).</p>
  *
  * <p>{@code CreativeTabLoader.register} restores the 1.12.2 {@code tabNyaSamaOptics}: 1.12.2 called its
  * constructor from {@code CommonProxy.preInit}, and the deferred register takes that place.</p>
@@ -31,6 +32,15 @@ public class NyaSamaOptics {
     public NyaSamaOptics(IEventBus modBus, ModContainer container) {
         OpticsBlocks.register(modBus);
         OpticsItems.register(modBus);
+        // The block entity types were the one registry this constructor never handed to the mod bus:
+        // OpticsBlockEntities.register(modBus) existed but had no caller, so none of the six types it
+        // owns were ever registered and OpticsRenderers died with
+        //   NullPointerException: Trying to access unbound value:
+        //       ResourceKey[minecraft:block_entity_type / nyasamaoptics:ad_board]
+        // when EntityRenderersEvent$RegisterRenderers dispatched (crash 8). Place is the same as
+        // nyasamatelecom / opticzCraft / nyasamabuilding: a mod-bus DeferredRegister is wired from the
+        // @Mod constructor, after the blocks and items and before the creative tab.
+        OpticsBlockEntities.register(modBus);
         CreativeTabLoader.register(modBus);
         LOGGER.info("[{}] v3 skeleton loaded (NeoForge, MC 1.21.1)", MODID);
     }
